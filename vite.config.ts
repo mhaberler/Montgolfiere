@@ -11,6 +11,16 @@ export default defineConfig({
     vue(),
     legacy()
   ],
+  build: {
+    target: 'esnext', // This enables BigInt support
+    minify: 'esbuild',
+  },
+  esbuild: {
+    target: 'esnext', // This also needs to be set for esbuild
+    supported: {
+      bigint: true
+    }
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

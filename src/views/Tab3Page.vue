@@ -35,6 +35,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonText } from '@ionic/vue';
 import { Barometer } from 'capacitor-barometer';
+import BalloonEKF  from '../BalloonEKF';
 
 // Define interfaces for type safety
 interface BarometerAvailable {
@@ -45,6 +46,7 @@ const hasBarometer = ref(false);
 const pressure = ref(1013.25);
 const altitude = ref(0);
 const message = ref<string>('');
+const ekf = ref<BalloonEKF>();
 
 const initBarometer = async () => {
   try {
@@ -75,6 +77,7 @@ const calculateAltitude = (pressureHpa: number): number => {
 // Call initialization when component mounts
 onMounted(() => {
   initBarometer();
+  ekf.value = new BalloonEKF();
 });
 
 // Cleanup when component unmounts
