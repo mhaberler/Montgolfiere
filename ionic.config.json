@@ -1,0 +1,7 @@
+{
+  "name": "location-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
