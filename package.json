@@ -6,19 +6,28 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
+    "preview": "vite --port 4712 preview",
     "test:e2e": "cypress run",
     "test:unit": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "predeploy": "npm run build",
+    "sync": "npx cap sync",
+    "ios": "npx cap open ios",
+    "android": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor-community/bluetooth-le": "^7.1.1",
+    "@capacitor/android": "7.4.0",
     "@capacitor/app": "7.0.1",
     "@capacitor/core": "7.4.0",
+    "@capacitor/geolocation": "^7.1.2",
     "@capacitor/haptics": "7.0.1",
+    "@capacitor/ios": "7.4.0",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
+    "capacitor-barometer": "^1.0.1",
     "ionicons": "^7.0.0",
     "vue": "^3.3.0",
     "vue-router": "^4.2.0"
