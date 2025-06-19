@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.haberler.sensordemo;
 
 import com.getcapacitor.BridgeActivity;
 
