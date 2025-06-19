@@ -86,9 +86,11 @@ const toggleScan = async () => {
 
     await BleClient.requestLEScan(
       {
-        allowDuplicates: false,
+        allowDuplicates: true,
       },
       (result) => {
+        console.log("----- BLE", JSON.stringify(result, null, 2));
+
         // Fix: access deviceId through the device property
         const exists = devices.value.find(d => d.device.deviceId === result.device.deviceId);
         if (!exists) {
