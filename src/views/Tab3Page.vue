@@ -69,14 +69,14 @@ const initBarometer = async () => {
       Barometer.addListener('onPressureChange', (event) => {
         console.error("---------------baro event:", JSON.stringify(event));
         pressure.value = event.pressure
-        // altitude.value = altitudeISAByPres(event.pressure);
-        const timestamp = Date.now();
-        if (prevTimestamp > 0) {
-          const dt = timestamp - prevTimestamp;
+        altitude.value = altitudeISAByPres(event.pressure) ?? 0;
+        // const timestamp = Date.now();
+        // if (prevTimestamp > 0) {
+        //   const dt = timestamp - prevTimestamp;
 
-          // apply dt
-        } 
-        prevTimestamp = timestamp;
+        //   // apply dt
+        // } 
+        // prevTimestamp = timestamp;
       });
       await Barometer.start();
     }
