@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { Preferences } from '@capacitor/preferences';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonText, IonButton } from '@ionic/vue';
 import { Barometer } from 'capacitor-barometer';
 import BalloonEKF from '../BalloonEKF';
@@ -53,6 +54,7 @@ const ekf = ref<BalloonEKF>();
 const pressure = ref(1013.25);
 const altitude = ref(0);
 const message = ref<string>('');
+const referencePressure = ref(1013.25);
 
 let baroListener: any = null;
 
@@ -98,9 +100,26 @@ const initBarometer = async () => {
   }
 };
 
+const ekfHistoryInfinite = ref(false);
+const historySeconds = ref(5);
+
+const loadEKFSettings = async () => {
+  const ekfInf = await Preferences.get({ key: 'ekfHistoryInfinite' });
+  const histSec = await Preferences.get({ key: 'historySeconds' });
+  ekfHistoryInfinite.value = ekfInf.value ? JSON.parse(ekfInf.value) : false;
+  historySeconds.value = histSec.value ? JSON.parse(histSec.value) : 5;
+};
+
+const loadQNH = async () => {
+  const qnh = await Preferences.get({ key: 'qnhPressure' });
+  referencePressure.value = qnh.value ? JSON.parse(qnh.value) : 1013.25;
+};
+
 onMounted(() => {
   initBarometer();
   ekf.value = new BalloonEKF();
+  loadEKFSettings();
+  loadQNH();
 });
 
 onUnmounted(async () => {
