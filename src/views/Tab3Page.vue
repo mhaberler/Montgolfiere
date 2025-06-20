@@ -35,7 +35,8 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonText } from '@ionic/vue';
 import { Barometer } from 'capacitor-barometer';
-import BalloonEKF  from '../BalloonEKF';
+import BalloonEKF from '../BalloonEKF';
+import { altitudeISAByPres, windspeedMSToKMH } from 'meteojs/calc.js';
 
 // Define interfaces for type safety
 interface BarometerAvailable {
@@ -43,10 +44,20 @@ interface BarometerAvailable {
 }
 
 const hasBarometer = ref(false);
+const ekf = ref<BalloonEKF>();
+
 const pressure = ref(1013.25);
 const altitude = ref(0);
 const message = ref<string>('');
-const ekf = ref<BalloonEKF>();
+const velocity = ref(0);
+const acceleration = ref(0);
+const burnerGain = ref(0);
+const isDecelerating = ref<boolean>(false);
+const timeToZeroSpeed = ref(0);
+const zeroSpeedAltitude = ref(0);
+const zeroSpeedValid = ref<boolean>(false);
+const prevTimestamp = 0;
+const lastTimestamp = 0;
 
 const initBarometer = async () => {
   try {
@@ -58,7 +69,14 @@ const initBarometer = async () => {
       Barometer.addListener('onPressureChange', (event) => {
         console.error("---------------baro event:", JSON.stringify(event));
         pressure.value = event.pressure
-        altitude.value = calculateAltitude(event.pressure);
+        // altitude.value = altitudeISAByPres(event.pressure);
+        const timestamp = Date.now();
+        if (prevTimestamp > 0) {
+          const dt = timestamp - prevTimestamp;
+
+          // apply dt
+        } 
+        prevTimestamp = timestamp;
       });
       await Barometer.start();
     }
@@ -67,11 +85,6 @@ const initBarometer = async () => {
     message.value = `Error: ${error.message || 'Unknown error occurred'}`;
     console.error('Barometer error:', error);
   }
-};
-
-const calculateAltitude = (pressureHpa: number): number => {
-  const STANDARD_PRESSURE = 1013.25;
-  return 44330 * (1 - Math.pow(pressureHpa / STANDARD_PRESSURE, 1 / 5.255));
 };
 
 // Call initialization when component mounts
