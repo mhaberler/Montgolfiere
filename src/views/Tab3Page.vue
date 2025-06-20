@@ -13,6 +13,10 @@
       </ion-header>
 
       <div class="sensor-container">
+        <ion-button @click="toggleBarometer" :disabled="!hasBarometer">
+          {{ baroActive ? 'Stop Barometer' : 'Start Barometer' }}
+        </ion-button>
+
         <ion-text class="sensor-status" :color="hasBarometer ? 'success' : 'medium'">
           <h2>Barometer Sensor: {{ hasBarometer ? 'Available' : 'Not Available' }}</h2>
         </ion-text>
@@ -33,52 +37,59 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonText } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonText, IonButton } from '@ionic/vue';
 import { Barometer } from 'capacitor-barometer';
 import BalloonEKF from '../BalloonEKF';
 import { altitudeISAByPres, windspeedMSToKMH } from 'meteojs/calc.js';
 
-// Define interfaces for type safety
 interface BarometerAvailable {
   available: boolean;
 }
 
 const hasBarometer = ref(false);
+const baroActive = ref(false);
 const ekf = ref<BalloonEKF>();
 
 const pressure = ref(1013.25);
 const altitude = ref(0);
 const message = ref<string>('');
-const velocity = ref(0);
-const acceleration = ref(0);
-const burnerGain = ref(0);
-const isDecelerating = ref<boolean>(false);
-const timeToZeroSpeed = ref(0);
-const zeroSpeedAltitude = ref(0);
-const zeroSpeedValid = ref<boolean>(false);
-const prevTimestamp = 0;
-const lastTimestamp = 0;
+
+let baroListener: any = null;
+
+const startBarometer = async () => {
+  if (baroActive.value) return;
+  baroListener = await Barometer.addListener('onPressureChange', (event) => {
+    pressure.value = event.pressure;
+    altitude.value = altitudeISAByPres(event.pressure) ?? 0;
+  });
+  await Barometer.start();
+  baroActive.value = true;
+};
+
+const stopBarometer = async () => {
+  if (!baroActive.value) return;
+  await Barometer.stop();
+  if (baroListener) {
+    await baroListener.remove();
+    baroListener = null;
+  }
+  baroActive.value = false;
+};
+
+const toggleBarometer = async () => {
+  if (baroActive.value) {
+    await stopBarometer();
+  } else {
+    await startBarometer();
+  }
+};
 
 const initBarometer = async () => {
   try {
     const result = await Barometer.isAvailable() as BarometerAvailable;
     hasBarometer.value = result.available;
-
     if (result.available) {
-      // Listen for pressure changes
-      Barometer.addListener('onPressureChange', (event) => {
-        console.error("---------------baro event:", JSON.stringify(event));
-        pressure.value = event.pressure
-        altitude.value = altitudeISAByPres(event.pressure) ?? 0;
-        // const timestamp = Date.now();
-        // if (prevTimestamp > 0) {
-        //   const dt = timestamp - prevTimestamp;
-
-        //   // apply dt
-        // } 
-        // prevTimestamp = timestamp;
-      });
-      await Barometer.start();
+      await startBarometer();
     }
   } catch (err) {
     const error = err as Error;
@@ -87,18 +98,14 @@ const initBarometer = async () => {
   }
 };
 
-// Call initialization when component mounts
 onMounted(() => {
   initBarometer();
   ekf.value = new BalloonEKF();
 });
 
-// Cleanup when component unmounts
 onUnmounted(async () => {
-  if (hasBarometer.value) {
-    await Barometer.stop();
-    await Barometer.removeAllListeners();
-  }
+  await stopBarometer();
+  await Barometer.removeAllListeners();
 });
 </script>
 
