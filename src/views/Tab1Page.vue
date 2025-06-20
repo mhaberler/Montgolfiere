@@ -13,8 +13,10 @@
       </ion-header>
 
       <div class="location-container">
-        <ion-button @click="getCurrentPosition">Get Current Location</ion-button>
-        
+        <ion-button @click="toggleWatching">
+          {{ watching ? 'Stop Watching Location' : 'Start Watching Location' }}
+        </ion-button>
+
         <ion-card v-if="location">
           <ion-card-header>
             <ion-card-title>Current Location</ion-card-title>
@@ -35,13 +37,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { Geolocation } from '@capacitor/geolocation';
-import { 
-  IonPage, 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
   IonContent,
   IonButton,
   IonCard,
@@ -53,21 +55,56 @@ import {
 
 const location = ref<{ latitude: number; longitude: number; accuracy?: number } | null>(null);
 const error = ref<string | null>(null);
+const watching = ref(false);
+let watchId: string | null = null;
 
-const getCurrentPosition = async () => {
+const startWatching = async () => {
   try {
-    const position = await Geolocation.getCurrentPosition();
-    location.value = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      accuracy: position.coords.accuracy
-    };
-    error.value = null;
+    watchId = await Geolocation.watchPosition({
+      enableHighAccuracy: true,
+      timeout: 500
+    }, (position, err) => {
+      if (err) {
+        error.value = 'Error watching location. Please ensure location permissions are enabled.';
+        console.error(err);
+        return;
+      }
+      if (position) {
+        location.value = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy
+        };
+        error.value = null;
+      }
+    });
+    watching.value = true;
   } catch (e) {
-    error.value = 'Error getting location. Please ensure location permissions are enabled.';
+    error.value = 'Error starting location watch.';
     console.error(e);
+    watching.value = false;
   }
 };
+
+const stopWatching = async () => {
+  if (watchId) {
+    await Geolocation.clearWatch({ id: watchId });
+    watchId = null;
+  }
+  watching.value = false;
+};
+
+const toggleWatching = async () => {
+  if (watching.value) {
+    await stopWatching();
+  } else {
+    await startWatching();
+  }
+};
+
+onUnmounted(() => {
+  stopWatching();
+});
 </script>
 
 <style scoped>
