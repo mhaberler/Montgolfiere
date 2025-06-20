@@ -21,4 +21,4 @@ include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
 include ':capacitor-barometer'
-project(':capacitor-barometer').projectDir = new File('../node_modules/capacitor-barometer/android')
+project(':capacitor-barometer').projectDir = new File('../../capacitor-barometer/android')

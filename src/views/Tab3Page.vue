@@ -54,6 +54,7 @@ const initBarometer = async () => {
     if (result.available) {
       // Listen for pressure changes
       Barometer.addListener('onPressureChange', (event) => {
+        console.error("---------------baro event:", JSON.stringify(event));
         pressure.value = event.pressure
         altitude.value = calculateAltitude(event.pressure);
       });

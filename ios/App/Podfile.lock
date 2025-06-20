@@ -3,7 +3,7 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (7.0.1):
     - Capacitor
-  - CapacitorBarometer (1.0.1):
+  - CapacitorBarometer (1.0.2):
     - Capacitor
   - CapacitorCommunityBluetoothLe (7.1.1):
     - Capacitor
@@ -22,7 +22,7 @@ PODS:
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
-  - CapacitorBarometer (from `../../node_modules/capacitor-barometer`)
+  - CapacitorBarometer (from `../../../capacitor-barometer`)
   - "CapacitorCommunityBluetoothLe (from `../../node_modules/@capacitor-community/bluetooth-le`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
@@ -40,7 +40,7 @@ EXTERNAL SOURCES:
   CapacitorApp:
     :path: "../../node_modules/@capacitor/app"
   CapacitorBarometer:
-    :path: "../../node_modules/capacitor-barometer"
+    :path: "../../../capacitor-barometer"
   CapacitorCommunityBluetoothLe:
     :path: "../../node_modules/@capacitor-community/bluetooth-le"
   CapacitorCordova:
@@ -57,7 +57,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: 10feab36396883c55373328124a677f118cd4b5f
   CapacitorApp: febecbb9582cb353aed037e18ec765141f880fe9
-  CapacitorBarometer: 3e014ad5e4319b15701392aa257b33a55029e170
+  CapacitorBarometer: 933a8911531eda4a7d8762e7aa055c0802d95b41
   CapacitorCommunityBluetoothLe: 3a65ed12464f16189772c1a8c247cb0b91186114
   CapacitorCordova: 723e017d8a80ab2ede9959fbe37556c35ac860d5
   CapacitorGeolocation: b005744861676af9abd19a0682f0b1af32cc2c99
@@ -66,6 +66,6 @@ SPEC CHECKSUMS:
   CapacitorStatusBar: 6e7af040d8fc4dd655999819625cae9c2d74c36f
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
 
-PODFILE CHECKSUM: 1231d1d7f706b66ef1e36cce6a20430fe4769fc9
+PODFILE CHECKSUM: 5d3eee67f39e35fe6c0805ac9e8fc786ad3c31ac
 
 COCOAPODS: 1.16.2
