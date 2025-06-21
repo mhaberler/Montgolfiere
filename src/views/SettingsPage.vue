@@ -35,7 +35,7 @@
             type="number"
             min="800"
             max="1100"
-            step="0.01"
+            step="1"
             v-model.number="qnhPressure"
             @ionInput="saveSettings"
           ></ion-input>

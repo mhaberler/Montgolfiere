@@ -62,40 +62,8 @@ const isScanning = ref(false);
 const devices = ref<ScanResult[]>([]);
 const error = ref<string | null>(null);
 
+import { serializeDataViewToHexString } from '@/utils/ble-utils';
 
-/**
- * Converts a Uint8Array (or any array-like of numbers) into a hexadecimal string.
- * Each byte is represented by two hex characters (e.g., 255 becomes "ff").
- * @param {Uint8Array} uint8Array The byte array to convert.
- * @returns {string} The hexadecimal representation of the bytes.
- */
-function uint8ArrayToHexString(uint8Array: Uint8Array): string { // Fix 1: Explicitly type uint8Array
-  return Array.from(uint8Array)
-    .map((b: number) => b.toString(16).padStart(2, '0')) // Fix 2: Explicitly type 'b' as number
-    .join(''); // Join all hex strings together
-}
-
-/**
- * Serializes an object, converting any DataView attributes into a hexadecimal string
- * representation of their underlying bytes.
- * @param {object} obj The object to serialize.
- * @returns {string} The JSON string representation of the object.
- */
-function serializeDataViewToHexString(obj: any): string { // Type 'obj' as 'any' or a more specific interface if you have one
-  return JSON.stringify(obj, (key: string, value: any) => { // Type 'key' and 'value' in the replacer
-    if (value instanceof DataView) {
-      // Create a Uint8Array view over the DataView's buffer segment
-      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      // Convert the Uint8Array to a hexadecimal string
-      return {
-        _type: "DataView",
-        _encoding: "hex",
-        data: uint8ArrayToHexString(uint8Array)
-      };
-    }
-    return value;
-  }, 2);
-}
 
 const initialize = async () => {
   try {

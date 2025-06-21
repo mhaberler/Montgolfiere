@@ -13,9 +13,6 @@
       </ion-header>
 
       <div class="sensor-container">
-        <ion-button @click="toggleBarometer" :disabled="!hasBarometer">
-          {{ baroActive ? 'Stop Barometer' : 'Start Barometer' }}
-        </ion-button>
 
         <ion-text class="sensor-status" :color="hasBarometer ? 'success' : 'medium'">
           <h2>Barometer Sensor: {{ hasBarometer ? 'Available' : 'Not Available' }}</h2>
@@ -36,12 +33,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Preferences } from '@capacitor/preferences';
+import { watchEffect } from 'vue';
+
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonText, IonButton } from '@ionic/vue';
 import { Barometer } from 'capacitor-barometer';
 import BalloonEKF from '../BalloonEKF';
-import { altitudeISAByPres, windspeedMSToKMH } from 'meteojs/calc.js';
+import { altitudeISAByPres } from 'meteojs/calc.js';
 
 interface BarometerAvailable {
   available: boolean;
@@ -57,6 +56,21 @@ const message = ref<string>('');
 const referencePressure = ref(1013.25);
 
 let baroListener: any = null;
+
+
+const baroEnabled = ref(false);
+
+// onMounted(() => {
+//   initBarometer();
+//   ekf.value = new BalloonEKF();
+//   loadEKFSettings();
+//   loadQNH();
+// });
+
+const loadBaroSetting = async () => {
+  const baro = await Preferences.get({ key: 'baroEnabled' });
+  baroEnabled.value = baro.value ? JSON.parse(baro.value) : false;
+};
 
 const startBarometer = async () => {
   if (baroActive.value) return;
@@ -78,13 +92,13 @@ const stopBarometer = async () => {
   baroActive.value = false;
 };
 
-const toggleBarometer = async () => {
-  if (baroActive.value) {
-    await stopBarometer();
-  } else {
-    await startBarometer();
-  }
-};
+// const toggleBarometer = async () => {
+//   if (baroActive.value) {
+//     await stopBarometer();
+//   } else {
+//     await startBarometer();
+//   }
+// };
 
 const initBarometer = async () => {
   try {
@@ -115,18 +129,31 @@ const loadQNH = async () => {
   referencePressure.value = qnh.value ? JSON.parse(qnh.value) : 1013.25;
 };
 
+
+
 onMounted(() => {
-  initBarometer();
-  ekf.value = new BalloonEKF();
-  loadEKFSettings();
   loadQNH();
+  loadEKFSettings();
+  initBarometer();
+  loadBaroSetting();
 });
 
-onUnmounted(async () => {
-  await stopBarometer();
-  await Barometer.removeAllListeners();
+
+
+// Watch for changes and start/stop barometer accordingly
+watchEffect(async () => {
+  if (baroEnabled.value) {
+    await startBarometer();
+  } else {
+    await stopBarometer();
+  }
 });
-</script>
+
+// onUnmounted(async () => {
+//   await stopBarometer();
+//   await Barometer.removeAllListeners();
+// });
+// </script>
 
 <style scoped>
 .sensor-container {

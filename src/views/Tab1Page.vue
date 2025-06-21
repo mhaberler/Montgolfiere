@@ -13,9 +13,9 @@
       </ion-header>
 
       <div class="location-container">
-        <ion-button @click="toggleWatching">
-          {{ watching ? 'Stop Watching Location' : 'Start Watching Location' }}
-        </ion-button>
+        <ion-text class="sensor-status" :color="geoEnabled ? 'success' : 'medium'">
+          <h2>Geolocation: {{ geoEnabled ? 'Available' : 'Not Available' }}</h2>
+        </ion-text>
 
         <ion-card v-if="location">
           <ion-card-header>
@@ -37,15 +37,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Geolocation } from '@capacitor/geolocation';
+import { Preferences } from '@capacitor/preferences';
+import { watchEffect } from 'vue';
 import {
   IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonButton,
+  // IonButton,
   IonCard,
   IonCardHeader,
   IonCardTitle,
@@ -53,6 +55,7 @@ import {
   IonText
 } from '@ionic/vue';
 
+const geoEnabled = ref(false);
 const location = ref<{ latitude: number; longitude: number; accuracy?: number } | null>(null);
 const error = ref<string | null>(null);
 const watching = ref(false);
@@ -94,17 +97,33 @@ const stopWatching = async () => {
   watching.value = false;
 };
 
-const toggleWatching = async () => {
-  if (watching.value) {
-    await stopWatching();
-  } else {
-    await startWatching();
-  }
+// const toggleWatching = async () => {
+//   if (watching.value) {
+//     await stopWatching();
+//   } else {
+//     await startWatching();
+//   }
+// };
+
+// onUnmounted(() => {
+//   stopWatching();
+// });
+
+const loadGeoSetting = async () => {
+  const geo = await Preferences.get({ key: 'geoEnabled' });
+  geoEnabled.value = geo.value ? JSON.parse(geo.value) : false;
 };
 
-onUnmounted(() => {
-  stopWatching();
+onMounted(loadGeoSetting);
+
+watchEffect(async () => {
+  if (geoEnabled.value) {
+    await startWatching();
+  } else {
+    await stopWatching();
+  }
 });
+
 </script>
 
 <style scoped>
@@ -121,3 +140,4 @@ ion-card {
   max-width: 400px;
 }
 </style>
+
