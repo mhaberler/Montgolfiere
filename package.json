@@ -12,8 +12,12 @@
     "lint": "eslint .",
     "predeploy": "npm run build",
     "sync": "npx cap sync",
-    "ios": "npx cap open ios",
-    "android": "npx cap open android"
+    "open-in-Xcode": "npx cap open ios",
+    "open-in-Android-Studio": "npx cap open android",
+    "cmdline-ios-build": "npx cap build ios",
+    "cmdline-android-build": "npx cap build android",
+    "run-on-galaxy-s24": "npx cap run android --target R3CX90A30EW",
+    "run-on-galaxy-s10": "npx cap run android --target RF8MC11LGDW"   
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.1.1",
@@ -29,6 +33,7 @@
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
     "capacitor-barometer": "file:../capacitor-barometer",
+    "dotenv": "^16.5.0",
     "ionicons": "^7.0.0",
     "mathjs": "^14.5.2",
     "meteojs": "^1.17.3",
@@ -45,9 +50,9 @@
     "eslint": "^8.35.0",
     "eslint-plugin-vue": "^9.9.0",
     "jsdom": "^22.1.0",
-    "terser": "^5.4.0",
-    "typescript": "~5.6.2",
-    "vite": "~5.2.0",
+    "terser": "5.43.1",
+    "typescript": "5.8.3",
+    "vite": "5.4.19",
     "vitest": "^0.34.6",
     "vue-tsc": "^2.1.10"
   },
