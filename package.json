@@ -18,7 +18,15 @@
     "cmdline-android-build": "npx cap build android",
     "run-on-galaxy-s24": "npx cap run android --target R3CX90A30EW",
     "run-on-galaxy-s10": "npx cap run android --target RF8MC11LGDW",
-    "run-on-iphone-12": "npx cap run ios --target 00008101-001814862441401E"
+    "run-on-iphone-12": "npx cap run ios --target 00008101-001814862441401E",
+    "capacitor:open:ios": "npx cap open ios",
+    "logcat:all": "adb logcat",
+    "logcat:clear": "adb logcat -c",
+    "logcat:app": "adb logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
+    "logcat:app:device": "adb -d logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
+    "logcat:app:emulator": "adb -e logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
+    "logcat:app:mydevice": "adb -s RF8MC11LGDW logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
+    "logcat:app:output": "adb logcat -d -v threadtime Capacitor:D 'Capacitor/Console':D *:S > android_logs.txt"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.1.1",
