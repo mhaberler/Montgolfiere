@@ -17,7 +17,8 @@
     "cmdline-ios-build": "npx cap build ios",
     "cmdline-android-build": "npx cap build android",
     "run-on-galaxy-s24": "npx cap run android --target R3CX90A30EW",
-    "run-on-galaxy-s10": "npx cap run android --target RF8MC11LGDW"   
+    "run-on-galaxy-s10": "npx cap run android --target RF8MC11LGDW",
+    "run-on-iphone-12": "npx cap run ios --target 00008101-001814862441401E"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.1.1",
