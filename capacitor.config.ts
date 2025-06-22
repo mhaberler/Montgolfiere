@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config(); // Load environment variables from .env file
 
 const config: CapacitorConfig = {
-  appId: 'com.haberler.sensordemo',
-  appName: 'sensordemo',
+  appId: 'com.haberler.montgolfiere',
+  appName: 'Montgolfiere',
   webDir: 'dist',
 
 

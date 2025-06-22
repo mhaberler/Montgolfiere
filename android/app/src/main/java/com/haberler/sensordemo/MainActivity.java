@@ -1,4 +1,4 @@
-package com.haberler.sensordemo;
+package com.haberler.montgolfiere;
 
 import com.getcapacitor.BridgeActivity;
 
