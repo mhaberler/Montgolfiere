@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,7 +28,12 @@
     "logcat:app:device": "adb -d logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
     "logcat:app:emulator": "adb -e logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
     "logcat:app:mydevice": "adb -s RF8MC11LGDW logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
-    "logcat:app:output": "adb logcat -d -v threadtime Capacitor:D 'Capacitor/Console':D *:S > android_logs.txt"
+    "logcat:app:output": "adb logcat -d -v threadtime Capacitor:D 'Capacitor/Console':D *:S > android_logs.txt",
+    "bump-patch": "npm version patch --no-git-tag-version && fastlane bump",
+    "bump-minor": "npm version minor --no-git-tag-version && fastlane bump",
+    "bump-major": "npm version major --no-git-tag-version && fastlane bump",
+    "ios-beta": "fastlane ios beta",
+    "android-beta": "fastlane android beta"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.1.1",

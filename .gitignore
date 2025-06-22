@@ -32,3 +32,5 @@ npm-debug.log*
 /www
 .env
 project-summary.md
+App.app.dSYM.zip
+App.ipa
