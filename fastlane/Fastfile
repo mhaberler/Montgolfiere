@@ -81,7 +81,7 @@ platform(:android) do
     )
 
     upload_to_play_store(
-      track: "alpha",
+      track: "internal",
       aab: "android/app/build/outputs/bundle/release/app-release.aab",
       release_status: "draft",
       skip_upload_apk: true, # dont upload remaining debug apk

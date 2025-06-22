@@ -7,7 +7,13 @@ const config: CapacitorConfig = {
   appId: 'com.haberler.montgolfiere',
   appName: 'Montgolfiere',
   webDir: 'dist',
-
+  // bundledWebRuntime: false,
+  server: {
+    // This is usually only set for a *specific* remote server, not for local dev.
+    // During live reload, the CLI overrides this to point to your local dev server.
+    // url: 'http://my-remote-server.com',
+    cleartext: true // Required if your dev server is HTTP (not HTTPS)
+  },
 
   android: {
     buildOptions: {
