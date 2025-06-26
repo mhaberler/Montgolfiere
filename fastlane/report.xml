@@ -5,27 +5,47 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000188">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000225">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: get_version_name" time="0.305824">
+      <testcase classname="fastlane.lanes" name="1: Switch to inc_ver_ios lane" time="0.000562">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: get_version_code" time="0.234128">
+      <testcase classname="fastlane.lanes" name="2: load_json" time="0.000833">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: bundleRelease" time="1.636459">
+      <testcase classname="fastlane.lanes" name="3: increment_build_number" time="0.278661">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: upload_to_play_store" time="27.115096">
+      <testcase classname="fastlane.lanes" name="4: increment_version_number" time="0.170409">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: Switch to inc_ver_and lane" time="0.000198">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: load_json" time="0.000182">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="7: increment_version_code" time="0.001401">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="8: increment_version_name" time="0.00056">
         
       </testcase>
     
