@@ -35,3 +35,7 @@ project-summary.md
 App.app.dSYM.zip
 App.ipa
 TODO
+.env.development
+.env.production
+.gitignore
+fastlane/report.xml
