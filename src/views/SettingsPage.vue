@@ -25,6 +25,11 @@
           <ion-input type="number" min="1" max="360" v-model.number="historySeconds"></ion-input>
         </ion-item>
       </ion-list>
+
+      <ion-text :color="baroActive ? 'success' : 'medium'">
+        <h2>Variance: {{ baroActive ? currentVariance : '--' }}</h2>
+      </ion-text>
+
     </ion-content>
   </ion-page>
 </template>
@@ -36,6 +41,8 @@ import {
   referencePressure,
   useReferencePressure,
   transitionAltitude,
-  historySeconds
+  historySeconds,
+  currentVariance,
+  baroActive
 } from '@/utils/state';
 </script>

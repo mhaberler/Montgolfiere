@@ -27,6 +27,7 @@ const baroActive = ref(false);
 const pressure = ref<number>(1013.25);
 const altitudeQNH = ref<number>(0.0);
 const altitudeISA = ref<number>(0.0);
+const currentVariance = ref<number>(0.0);
 
 const ekfAltitude = ref<number>(0);
 const ekfVelocity = ref<number>(0);
@@ -65,7 +66,8 @@ const startBarometer = async () => {
                   ? altitudeQNH.value
                   : altitudeISA.value;
                 rv.push(p);
-                ekf.setVariance(rv.variance());
+                currentVariance.value = rv.variance();
+                ekf.setVariance(currentVariance.value);
                 ekf.processMeasurement(timeDiff, useReferencePressure.value ? altitudeQNH.value : altitudeISA.value, loudness, burnerDuration);
 
                 ekfAltitude.value = ekf.getAltitude();
@@ -96,27 +98,26 @@ const stopBarometer = async () => {
 };
 
 export {
+  referencePressure,
+  useReferencePressure,
+  transitionAltitude,
+  historySeconds,
+  startBarometer,
+  stopBarometer,
 
-    referencePressure,
-    useReferencePressure,
-    transitionAltitude,
-    historySeconds,
-
-    startBarometer,
-    stopBarometer,
-
-    // volatile state
-    barometerAvailable,
-    baroActive,
-    pressure,
-    altitudeQNH,
-    altitudeISA,
-    ekfAltitude,
-    ekfVelocity,
-    ekfAcceleration,
-    ekfBurnerGain,
-    ekfIsDecelerating,
-    ekfTimeToZeroSpeed,
-    ekfZeroSpeedAltitude,
-    ekfZeroSpeedValid,
+  // volatile state
+  barometerAvailable,
+  baroActive,
+  pressure,
+  altitudeQNH,
+  altitudeISA,
+  ekfAltitude,
+  ekfVelocity,
+  ekfAcceleration,
+  ekfBurnerGain,
+  ekfIsDecelerating,
+  ekfTimeToZeroSpeed,
+  ekfZeroSpeedAltitude,
+  ekfZeroSpeedValid,
+  currentVariance,
 };

@@ -1,29 +1,27 @@
 // consolidate the state management for barometer and location sensors
 import {
+  // persistent state
+  referencePressure,
+  useReferencePressure,
+  transitionAltitude,
+  historySeconds,
 
-    // persistent state
-    referencePressure,
-    useReferencePressure,
-    transitionAltitude,
-    historySeconds,
-
-    // volatile
-    barometerAvailable,
-    baroActive,
-
-    pressure,
-    altitudeQNH,
-    altitudeISA,
-
-    ekfAltitude,
-    ekfVelocity,
-    ekfAcceleration,
-    ekfBurnerGain,
-    ekfIsDecelerating,
-    ekfTimeToZeroSpeed,
-    ekfZeroSpeedAltitude,
-    ekfZeroSpeedValid
-} from '../sensors/pressure';
+  // volatile
+  barometerAvailable,
+  baroActive,
+  pressure,
+  altitudeQNH,
+  altitudeISA,
+  ekfAltitude,
+  ekfVelocity,
+  ekfAcceleration,
+  ekfBurnerGain,
+  ekfIsDecelerating,
+  ekfTimeToZeroSpeed,
+  ekfZeroSpeedAltitude,
+  ekfZeroSpeedValid,
+  currentVariance,
+} from "../sensors/pressure";
 
 import {
     locationAvailable,
@@ -55,6 +53,7 @@ export {
     ekfTimeToZeroSpeed,
     ekfZeroSpeedAltitude,
     ekfZeroSpeedValid,
+    currentVariance,
 
     locationAvailable,
     location,
