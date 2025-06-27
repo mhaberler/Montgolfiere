@@ -21,6 +21,7 @@ import {
   ekfZeroSpeedAltitude,
   ekfZeroSpeedValid,
   currentVariance,
+  baroRate,
 } from "../sensors/pressure";
 
 import {
@@ -54,7 +55,7 @@ export {
     ekfZeroSpeedAltitude,
     ekfZeroSpeedValid,
     currentVariance,
-
+    baroRate,
     locationAvailable,
     location,
     locationError,

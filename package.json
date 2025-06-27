@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host 172.16.0.212 --port=8100 --host",

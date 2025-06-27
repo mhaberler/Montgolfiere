@@ -27,9 +27,11 @@
       </ion-list>
 
       <ion-text :color="baroActive ? 'success' : 'medium'">
-        <h2>Variance: {{ baroActive ? currentVariance : '--' }}</h2>
+        <h2>Variance: {{ baroActive ? currentVariance.toFixed(5) : '--' }}</h2>
       </ion-text>
-
+      <ion-text :color="baroActive ? 'success' : 'medium'">
+        <h2>Baro rate samples/sec: {{ baroActive ? baroRate.toFixed(2) : '--' }}</h2>
+      </ion-text>
     </ion-content>
   </ion-page>
 </template>
@@ -43,6 +45,7 @@ import {
   transitionAltitude,
   historySeconds,
   currentVariance,
-  baroActive
+  baroActive,
+  baroRate
 } from '@/utils/state';
 </script>
