@@ -39,3 +39,4 @@ TODO
 .env.production
 .gitignore
 fastlane/report.xml
+android_logs.txt
