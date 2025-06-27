@@ -5,10 +5,11 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 import { ref } from 'vue';
 import { startBarometer } from '../sensors/pressure';
 import { startLocation } from '../sensors/location';
+import { usePersistedRef } from '../composables/usePersistedRef';
 // import { initializeBLE } from '../sensors/ble';
 
 const wakeLockAvailable = ref(false);
-const showDebugInfo = ref(import.meta.env.MODE === "development");
+const showDebugInfo = usePersistedRef<boolean>('showDebugInfo', import.meta.env.MODE === "development");
 
 const isSupported = async () => {
     const result = await KeepAwake.isSupported();

@@ -1,10 +1,10 @@
 <template>
   <ion-page>
-    <ion-header>
+    <!-- <ion-header>
       <ion-toolbar>
         <ion-title>Settings</ion-title>
       </ion-toolbar>
-    </ion-header>
+    </ion-header> -->
     <ion-content>
       <ion-card>
         <ion-card-header>
@@ -38,7 +38,6 @@
         </ion-card-content>
       </ion-card>
 
-      <DebugEkf v-if="showDebugInfo"></DebugEkf>
     </ion-content>
   </ion-page>
 </template>
@@ -46,7 +45,6 @@
 <script setup lang="ts">
 
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle, IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton } from '@ionic/vue';
-import DebugEkf from '@/components/DebugEkf.vue';
 import { ref } from 'vue';
 
 import {
@@ -57,11 +55,11 @@ import {
   currentVariance,
   baroActive,
   baroRate,
-  // showDebugInfo
+  showDebugInfo
 } from '@/utils/state';
 
 // Volatile ref for debug info toggle (doesn't persist)
-const showDebugInfo = ref(false);
+// const showDebugInfo = ref(false);
 
 const toggleDebugInfo = () => {
   showDebugInfo.value = !showDebugInfo.value;

@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>BLE Scanner</ion-title>
+        <ion-title>BLE Sensor Scanner</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
