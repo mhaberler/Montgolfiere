@@ -5,7 +5,7 @@
         <ion-title>Status</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" v-if="showDebugInfo">
 
       <ion-card class="sensor-container">
         <ion-card-header>
@@ -146,6 +146,14 @@
 
     </ion-content>
 
+    <!-- Show message when not in debug mode -->
+    <ion-content :fullscreen="true" v-if="!showDebugInfo">
+      <ion-card>
+        <ion-card-content>
+          <p>Status page is only available in development mode.</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
 
   </ion-page>
 </template>
@@ -189,6 +197,8 @@ import {
   ekfZeroSpeedAltitude,
   ekfZeroSpeedValid
 } from '../utils/state';
+
+const showDebugInfo = import.meta.env.MODE === 'development';
 
 // const handleSensorClick = (sensorData) => {
 //   console.log('Sensor clicked:', sensorData)

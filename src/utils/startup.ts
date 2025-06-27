@@ -8,6 +8,7 @@ import { startLocation } from '../sensors/location';
 // import { initializeBLE } from '../sensors/ble';
 
 const wakeLockAvailable = ref(false);
+const showDebugInfo = ref(import.meta.env.MODE === "development");
 
 const isSupported = async () => {
     const result = await KeepAwake.isSupported();
@@ -66,14 +67,15 @@ const initializeApp = async () => {
 }
 
 export {
-    initializeApp,
-    // cameToForeground,
-    // wentToBackground,
-    // isSupported,
-    // isKeptAwake,
+  initializeApp,
+  // cameToForeground,
+  // wentToBackground,
+  // isSupported,
+  // isKeptAwake,
 
-    // barometerAvailable,
-    // locationAvailable,
-    // bleAvailable,
-    wakeLockAvailable,
+  // barometerAvailable,
+  // locationAvailable,
+  // bleAvailable,
+  wakeLockAvailable,
+  showDebugInfo,
 };

@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 172.16.0.212 --port=8100 --host",
+    "dev-production": "vite --mode production --host 172.16.0.212 --port=8100 --host",
     "dev-external": "vite --host 172.16.0.212 --port=8100",
-    "build": "vue-tsc && vite build",
+    "build-development": "vue-tsc && vite build --mode development",
+    "build-production": "vue-tsc && vite build --mode production",
     "preview-orig": "vite --host 172.16.0.212  preview",
     "preview": "vite --host 172.16.0.212 --port 4712 preview",
     "test:e2e": "cypress run",

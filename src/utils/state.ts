@@ -30,35 +30,32 @@ import {
     locationError,
 } from '../sensors/location';
 
-import {
-    wakeLockAvailable
-} from './startup';
+import { wakeLockAvailable, showDebugInfo } from "./startup";
 
 export {
-    // persistent state
-    referencePressure,
-    useReferencePressure,
-    transitionAltitude,
-    historySeconds,
-
-    barometerAvailable,
-    baroActive,
-    pressure,
-    altitudeQNH,
-    altitudeISA,
-    ekfAltitude,
-    ekfVelocity,
-    ekfAcceleration,
-    ekfBurnerGain,
-    ekfIsDecelerating,
-    ekfTimeToZeroSpeed,
-    ekfZeroSpeedAltitude,
-    ekfZeroSpeedValid,
-    currentVariance,
-    baroRate,
-    locationAvailable,
-    location,
-    locationError,
-
-    wakeLockAvailable
-}
+  // persistent state
+  referencePressure,
+  useReferencePressure,
+  transitionAltitude,
+  historySeconds,
+  barometerAvailable,
+  baroActive,
+  pressure,
+  altitudeQNH,
+  altitudeISA,
+  ekfAltitude,
+  ekfVelocity,
+  ekfAcceleration,
+  ekfBurnerGain,
+  ekfIsDecelerating,
+  ekfTimeToZeroSpeed,
+  ekfZeroSpeedAltitude,
+  ekfZeroSpeedValid,
+  currentVariance,
+  baroRate,
+  locationAvailable,
+  location,
+  locationError,
+  wakeLockAvailable,
+  showDebugInfo,
+};

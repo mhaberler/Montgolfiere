@@ -47,6 +47,9 @@ const rateStats = new RateStats();
 
 let previousTimestamp = 0;  // seconds/ Unix timestamp
 
+if (import.meta.env.MODE === "development") {
+  // dev-only logic
+}
 
 const startBarometer = async () => {
     const result = await Barometer.isAvailable() as BarometerAvailable;

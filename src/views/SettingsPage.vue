@@ -26,19 +26,17 @@
         </ion-item>
       </ion-list>
 
-      <ion-text :color="baroActive ? 'success' : 'medium'">
-        <h2>Variance: {{ baroActive ? currentVariance.toFixed(5) : '--' }}</h2>
-      </ion-text>
-      <ion-text :color="baroActive ? 'success' : 'medium'">
-        <h2>Baro rate samples/sec: {{ baroActive ? baroRate.toFixed(2) : '--' }}</h2>
-      </ion-text>
+      <DebugEkf></DebugEkf>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle, IonInput } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle, IonInput, IonCard } from '@ionic/vue';
+import DebugEkf from '@/components/DebugEkf.vue';
+
+
 import {
   referencePressure,
   useReferencePressure,
@@ -46,6 +44,7 @@ import {
   historySeconds,
   currentVariance,
   baroActive,
-  baroRate
+  baroRate,
+  // showDebugInfo
 } from '@/utils/state';
 </script>
