@@ -7,6 +7,10 @@ import { altitudeByPressure } from '../utils/meteo-utils';
 import { usePersistedRef } from '@/composables/usePersistedRef';
 import BalloonEKF from '../ekf/BalloonEKF';
 
+import { RunningVariance } from "../stats/RunningVariance";
+// import { RollingVariance } from "../stats/RollingVariance";
+// import { WindowVariance } from "../stats/WindowVariance";
+
 interface BarometerAvailable {
     available: boolean;
 }
@@ -36,6 +40,7 @@ const ekfZeroSpeedValid = ref<boolean>(false);
 let baroListener: PluginListenerHandle;
 
 const ekf = new BalloonEKF();
+const rv = new RunningVariance();
 
 let previousTimestamp = 0;  // seconds/ Unix timestamp
 
@@ -56,6 +61,11 @@ const startBarometer = async () => {
                 const timeDiff = data.timestamp - previousTimestamp;
                 const loudness = 0.0;
                 const burnerDuration = 0.0;
+                const p = useReferencePressure.value
+                  ? altitudeQNH.value
+                  : altitudeISA.value;
+                rv.push(p);
+                ekf.setVariance(rv.variance());
                 ekf.processMeasurement(timeDiff, useReferencePressure.value ? altitudeQNH.value : altitudeISA.value, loudness, burnerDuration);
 
                 ekfAltitude.value = ekf.getAltitude();
