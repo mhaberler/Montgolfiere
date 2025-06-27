@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import { startBarometer } from '../sensors/pressure';
 import { startLocation } from '../sensors/location';
 import { usePersistedRef } from '../composables/usePersistedRef';
-// import { initializeBLE } from '../sensors/ble';
+// import { initializeBLE } from '../sensors/blesensors';
 
 const wakeLockAvailable = ref(false);
 const showDebugInfo = usePersistedRef<boolean>('showDebugInfo', import.meta.env.MODE === "development");
@@ -41,9 +41,6 @@ const wentToBackground = async () => {
     }
 }
 
-// initializeLocation();
-// initializeBLE();
-
 const initializeApp = async () => {
 
     console.log('Initializing app...');
@@ -62,21 +59,12 @@ const initializeApp = async () => {
     });
     startBarometer();
     startLocation();
-    // initializeLocation();
     // initializeBLE();
     console.log('App initialized and ready to use.');
 }
 
 export {
   initializeApp,
-  // cameToForeground,
-  // wentToBackground,
-  // isSupported,
-  // isKeptAwake,
-
-  // barometerAvailable,
-  // locationAvailable,
-  // bleAvailable,
   wakeLockAvailable,
   showDebugInfo,
 };

@@ -17,16 +17,16 @@
               <ion-toggle v-model="useReferencePressure"></ion-toggle>
             </ion-item>
             <ion-item>
-              <ion-label>QNH Pressure (hPa)</ion-label>
+              <ion-label>QNH (hPa))</ion-label>
               <ion-input type="number" min="800" max="1100" step="1" v-model.number="referencePressure"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-label>Transition altitude (ft)</ion-label>
+              <ion-label>Transition alt (ft)</ion-label>
               <ion-input type="number" min="0" max="12000" step="1000" v-model.number="transitionAltitude"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-label>EKF Variance history (sec)</ion-label>
-              <ion-input type="number" min="1" max="360" v-model.number="historySeconds"></ion-input>
+              <ion-label>Variance samples</ion-label>
+              <ion-input type="number" min="1" max="360" v-model.number="historySamples"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label>Show Debug Info</ion-label>
@@ -51,10 +51,7 @@ import {
   referencePressure,
   useReferencePressure,
   transitionAltitude,
-  historySeconds,
-  currentVariance,
-  baroActive,
-  baroRate,
+  historySamples,
   showDebugInfo
 } from '@/utils/state';
 

@@ -4,7 +4,7 @@ import {
   referencePressure,
   useReferencePressure,
   transitionAltitude,
-  historySeconds,
+  historySamples,
 
   // volatile
   barometerAvailable,
@@ -37,7 +37,7 @@ export {
   referencePressure,
   useReferencePressure,
   transitionAltitude,
-  historySeconds,
+  historySamples,
   barometerAvailable,
   baroActive,
   pressure,

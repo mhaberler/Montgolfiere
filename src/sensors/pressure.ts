@@ -19,7 +19,7 @@ interface BarometerAvailable {
 const referencePressure = usePersistedRef<number>('referencePressure',1013.25);  // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
 const useReferencePressure = usePersistedRef('useReferencePressure', false);  // for ekf only
 const transitionAltitude = usePersistedRef<number>('transitionAltitude', 7000); // altitude in ft where we transition from QNH to ISA model
-const historySeconds = usePersistedRef<number>('historySeconds', 20); // variance time window
+const historySamples = usePersistedRef<number>('historySamples', 20); // variance time window
 
 // volatile state
 const barometerAvailable = ref<boolean>(false);
@@ -119,7 +119,7 @@ export {
   referencePressure,
   useReferencePressure,
   transitionAltitude,
-  historySeconds,
+  historySamples,
   startBarometer,
   stopBarometer,
 
