@@ -28,20 +28,26 @@
               <ion-label>EKF Variance history (sec)</ion-label>
               <ion-input type="number" min="1" max="360" v-model.number="historySeconds"></ion-input>
             </ion-item>
+            <ion-item>
+              <ion-label>Show Debug Info</ion-label>
+              <ion-button fill="outline" size="small" @click="toggleDebugInfo">
+                {{ showDebugInfo ? 'Hide' : 'Show' }}
+              </ion-button>
+            </ion-item>
           </ion-list>
         </ion-card-content>
       </ion-card>
 
-      <DebugEkf></DebugEkf>
+      <DebugEkf v-if="showDebugInfo"></DebugEkf>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle, IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle, IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton } from '@ionic/vue';
 import DebugEkf from '@/components/DebugEkf.vue';
-
+import { ref } from 'vue';
 
 import {
   referencePressure,
@@ -53,6 +59,13 @@ import {
   baroRate,
   // showDebugInfo
 } from '@/utils/state';
+
+// Volatile ref for debug info toggle (doesn't persist)
+const showDebugInfo = ref(false);
+
+const toggleDebugInfo = () => {
+  showDebugInfo.value = !showDebugInfo.value;
+};
 </script>
 
 <style scoped>
@@ -156,6 +169,22 @@ ion-toggle {
 }
 
 ion-toggle:hover {
+  transform: scale(1.05);
+}
+
+ion-button {
+  --background: rgba(102, 126, 234, 0.1);
+  --color: #667eea;
+  --border-color: #667eea;
+  --border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+ion-button:hover {
+  --background: #667eea;
+  --color: white;
   transform: scale(1.05);
 }
 
