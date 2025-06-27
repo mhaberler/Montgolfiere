@@ -15,7 +15,7 @@
     "test:unit": "vitest",
     "lint": "eslint .",
     "predeploy": "npm run build",
-    "sync": "npx cap sync",
+    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && npx cap sync",
     "debug-android-no-mirror": "npx cap run android  --live-reload --host 172.16.0.212 --port 8100  --target R3CX90A30EW",
     "debug-android": "npx cap run android  --live-reload --host 172.16.0.212 --port 8100  --target R3CX90A30EW",
     "debug-ios": "ionic cap run android --livereload --external --public-host  172.16.0.212 --port 8100  --target 00008140-0002692C1E79801C",
