@@ -4,7 +4,7 @@
   "version": "1.3.0",
   "type": "module",
   "scripts": {
-    "dev-default": "vite",
+    "dev-default": "vite --host",
     "dev": "vite --host 172.16.0.212 --port=8100 --host",
     "dev-production": "vite --mode production --host 172.16.0.212 --port=8100 --host",
     "build-development": "vue-tsc && vite build --mode development",
