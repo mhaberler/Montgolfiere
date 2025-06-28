@@ -7,7 +7,7 @@
             <ion-card-content>
                 <p>EKF Altitude (m): {{ ekfAltitude.toFixed(2) }}</p>
                 <p>EKF Velocity (m/s): {{ ekfVelocity.toFixed(2) }}</p>
-                <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration*1000.0).toFixed(4) }}</p>
+                <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration*1000.0).toFixed(2) }}</p>
                 <p>Variance: {{ currentVariance.toFixed(6) }}</p>
                 <p>Baro rate samples/sec: {{ baroRate.toFixed(2) }}</p>
             </ion-card-content>
