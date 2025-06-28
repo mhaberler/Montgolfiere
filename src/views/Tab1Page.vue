@@ -63,6 +63,21 @@
         </ion-card-content>
       </ion-card>
 
+
+
+      <!-- <ion-card class="sensor-container" v-if="showDebugInfo">
+        <ion-card-header> -->
+          <!-- <ion-card-title>Current Location</ion-card-title> -->
+      <!-- <ion-card-subtitle>Debug info</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-content :fullscreen="true">
+          <DebugEkf></DebugEkf>
+        </ion-content>
+      </ion-card-content>
+      </ion-card> -->
+
+      <DebugEkf></DebugEkf>
     </ion-content>
   </ion-page>
 </template>
@@ -70,6 +85,7 @@
 <script setup lang="ts">
 
 import SensorDisplay from '@/components/SensorDisplay.vue'
+import DebugEkf from '@/components/DebugEkf.vue';
 
 import {
   IonPage,
@@ -105,7 +121,8 @@ import {
   ekfIsDecelerating,
   ekfTimeToZeroSpeed,
   ekfZeroSpeedAltitude,
-  ekfZeroSpeedValid
+  ekfZeroSpeedValid,
+  showDebugInfo
 } from '../utils/state';
 
 // import { LinearGauge, RadialGauge } from '@/gauges/vue-canvas-gauges'

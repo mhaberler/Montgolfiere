@@ -1,15 +1,18 @@
 <template>
     <div>
         <ion-card v-if="showDebugInfo" class="debug-panel">
-            <!-- <ion-card-header>
+            <ion-card-header>
                 <ion-card-subtitle>EKF & pressure</ion-card-subtitle>
-            </ion-card-header> -->
+            </ion-card-header>
             <ion-card-content>
                 <p>EKF Altitude (m): {{ ekfAltitude.toFixed(2) }}</p>
                 <p>EKF Velocity (m/s): {{ ekfVelocity.toFixed(2) }}</p>
                 <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration*1000.0).toFixed(2) }}</p>
                 <p>Variance: {{ currentVariance.toFixed(6) }}</p>
-                <p>Baro rate samples/sec: {{ baroRate.toFixed(2) }}</p>
+                <p>Pressure (hPa): {{ pressure.toFixed(1) }}</p>
+                <p>Baro rate samples/sec: {{ baroRate.toFixed(1) }}</p>
+                <p>Alt ISA (m): {{ altitudeISA.toFixed(1) }}</p>
+                <p>Alt QNH (m): {{ altitudeQNH.toFixed(1) }}</p>
             </ion-card-content>
         </ion-card>
     </div>
@@ -23,7 +26,11 @@ import {
     ekfAcceleration,
     showDebugInfo,
     currentVariance,
-    baroRate
+    baroRate,
+    pressure,
+    altitudeISA,
+    altitudeQNH,
+
 } from '@/utils/state';
 </script>
 
