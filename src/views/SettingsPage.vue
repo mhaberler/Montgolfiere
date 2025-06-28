@@ -28,7 +28,7 @@
               <ion-label>Variance samples</ion-label>
               <ion-input type="number" min="5" max="100" v-model.number="historySamples" @ionBlur="() => {
                 if (historySamples < 5) historySamples = 5;
-                if (historySamples > 300) historySamples = 300;
+                if (historySamples > 500) historySamples = 500;
               }"></ion-input>
             </ion-item>
             <ion-item>

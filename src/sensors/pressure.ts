@@ -8,7 +8,7 @@ import { usePersistedRef } from "@/composables/usePersistedRef";
 import BalloonEKF from "../ekf/BalloonEKF";
 
 
-import { RollingVariance } from "../stats/RollingVariance";
+import { WindowVariance } from "../stats/WindowVariance";
 import { RateStats } from "../stats/RateStats";
 
 interface BarometerAvailable {
@@ -43,7 +43,7 @@ let baroListener: PluginListenerHandle;
 
 const ekf = new BalloonEKF();
 const rateStats = new RateStats();
-let computeVariance: RollingVariance;
+let computeVariance: WindowVariance;
 
 let previousTimestamp = 0; // seconds/ Unix timestamp
 
@@ -52,7 +52,7 @@ watch(
   historySamples,
   (newSampleCount) => {
     console.log(`historySamples: ${newSampleCount}`);
-    computeVariance = new RollingVariance(newSampleCount);
+    computeVariance = new WindowVariance(newSampleCount);
   },
   { immediate: true }
 );
@@ -86,7 +86,7 @@ const startBarometer = async () => {
         const p = useReferencePressure.value
           ? altitudeQNH.value
           : altitudeISA.value;
-        computeVariance.push(p);
+        computeVariance.add(p);
         currentVariance.value = computeVariance.variance();
         ekf.setVariance(currentVariance.value);
         ekf.processMeasurement(
