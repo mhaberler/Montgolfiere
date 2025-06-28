@@ -69,7 +69,7 @@ const startBarometer = async () => {
     baroListener = Barometer.addListener("onPressureChange", (data) => {
       rateStats.push();
       baroRate.value = rateStats.averageRate();
-
+      
       pressure.value = data.pressure;
       const altQNH = altitudeByPressure(
         pressure.value,
