@@ -26,7 +26,10 @@
             </ion-item>
             <ion-item>
               <ion-label>Variance samples</ion-label>
-              <ion-input type="number" min="1" max="360" v-model.number="historySamples"></ion-input>
+              <ion-input type="number" min="5" max="100" v-model.number="historySamples" @ionBlur="() => {
+                if (historySamples < 5) historySamples = 5;
+                if (historySamples > 300) historySamples = 300;
+              }"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label>Show Debug Info</ion-label>
@@ -149,7 +152,7 @@ ion-input {
 }
 
 ion-input:focus-within {
-  --background: rgba(255, 255, 255, 1);
+  /* --background: rgba(255, 255, 255, 1); */
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
@@ -188,25 +191,25 @@ ion-button:hover {
   ion-content {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   }
-  
+
   ion-card {
     background: rgba(52, 73, 94, 0.9);
     border-color: rgba(255, 255, 255, 0.1);
   }
-  
+
   ion-item {
     --background: rgba(52, 73, 94, 0.8);
     --color: #ecf0f1;
   }
-  
+
   ion-item:hover {
     --background: rgba(52, 73, 94, 1);
   }
-  
+
   ion-label {
     color: #ecf0f1;
   }
-  
+
   ion-input {
     --background: rgba(44, 62, 80, 0.8);
     --color: #ecf0f1;
@@ -218,25 +221,25 @@ ion-button:hover {
   ion-content {
     padding: 12px;
   }
-  
+
   ion-card {
     margin-bottom: 16px;
     border-radius: 12px;
   }
-  
+
   ion-card-header {
     padding: 16px;
     border-radius: 12px 12px 0 0;
   }
-  
+
   ion-card-title {
     font-size: 1.2rem;
   }
-  
+
   ion-item:hover {
     transform: none;
   }
-  
+
   ion-label {
     min-width: 150px;
     flex: 0 0 150px;

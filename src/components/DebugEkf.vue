@@ -1,10 +1,9 @@
 <template>
     <div>
-        <!-- Dev-only debug panel -->
         <ion-card v-if="showDebugInfo" class="debug-panel">
-            <ion-card-header>
-                <ion-card-subtitle>Debug Info (Dev Only)</ion-card-subtitle>
-            </ion-card-header>
+            <!-- <ion-card-header>
+                <ion-card-subtitle>EKF & pressure</ion-card-subtitle>
+            </ion-card-header> -->
             <ion-card-content>
                 <p>EKF Altitude: {{ ekfAltitude.toFixed(2) }}</p>
                 <p>EKF Velocity: {{ ekfVelocity.toFixed(2) }}</p>
