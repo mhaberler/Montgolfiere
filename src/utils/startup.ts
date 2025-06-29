@@ -8,6 +8,16 @@ import { startLocation } from "../sensors/location";
 import { usePersistedRef } from "../composables/usePersistedRef";
 // import { initializeBLE } from '../sensors/blesensors';
 
+// if (import.meta.env.DEV || process.env.NODE_ENV === "development") {
+if (true) {
+  const originalLog = console.log;
+  console.log = (...args) => {
+    if (args[0]?.includes?.("TO JS") && args[0]?.includes?.("pressure")) {
+      return;
+    }
+    originalLog.apply(console, args);
+  };
+}
 
 const wakeLockAvailable = ref(false);
 const showDebugInfo = usePersistedRef<boolean>(
@@ -49,7 +59,6 @@ const initializeApp = async () => {
   console.log("Initializing app...");
   wakeLockAvailable.value = await isSupported();
   console.log(`Wake lock supported: ${wakeLockAvailable.value}`);
-
 
   // Handle app state changes
   App.addListener("appStateChange", (state) => {
