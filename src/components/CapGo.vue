@@ -29,6 +29,16 @@
                 >
                     {{ isUpdating ? 'Updating...' : 'Try Update' }}
                 </IonButton>
+                
+                <IonButton 
+                    fill="outline" 
+                    size="default" 
+                    @click="revertToNative"
+                    :disabled="isReverting"
+                    color="warning"
+                >
+                    {{ isReverting ? 'Reverting...' : 'Revert to Native' }}
+                </IonButton>
             </ion-card-content>
         </ion-card>
     </div>
@@ -55,6 +65,7 @@ const showToast = async (message: string) => {
 const currentBundle = ref<CurrentBundleResult>();
 const isChecking = ref(false);
 const isUpdating = ref(false);
+const isReverting = ref(false);
 
 const checkForUpdate = async () => {
     if (isChecking.value) return;
@@ -110,6 +121,29 @@ const tryUpdate = async () => {
         showToast('Update failed. Check console for details.');
     } finally {
         isUpdating.value = false;
+    }
+};
+
+const revertToNative = async () => {
+    if (isReverting.value) return;
+    
+    isReverting.value = true;
+    try {
+        showToast('Reverting to native bundle...');
+        
+        // Reset to the builtin bundle (the one from app store)
+        await CapacitorUpdater.reset({ toLastSuccessful: false });
+        
+        showToast('Reverted to native bundle! Reloading app...');
+        
+        // Reload the app to apply the reset
+        await CapacitorUpdater.reload();
+        
+    } catch (error) {
+        console.error('Error during revert:', error);
+        showToast('Revert failed. Check console for details.');
+    } finally {
+        isReverting.value = false;
     }
 };
 
