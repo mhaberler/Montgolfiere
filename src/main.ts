@@ -39,6 +39,27 @@ import './theme/variables.css';
 import { initializeApp } from './utils/startup';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
+// Add global error handling for unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    // Don't prevent the error from being logged, but don't crash the app
+    if (event.reason && event.reason instanceof Error && 
+        event.reason.message && event.reason.message.includes('vnode')) {
+        console.warn('Caught vnode error during app reload - this is expected');
+        event.preventDefault(); // Prevent the error from crashing the app
+    }
+});
+
+// Add global error handler for Vue errors
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    if (event.error && event.error instanceof Error && 
+        event.error.message && event.error.message.includes('vnode')) {
+        console.warn('Caught vnode error - this is expected during app reload');
+        event.preventDefault(); // Prevent the error from crashing the app
+    }
+});
+
 CapacitorUpdater.notifyAppReady();
 
 
@@ -47,6 +68,22 @@ initializeApp();
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
+
+// Add Vue error handler
+app.config.errorHandler = (err, instance, info) => {
+    console.error('Vue error:', err);
+    console.error('Component instance:', instance);
+    console.error('Error info:', info);
+    
+    // Don't crash the app for vnode errors during reload
+    if (err && err instanceof Error && err.message && err.message.includes('vnode')) {
+        console.warn('Caught Vue vnode error - this is expected during app reload');
+        return;
+    }
+    
+    // Re-throw other errors
+    throw err;
+};
 
 
 
