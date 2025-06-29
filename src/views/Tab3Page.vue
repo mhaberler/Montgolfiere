@@ -6,16 +6,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <DebugEkf v-if="showDebugInfo"></DebugEkf>
-    </ion-content>
 
-    <!-- Show message when not in debug mode -->
-    <ion-content :fullscreen="true" v-if="!showDebugInfo">
-      <ion-card>
-        <ion-card-content>
-          <p>Status page is only available in development mode.</p>
-        </ion-card-content>
-      </ion-card>
+      <CapGo>
+      </CapGo>
     </ion-content>
 
   </ion-page>
@@ -23,25 +16,24 @@
 
 
 <script setup>
-import DebugEkf from '@/components/DebugEkf.vue';
 
 import {
   IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
-  // IonContent,
-  // IonButton,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
   IonContent,
+  // IonButton,
+  // IonCard,
+  // IonCardHeader,
+  // IonCardTitle,
+  // IonCardSubtitle,
+  // IonCardContent,
   // IonText,
   // IonCol, IonGrid, IonRow
 } from '@ionic/vue';
 
+import CapGo from '@/components/CapGo.vue';
 
 import {
   // locationAvailable, location, locationError,
@@ -59,8 +51,7 @@ import {
   // ekfTimeToZeroSpeed,
   // ekfZeroSpeedAltitude,
   // ekfZeroSpeedValid,
-  showDebugInfo
-
+  // showDebugInfo,
 } from '../utils/state';
 
 

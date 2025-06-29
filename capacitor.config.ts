@@ -1,20 +1,12 @@
 import type { CapacitorConfig } from '@capacitor/cli';
-import dotenv from 'dotenv';
-
-dotenv.config(); // Load environment variables from .env file
 
 const config: CapacitorConfig = {
   appId: 'com.haberler.montgolfiere',
   appName: 'Montgolfiere',
   webDir: 'dist',
-  // bundledWebRuntime: false,
   server: {
-    // This is usually only set for a *specific* remote server, not for local dev.
-    // During live reload, the CLI overrides this to point to your local dev server.
-    // url: 'http://my-remote-server.com',
-    cleartext: true // Required if your dev server is HTTP (not HTTPS)
+    cleartext: true
   },
-
   android: {
     buildOptions: {
       keystorePath: process.env.ANDROID_KEYSTORE_PATH || './debug.keystore', // Fallback to a debug keystore for development
@@ -32,6 +24,15 @@ const config: CapacitorConfig = {
       keystoreAliasPassword: process.env.ANDROID_KEYSTORE_ALIAS_PASSWORD || 'android', // Fallback for debug
     },
     webContentsDebuggingEnabled: true
+  },
+  plugins: {
+    extConfig: {},
+    CapacitorUpdater: {
+      version: '1.3.9',
+      appId: 'com.haberler.montgolfiere',
+      autoUpdate: true,
+      publicKey: '-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEA7Q3ei2rTD/qRDwfYGcaccuuSR2E+2IyeZcX34VWTNgtX//hzlYLt\nEVyVN7oAP6wFqQBIxfkp06Mzu3T/kW0cMcvVW8g6A1nQKVUES5NLAMZm50ZhrTWS\nImFJUKftebdmL4tjD0uWtm/0DCh7AJXGSrlD5bC82VOt0nM8/oY3n9T/72TljKoc\n494bURriGNGc0eEImAklIyaLVoT8kuWdIWGrD3jvRZpHJQFON/cRsVSmSCk9Fi3c\nRlGrhFPllqIvBaZEnPoO+ypvt6arTlA7uxlAUa/5LSD6wd0UXbXFAtAcj8lOHgRS\n3xsDPHLcChq4Rp+jMQY3H0Gw1ua9edKIowIDAQAB\n-----END RSA PUBLIC KEY-----\n'
+    }
   }
 };
 

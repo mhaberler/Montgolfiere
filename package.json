@@ -4,12 +4,11 @@
   "version": "1.3.3",
   "type": "module",
   "scripts": {
+    "watch": "tsc --watch",
     "dev-default": "vite --host",
     "dev": "vite --host 172.16.0.212 --port=8100 --host",
-    "build-development": "vue-tsc && vite build --mode development",
-    "build-production": "vue-tsc && vite build --mode production",
+    "build": "vue-tsc && vite build --mode development",
     "preview": "vite preview",
-    "preview-host": "vite --host 172.16.0.212 --port 4712 preview",
     "test:e2e": "bunx cypress run",
     "test:unit": "bunx vitest",
     "lint": "bunx eslint .",
@@ -38,7 +37,9 @@
     "ios-beta": "fastlane ios beta",
     "android-beta": "fastlane android beta",
     "deploy-mah.priv.at": "vite build --mode development --base=/apps/montgolfiere/  && rsync -avz --delete dist/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/",
-    "qrcode-mah.priv.at": "bunx qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/"
+    "qrcode-mah.priv.at": "bunx qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
+    "capgo-dev-upload": "bunx @capgo/cli@latest bundle upload --channel=dev",
+    "capgo-production-upload": "bunx @capgo/cli@latest bundle upload --channel=dev"
   },
   "scripts-disabled": {
     "dev-production": "vite --mode production --host 172.16.0.212 --port=8100 --host",
@@ -47,7 +48,9 @@
     "preview": "vite --host 172.16.0.212  preview",
     "predeploy": "npm run build",
     "cmdline-ios-build": "npx cap build ios",
-    "cmdline-android-build": "npx cap build android"
+    "cmdline-android-build": "npx cap build android",
+    "build-production": "vue-tsc && vite build --mode production",
+    "preview-host": "vite --host 172.16.0.212 --port 4712 preview"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.1.1",
@@ -62,6 +65,7 @@
     "@capacitor/preferences": "^7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@capacitor/toast": "^7.0.1",
+    "@capgo/capacitor-updater": "^7.4.0",
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
     "canvas-gauges": "^2.1.7",

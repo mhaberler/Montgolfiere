@@ -37,6 +37,10 @@ import './theme/variables.css';
 
 
 import { initializeApp } from './utils/startup';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
+
+CapacitorUpdater.notifyAppReady();
+
 
 initializeApp();
 
