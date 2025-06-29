@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.3.2",
+  "version": "1.3.3",
   "type": "module",
   "scripts": {
     "dev-default": "vite --host",
@@ -30,9 +30,9 @@
     "logcat:app:emulator": "adb -e logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
     "logcat:app:mydevice": "adb -s RF8MC11LGDW logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
     "logcat:app:output": "adb logcat -d -v threadtime Capacitor:D 'Capacitor/Console':D *:S > android_logs.txt",
-    "bump-patch": "bun version patch --no-git-tag-version && fastlane bump",
-    "bump-minor": "bun version minor --no-git-tag-version && fastlane bump",
-    "bump-major": "bun version major --no-git-tag-version && fastlane bump",
+    "bump-patch": "bunx npm version patch --no-git-tag-version && fastlane bump",
+    "bump-minor": "bunx npm version minor --no-git-tag-version && fastlane bump",
+    "bump-major": "bunx npm version major --no-git-tag-version && fastlane bump",
     "open-in-Xcode": "bunx cap open ios",
     "open-in-Android-Studio": "bunx cap open android",
     "ios-beta": "fastlane ios beta",
