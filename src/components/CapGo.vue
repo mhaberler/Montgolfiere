@@ -17,7 +17,7 @@
                     <ion-select 
                         v-model="currentChannel" 
                         @selection-change="onChannelChange"
-                        :disabled="isChangingChannel || isChecking || isUpdating || isReverting"
+                        :disabled="isChangingChannel || isChecking || isUpdating || isReverting || isDeletingBundle"
                         placeholder="Select Channel"
                         interface="popover"
                     >
@@ -35,7 +35,7 @@
                     fill="outline" 
                     size="default" 
                     @click="checkForUpdate"
-                    :disabled="isChecking || isChangingChannel"
+                    :disabled="isChecking || isChangingChannel || isDeletingBundle"
                 >
                     {{ isChecking ? 'Checking...' : 'Check for Update' }}
                 </IonButton>
@@ -44,7 +44,7 @@
                     fill="solid" 
                     size="default" 
                     @click="tryUpdate"
-                    :disabled="isUpdating || isChangingChannel"
+                    :disabled="isUpdating || isChangingChannel || isDeletingBundle"
                     color="primary"
                 >
                     {{ isUpdating ? 'Updating...' : 'Try Update' }}
@@ -54,7 +54,7 @@
                     fill="outline" 
                     size="default" 
                     @click="revertToNative"
-                    :disabled="isReverting || isChangingChannel"
+                    :disabled="isReverting || isChangingChannel || isDeletingBundle"
                     color="warning"
                 >
                     {{ isReverting ? 'Reverting...' : 'Revert to Native' }}
@@ -64,10 +64,10 @@
                     fill="clear" 
                     size="small" 
                     @click="refreshBundleInfo"
-                    :disabled="isChecking || isUpdating || isReverting || isChangingChannel"
+                    :disabled="isChecking || isUpdating || isReverting || isChangingChannel || isDeletingBundle"
                     color="medium"
                 >
-                    {{ isChangingChannel ? '⏳ Changing...' : '🔄 Refresh' }}
+                    {{ isChangingChannel ? '⏳ Changing...' : isDeletingBundle ? '🗑️ Deleting...' : '🔄 Refresh' }}
                 </IonButton>
                 
                 <div v-if="availableBundles.length > 0" class="bundles-section">
@@ -79,15 +79,29 @@
                             <span class="bundle-status">{{ bundle.status }}</span>
                             <span class="bundle-downloaded">{{ bundle.downloaded ? 'Downloaded' : 'Not Downloaded' }}</span>
                         </div>
-                        <IonButton 
-                            size="small" 
-                            fill="outline" 
-                            @click="revertToBundle(bundle.id)"
-                            :disabled="isReverting || isChangingChannel || bundle.id === currentBundle?.bundle?.id"
-                            color="secondary"
-                        >
-                            {{ bundle.id === currentBundle?.bundle?.id ? 'Current' : 'Use This' }}
-                        </IonButton>
+                        <div class="bundle-actions">
+                            <IonButton 
+                                size="small" 
+                                fill="outline" 
+                                @click="revertToBundle(bundle.id)"
+                                :disabled="isReverting || isChangingChannel || isDeletingBundle || bundle.id === currentBundle?.bundle?.id"
+                                color="secondary"
+                            >
+                                {{ bundle.id === currentBundle?.bundle?.id ? 'Current' : 'Use This' }}
+                            </IonButton>
+                            
+                            <IonButton 
+                                v-if="bundle.downloaded && bundle.id !== currentBundle?.bundle?.id && bundle.id !== 'builtin'"
+                                size="small" 
+                                fill="clear" 
+                                @click="deleteBundle(bundle.id)"
+                                :disabled="isReverting || isChangingChannel || isDeletingBundle"
+                                color="danger"
+                                title="Delete this bundle"
+                            >
+                                🗑️
+                            </IonButton>
+                        </div>
                     </div>
                 </div>
             </ion-card-content>
@@ -122,6 +136,7 @@ const isReverting = ref(false);
 const currentChannel = ref<string>('production');
 const availableChannels = ref<string[]>(['production', 'staging', 'beta', 'development']);
 const isChangingChannel = ref(false);
+const isDeletingBundle = ref(false);
 
 const formatBundleVersion = (bundle: BundleInfo) => {
     // If bundle has version, show it; otherwise show a truncated ID for differentiation
@@ -417,6 +432,38 @@ const getAvailableChannels = async () => {
     }
 };
 
+const deleteBundle = async (bundleId: string) => {
+    if (isDeletingBundle.value) return;
+    
+    // Don't allow deleting the current bundle or native bundle
+    if (bundleId === currentBundle.value?.bundle?.id || bundleId === 'builtin') {
+        showToast('Cannot delete current or native bundle');
+        return;
+    }
+    
+    isDeletingBundle.value = true;
+    try {
+        const bundle = availableBundles.value.find(b => b.id === bundleId);
+        const version = bundle?.version || bundleId.substring(0, 8) + '...';
+        
+        showToast(`Deleting bundle ${version}...`);
+        
+        // Delete the bundle
+        await CapacitorUpdater.delete({ id: bundleId });
+        
+        showToast(`Bundle ${version} deleted successfully`);
+        
+        // Refresh bundle list to remove the deleted bundle
+        await refreshBundleInfo();
+        
+    } catch (error) {
+        console.error('Error deleting bundle:', error);
+        showToast('Failed to delete bundle. Check console for details.');
+    } finally {
+        isDeletingBundle.value = false;
+    }
+};
+
 initializeCapGo();
 
 </script>
@@ -518,6 +565,18 @@ initializeCapGo();
     flex-direction: column;
     gap: 0.25rem;
     flex: 1;
+}
+
+.bundle-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.bundle-actions ion-button {
+    --padding-start: 0.5rem;
+    --padding-end: 0.5rem;
+    min-width: auto;
 }
 
 .bundle-version {
