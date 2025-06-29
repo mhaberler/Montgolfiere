@@ -14,7 +14,7 @@
     "lint": "bunx eslint .",
     "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync",
     "debug-android": "bunx cap run android  --live-reload --host 172.16.0.212 --port 8100  --target R3CX90A30EW",
-    "debug-ios-xxx": "ionic cap run ios --livereload --external --public-host  172.16.0.212 --port 8100  --target 00008140-0002692C1E79801C",
+    "debug-ios": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --host  172.16.0.212 --port 8100  --target 00008140-0002692C1E79801C",
     "run-on-galaxy-s24": "bunx cap run android --target R3CX90A30EW",
     "run-on-galaxy-s10": "bunx cap run android --target RF8MC11LGDW",
     "run-on-galaxy-pro-tab10": "bunx cap run android --target R52T40AW12D",
