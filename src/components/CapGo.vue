@@ -7,35 +7,16 @@
             <ion-card-content>
                 <p>Bundle version: {{ formatCurrentBundleVersion() }}</p>
                 <p>Bundle ID: {{ currentBundle?.bundle?.id }}</p>
-                <p>Channel: {{ currentChannel || 'Unknown' }}</p>
+                <p>Channel: Development</p>
                 <p>Status: {{ currentBundle?.bundle?.status }}</p>
                 <p>Downloaded: {{ currentBundle?.bundle?.downloaded ? 'Yes' : 'No' }}</p>
                 <p>Native: {{ currentBundle?.native ? 'Yes' : 'No' }}</p>
-                
-                <ion-item>
-                    <ion-label>Channel:</ion-label>
-                    <ion-select 
-                        v-model="currentChannel" 
-                        @selection-change="onChannelChange"
-                        :disabled="isChangingChannel || isChecking || isUpdating || isReverting || isDeletingBundle"
-                        placeholder="Select Channel"
-                        interface="popover"
-                    >
-                        <ion-select-option 
-                            v-for="channel in availableChannels" 
-                            :key="channel" 
-                            :value="channel"
-                        >
-                            {{ channel.charAt(0).toUpperCase() + channel.slice(1) }}
-                        </ion-select-option>
-                    </ion-select>
-                </ion-item>
                 
                 <IonButton 
                     fill="outline" 
                     size="default" 
                     @click="checkForUpdate"
-                    :disabled="isChecking || isChangingChannel || isDeletingBundle"
+                    :disabled="isChecking || isDeletingBundle"
                 >
                     {{ isChecking ? 'Checking...' : 'Check for Update' }}
                 </IonButton>
@@ -44,17 +25,17 @@
                     fill="solid" 
                     size="default" 
                     @click="tryUpdate"
-                    :disabled="isUpdating || isChangingChannel || isDeletingBundle"
+                    :disabled="isUpdating || isDeletingBundle"
                     color="primary"
                 >
-                    {{ isUpdating ? 'Updating...' : 'Try Update' }}
+                    {{ isUpdating ? 'Updating...' : 'download new' }}
                 </IonButton>
                 
                 <IonButton 
                     fill="outline" 
                     size="default" 
                     @click="revertToNative"
-                    :disabled="isReverting || isChangingChannel || isDeletingBundle"
+                    :disabled="isReverting || isDeletingBundle"
                     color="warning"
                 >
                     {{ isReverting ? 'Reverting...' : 'Revert to Native' }}
@@ -64,10 +45,10 @@
                     fill="clear" 
                     size="small" 
                     @click="refreshBundleInfo"
-                    :disabled="isChecking || isUpdating || isReverting || isChangingChannel || isDeletingBundle"
+                    :disabled="isChecking || isUpdating || isReverting || isDeletingBundle"
                     color="medium"
                 >
-                    {{ isChangingChannel ? '⏳ Changing...' : isDeletingBundle ? '🗑️ Deleting...' : '🔄 Refresh' }}
+                    {{ isDeletingBundle ? '🗑️ Deleting...' : '🔄 Refresh' }}
                 </IonButton>
                 
                 <div v-if="availableBundles.length > 0" class="bundles-section">
@@ -84,7 +65,7 @@
                                 size="small" 
                                 fill="outline" 
                                 @click="revertToBundle(bundle.id)"
-                                :disabled="isReverting || isChangingChannel || isDeletingBundle || bundle.id === currentBundle?.bundle?.id"
+                                :disabled="isReverting || isDeletingBundle || bundle.id === currentBundle?.bundle?.id"
                                 color="secondary"
                             >
                                 {{ bundle.id === currentBundle?.bundle?.id ? 'Current' : 'Use This' }}
@@ -95,7 +76,7 @@
                                 size="small" 
                                 fill="clear" 
                                 @click="deleteBundle(bundle.id)"
-                                :disabled="isReverting || isChangingChannel || isDeletingBundle"
+                                :disabled="isReverting || isDeletingBundle"
                                 color="danger"
                                 title="Delete this bundle"
                             >
@@ -111,7 +92,7 @@
 
 
 <script setup lang="ts">
-import { IonCard, IonCardHeader, IonCardSubtitle, IonCardContent, IonButton, IonSelect, IonSelectOption, IonItem, IonLabel } from '@ionic/vue';
+import { IonCard, IonCardHeader, IonCardSubtitle, IonCardContent, IonButton } from '@ionic/vue';
 import { ref } from "vue";
 import {
     CapacitorUpdater,
@@ -133,9 +114,6 @@ const availableBundles = ref<BundleInfo[]>([]);
 const isChecking = ref(false);
 const isUpdating = ref(false);
 const isReverting = ref(false);
-const currentChannel = ref<string>('production');
-const availableChannels = ref<string[]>(['production', 'staging', 'beta', 'development']);
-const isChangingChannel = ref(false);
 const isDeletingBundle = ref(false);
 
 const formatBundleVersion = (bundle: BundleInfo) => {
@@ -172,13 +150,13 @@ const checkForUpdate = async () => {
     
     isChecking.value = true;
     try {
-        showToast(`Checking for updates in ${currentChannel.value} channel...`);
+        showToast('Checking for updates in development channel...');
         const latest = await CapacitorUpdater.getLatest();
         
         if (latest.version && latest.version !== currentBundle.value?.bundle?.version) {
             showToast(`New version available: ${latest.version}`);
         } else {
-            showToast(`App is up to date in ${currentChannel.value} channel!`);
+            showToast('App is up to date in development channel!');
         }
     } catch (error) {
         console.error('Error checking for updates:', error);
@@ -193,7 +171,7 @@ const tryUpdate = async () => {
     
     isUpdating.value = true;
     try {
-        showToast(`Looking for updates in ${currentChannel.value} channel...`);
+        showToast('Looking for updates in development channel...');
         const latest = await CapacitorUpdater.getLatest();
         
         if (latest.version && latest.version !== currentBundle.value?.bundle?.version) {
@@ -217,7 +195,7 @@ const tryUpdate = async () => {
             
             showToast('Update ready! Restart app to apply.');
         } else {
-            showToast(`No updates available in ${currentChannel.value} channel`);
+            showToast('No updates available in development channel');
         }
     } catch (error) {
         console.error('Error during update:', error);
@@ -327,8 +305,6 @@ const refreshBundleInfo = async () => {
 const initializeCapGo = async () => {
     currentBundle.value = await CapacitorUpdater.current(); 
     await loadAvailableBundles();
-    await getCurrentChannel();
-    await getAvailableChannels();
 
     // Add CapGo event listeners with toast notifications
     CapacitorUpdater.addListener('noNeedUpdate', (event) => {
@@ -380,57 +356,6 @@ const initializeCapGo = async () => {
         }
     });
 }
-
-const getCurrentChannel = async () => {
-    try {
-        const channel = await CapacitorUpdater.getChannel();
-        currentChannel.value = channel.channel || 'production';
-        console.log('Current channel:', channel);
-    } catch (error) {
-        console.error('Error getting current channel:', error);
-        currentChannel.value = 'production';
-    }
-};
-
-const onChannelChange = async (event: any) => {
-    if (isChangingChannel.value) return;
-    
-    const newChannel = event.detail.value;
-    if (newChannel === currentChannel.value) return;
-    
-    isChangingChannel.value = true;
-    try {
-        showToast(`Switching to ${newChannel} channel...`);
-        
-        await CapacitorUpdater.setChannel({ channel: newChannel });
-        currentChannel.value = newChannel;
-        
-        showToast(`Channel switched to ${newChannel}`);
-        
-        // Refresh bundle info after channel change
-        await refreshBundleInfo();
-        
-    } catch (error) {
-        console.error('Error changing channel:', error);
-        showToast('Failed to change channel. Check console for details.');
-        // Revert the selection
-        await getCurrentChannel();
-    } finally {
-        isChangingChannel.value = false;
-    }
-};
-
-const getAvailableChannels = async () => {
-    try {
-        // CapGo doesn't have a getChannels method, so we'll use a predefined list
-        // These are common channel names used in CapGo configurations
-        console.log('Using predefined channel list');
-        // Keep the default channels we already have
-    } catch (error) {
-        console.log('Error getting channels:', error);
-        // Keep default channels
-    }
-};
 
 const deleteBundle = async (bundleId: string) => {
     if (isDeletingBundle.value) return;

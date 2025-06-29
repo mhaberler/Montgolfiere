@@ -25,7 +25,7 @@ PODS:
     - Capacitor
   - CapacitorToast (7.0.1):
     - Capacitor
-  - CapgoCapacitorUpdater (7.4.0):
+  - CapgoCapacitorUpdater (7.6.0):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -101,7 +101,7 @@ SPEC CHECKSUMS:
   CapacitorPreferences: 6c98117d4d7508034a4af9db64d6b26fc75d7b94
   CapacitorStatusBar: 6e7af040d8fc4dd655999819625cae9c2d74c36f
   CapacitorToast: ddfc4b36080dbe3634c9faf510b20f6ddcff9330
-  CapgoCapacitorUpdater: 5db8a3e19ac24e265bfad628f6a141c3c8d15441
+  CapgoCapacitorUpdater: d4f8bb99fa6a821f68d00fb2f2e6ce669ee0d501
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486

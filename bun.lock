@@ -16,6 +16,7 @@
         "@capacitor/preferences": "^7.0.1",
         "@capacitor/status-bar": "7.0.1",
         "@capacitor/toast": "^7.0.1",
+        "@capgo/capacitor-updater": "^7.4.0",
         "@ionic/vue": "^8.0.0",
         "@ionic/vue-router": "^8.0.0",
         "canvas-gauges": "^2.1.7",
@@ -25,6 +26,7 @@
         "mathjs": "^14.5.2",
         "meteojs": "^1.17.3",
         "qrcode-terminal": "^0.12.0",
+        "rimraf": "^6.0.1",
         "vue": "^3.3.0",
         "vue-router": "^4.2.0",
       },
@@ -256,6 +258,8 @@
     "@capacitor/synapse": ["@capacitor/synapse@1.0.3", "", {}, "sha512-7gGvuQ1NlSCwnjdIMkry+/meyUxHTnsVodRxOTOerLAoAyvtSnCp1rKyLjt9kCz9Lf7Y/wUbCe+AWbAvfxL5bA=="],
 
     "@capacitor/toast": ["@capacitor/toast@7.0.1", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-3GFhejVwKqUjosYnpQVfq5eml7X6B97jcVpncY75lBDiTlCYJeRanj63OChZPuw1KWudkBTYZMcXdRYWguJdKw=="],
+
+    "@capgo/capacitor-updater": ["@capgo/capacitor-updater@7.6.0", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-EwWQKviM/85O/ttczvKobY5mFXc6l4yoq7dYeLhsgfA2GF3rB0NLrnt/AOLTN0OK07UDX2ozex2sOLDdujQ7uw=="],
 
     "@chevrotain/cst-dts-gen": ["@chevrotain/cst-dts-gen@11.0.3", "", { "dependencies": { "@chevrotain/gast": "11.0.3", "@chevrotain/types": "11.0.3", "lodash-es": "4.17.21" } }, "sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ=="],
 
