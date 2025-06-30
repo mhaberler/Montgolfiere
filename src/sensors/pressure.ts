@@ -15,6 +15,11 @@ interface BarometerAvailable {
   available: boolean;
 }
 
+interface BarometerData {
+  pressure: number;
+  timestamp: number;
+}
+
 // persistent config state - automatically restored from Capacitor Preferences
 const referencePressure = usePersistedRef<number>("referencePressure", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
 const useReferencePressure = usePersistedRef("useReferencePressure", false); // for driving ekf
@@ -66,7 +71,7 @@ const startBarometer = async () => {
   barometerAvailable.value = result.available;
 
   if (barometerAvailable.value && !baroActive.value) {
-    baroListener = Barometer.addListener("onPressureChange", (data) => {
+    baroListener = Barometer.addListener("onPressureChange", (data: BarometerData) => {
       rateStats.push();
       baroRate.value = rateStats.averageRate();
       

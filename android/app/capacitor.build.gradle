@@ -46,7 +46,7 @@ dependencies {
     implementation project(':capgo-capacitor-updater')
     implementation project(':capgo-native-audio')
     implementation project(':sentry-capacitor')
-    implementation project(':mhaberler-capacitor-barometer')
+    implementation project(':capacitor-barometer')
 
 }
 
