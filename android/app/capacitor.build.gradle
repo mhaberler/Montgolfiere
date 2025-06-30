@@ -44,6 +44,7 @@ dependencies {
     implementation project(':capawesome-capacitor-screen-orientation')
     implementation project(':capawesome-capacitor-screenshot')
     implementation project(':capgo-capacitor-updater')
+    implementation project(':capgo-native-audio')
     implementation project(':sentry-capacitor')
     implementation project(':capacitor-barometer')
 

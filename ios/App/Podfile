@@ -46,6 +46,7 @@ def capacitor_pods
   pod 'CapawesomeCapacitorScreenOrientation', :path => '../../node_modules/@capawesome/capacitor-screen-orientation'
   pod 'CapawesomeCapacitorScreenshot', :path => '../../node_modules/@capawesome/capacitor-screenshot'
   pod 'CapgoCapacitorUpdater', :path => '../../node_modules/@capgo/capacitor-updater'
+  pod 'CapgoNativeAudio', :path => '../../node_modules/@capgo/native-audio'
   pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
   pod 'CapacitorBarometer', :path => '../../../capacitor-barometer'
 end

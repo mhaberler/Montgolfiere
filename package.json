@@ -99,6 +99,7 @@
     "@capawesome/capacitor-screen-orientation": "^7.0.1",
     "@capawesome/capacitor-screenshot": "^7.0.1",
     "@capgo/capacitor-updater": "^7.4.0",
+    "@capgo/native-audio": "^7.3.34",
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/remote-log": "^0.0.2",
     "@ionic/vue": "^8.0.0",

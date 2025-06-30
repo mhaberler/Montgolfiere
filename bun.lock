@@ -43,6 +43,7 @@
         "@capawesome/capacitor-screen-orientation": "^7.0.1",
         "@capawesome/capacitor-screenshot": "^7.0.1",
         "@capgo/capacitor-updater": "^7.4.0",
+        "@capgo/native-audio": "^7.3.34",
         "@ionic/prettier-config": "^4.0.0",
         "@ionic/remote-log": "^0.0.2",
         "@ionic/vue": "^8.0.0",
@@ -344,6 +345,8 @@
     "@capawesome/capacitor-screenshot": ["@capawesome/capacitor-screenshot@7.0.1", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0", "html2canvas": "^1.4.1" } }, "sha512-CLzRmAiPLWMAP6YrvVv7ORrEekXVSEymCtIkBq7TDIFuEjtUDgIR0BbdHIgZ/EFAHeCDIgd0JB28tXieYDXokw=="],
 
     "@capgo/capacitor-updater": ["@capgo/capacitor-updater@7.6.0", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-EwWQKviM/85O/ttczvKobY5mFXc6l4yoq7dYeLhsgfA2GF3rB0NLrnt/AOLTN0OK07UDX2ozex2sOLDdujQ7uw=="],
+
+    "@capgo/native-audio": ["@capgo/native-audio@7.3.34", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-aw41bZ8sYQCCMJkOGQQAlSSsbxsj7spB3UZrAdaBy+9V1yQfOxCtLhyo3cJODCM0A9hYE09kYMeFP3McANix+Q=="],
 
     "@chevrotain/cst-dts-gen": ["@chevrotain/cst-dts-gen@11.0.3", "", { "dependencies": { "@chevrotain/gast": "11.0.3", "@chevrotain/types": "11.0.3", "lodash-es": "4.17.21" } }, "sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ=="],
 
