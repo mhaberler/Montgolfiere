@@ -56,5 +56,7 @@
 	<string>We need to use Bluetooth to scan to read envelope and tank sensors.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>We need access to motion and barometer sensors to measure atmospheric pressure and altitude.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To be able to scan barcodes</string>
 </dict>
 </plist>
