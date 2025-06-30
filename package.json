@@ -103,6 +103,7 @@
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
     "@sentry/capacitor": "^1.4.0",
+    "@sentry/vue": "^9.33.0",
     "canvas-gauges": "^2.1.7",
     "capacitor-barometer": "file:../capacitor-barometer",
     "capacitor-plugin-safe-area": "^4.0.0",
