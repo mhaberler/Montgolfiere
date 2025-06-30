@@ -58,5 +58,10 @@
 	<string>We need access to motion and barometer sensors to measure atmospheric pressure and altitude.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>To be able to scan barcodes</string>
+
+	<!-- @capawesome/capacitor-file-picker -->
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+
 </dict>
 </plist>
