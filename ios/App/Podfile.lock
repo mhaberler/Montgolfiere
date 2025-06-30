@@ -7,6 +7,10 @@ PODS:
     - Capacitor
   - CapacitorBarometer (1.0.2):
     - Capacitor
+  - CapacitorCamera (7.0.1):
+    - Capacitor
+  - CapacitorClipboard (7.0.1):
+    - Capacitor
   - CapacitorCommunityBluetoothLe (7.1.1):
     - Capacitor
   - CapacitorCommunityKeepAwake (7.1.0):
@@ -21,11 +25,13 @@ PODS:
     - Capacitor
   - CapacitorPreferences (7.0.1):
     - Capacitor
+  - CapacitorShare (7.0.1):
+    - Capacitor
   - CapacitorStatusBar (7.0.1):
     - Capacitor
   - CapacitorToast (7.0.1):
     - Capacitor
-  - CapgoCapacitorUpdater (7.6.0):
+  - CapgoCapacitorUpdater (7.4.0):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -39,6 +45,8 @@ DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - CapacitorBarometer (from `../../../capacitor-barometer`)
+  - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
+  - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityBluetoothLe (from `../../node_modules/@capacitor-community/bluetooth-le`)"
   - "CapacitorCommunityKeepAwake (from `../../node_modules/@capacitor-community/keep-awake`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
@@ -46,6 +54,7 @@ DEPENDENCIES:
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
+  - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - "CapacitorToast (from `../../node_modules/@capacitor/toast`)"
   - "CapgoCapacitorUpdater (from `../../node_modules/@capgo/capacitor-updater`)"
@@ -65,6 +74,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/app"
   CapacitorBarometer:
     :path: "../../../capacitor-barometer"
+  CapacitorCamera:
+    :path: "../../node_modules/@capacitor/camera"
+  CapacitorClipboard:
+    :path: "../../node_modules/@capacitor/clipboard"
   CapacitorCommunityBluetoothLe:
     :path: "../../node_modules/@capacitor-community/bluetooth-le"
   CapacitorCommunityKeepAwake:
@@ -79,6 +92,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
+  CapacitorShare:
+    :path: "../../node_modules/@capacitor/share"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
   CapacitorToast:
@@ -92,6 +107,8 @@ SPEC CHECKSUMS:
   Capacitor: 10feab36396883c55373328124a677f118cd4b5f
   CapacitorApp: febecbb9582cb353aed037e18ec765141f880fe9
   CapacitorBarometer: 933a8911531eda4a7d8762e7aa055c0802d95b41
+  CapacitorCamera: 6e73f1fc6c629a672658705a02409b60854bc0f1
+  CapacitorClipboard: 70bfdb42b877b320a6e511ab94fa7a6a55d57ecb
   CapacitorCommunityBluetoothLe: 3a65ed12464f16189772c1a8c247cb0b91186114
   CapacitorCommunityKeepAwake: 05c75aab989f60e621870cf03b24a144a5544c30
   CapacitorCordova: 723e017d8a80ab2ede9959fbe37556c35ac860d5
@@ -99,13 +116,14 @@ SPEC CHECKSUMS:
   CapacitorHaptics: 1f1e17041f435d8ead9ff2a34edd592c6aa6a8d6
   CapacitorKeyboard: 09fd91dcde4f8a37313e7f11bde553ad1ed52036
   CapacitorPreferences: 6c98117d4d7508034a4af9db64d6b26fc75d7b94
+  CapacitorShare: e573823f511f260f598d0423c33b1e3d7bbe5fd1
   CapacitorStatusBar: 6e7af040d8fc4dd655999819625cae9c2d74c36f
   CapacitorToast: ddfc4b36080dbe3634c9faf510b20f6ddcff9330
-  CapgoCapacitorUpdater: d4f8bb99fa6a821f68d00fb2f2e6ce669ee0d501
+  CapgoCapacitorUpdater: 5db8a3e19ac24e265bfad628f6a141c3c8d15441
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: fafc24e9a8691b3322282add125796f2c6d8ca7c
+PODFILE CHECKSUM: 145f885f2d7b9653fa575da30703dd09c28d6313
 
 COCOAPODS: 1.16.2
