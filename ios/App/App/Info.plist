@@ -65,5 +65,9 @@
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
 
+	<!-- Export Compliance: Set to false if app only uses standard encryption -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
 </dict>
 </plist>
