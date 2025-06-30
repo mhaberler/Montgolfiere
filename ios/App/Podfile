@@ -48,7 +48,7 @@ def capacitor_pods
   pod 'CapgoCapacitorUpdater', :path => '../../node_modules/@capgo/capacitor-updater'
   pod 'CapgoNativeAudio', :path => '../../node_modules/@capgo/native-audio'
   pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
-  pod 'CapacitorBarometer', :path => '../../../capacitor-barometer'
+  pod 'MhaberlerCapacitorBarometer', :path => '../../node_modules/@mhaberler/capacitor-barometer'
 end
 
 target 'App' do
