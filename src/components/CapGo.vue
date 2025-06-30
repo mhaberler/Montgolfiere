@@ -159,8 +159,8 @@ const checkForUpdate = async () => {
             showToast('App is up to date in development channel!');
         }
     } catch (error) {
-        console.error('Error checking for updates:', error);
-        showToast('Failed to check for updates');
+        console.error(error.message);
+        showToast(error.message);
     } finally {
         isChecking.value = false;
     }
@@ -198,8 +198,8 @@ const tryUpdate = async () => {
             showToast('No updates available in development channel');
         }
     } catch (error) {
-        console.error('Error during update:', error);
-        showToast('Update failed. Check console for details.');
+        console.error(error.message);
+        showToast(error.message);
     } finally {
         isUpdating.value = false;
     }
