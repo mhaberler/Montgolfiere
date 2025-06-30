@@ -108,6 +108,7 @@
     "capacitor-plugin-safe-area": "^4.0.0",
     "capacitor-set-version": "^2.2.0",
     "dotenv": "^16.5.0",
+    "html2canvas": "^1.4.1",
     "ionicons": "^7.0.0",
     "mathjs": "^14.5.2",
     "meteojs": "^1.17.3",
