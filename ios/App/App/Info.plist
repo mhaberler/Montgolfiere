@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.3.5</string>
+	<string>1.4.0</string>
 	<key>CFBundleVersion</key>
-	<string>15</string>
+	<string>16</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -58,6 +58,8 @@
 	<string>We need access to motion and barometer sensors to measure atmospheric pressure and altitude.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>To be able to scan barcodes</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To be able to retrieve a qrcode stored in the gallery</string>
 
 	<!-- @capawesome/capacitor-file-picker -->
 	<key>com.apple.security.files.user-selected.read-only</key>
