@@ -103,7 +103,7 @@ DEPENDENCIES:
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorAppLauncher (from `../../node_modules/@capacitor/app-launcher`)"
   - "CapacitorBarcodeScanner (from `../../node_modules/@capacitor/barcode-scanner`)"
-  - CapacitorBarometer (from `../../../capacitor-barometer`)
+  - CapacitorBarometer (from `../../node_modules/capacitor-barometer`)
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
@@ -163,7 +163,7 @@ EXTERNAL SOURCES:
   CapacitorBarcodeScanner:
     :path: "../../node_modules/@capacitor/barcode-scanner"
   CapacitorBarometer:
-    :path: "../../../capacitor-barometer"
+    :path: "../../node_modules/capacitor-barometer"
   CapacitorBrowser:
     :path: "../../node_modules/@capacitor/browser"
   CapacitorCamera:
@@ -284,6 +284,6 @@ SPEC CHECKSUMS:
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: 0251b18615b2b5207fdd16fc407038da2be1b143
+PODFILE CHECKSUM: 700753d65d61ce2d3d200c8d48cc25eb2ce51ccc
 
 COCOAPODS: 1.16.2

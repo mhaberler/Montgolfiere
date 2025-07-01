@@ -57,7 +57,8 @@
     "cmdline-ios-build": "npx cap build ios",
     "cmdline-android-build": "npx cap build android",
     "build-production": "vue-tsc && vite build --mode production",
-    "preview-host": "vite --host 172.16.0.212 --port 4712 preview"
+    "preview-host": "vite --host 172.16.0.212 --port 4712 preview",
+    "capacitor-barometer": "file:../capacitor-barometer"
   },
   "dependencies": {
     "@capacitor-community/apple-sign-in": "7.0.1",
@@ -107,7 +108,7 @@
     "@sentry/capacitor": "^1.4.0",
     "@sentry/vue": "8.55.0",
     "canvas-gauges": "^2.1.7",
-    "capacitor-barometer": "file:../capacitor-barometer",
+    "capacitor-barometer": "github:mhaberler/capacitor-barometer#web-simulated-pressure",
     "capacitor-set-version": "^2.2.0",
     "dotenv": "^16.5.0",
     "html2canvas": "^1.4.1",

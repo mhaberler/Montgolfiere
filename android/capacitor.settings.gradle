@@ -114,4 +114,4 @@ include ':sentry-capacitor'
 project(':sentry-capacitor').projectDir = new File('../node_modules/@sentry/capacitor/android')
 
 include ':capacitor-barometer'
-project(':capacitor-barometer').projectDir = new File('../../capacitor-barometer/android')
+project(':capacitor-barometer').projectDir = new File('../node_modules/capacitor-barometer/android')
