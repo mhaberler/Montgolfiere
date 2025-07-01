@@ -159,8 +159,9 @@ const checkForUpdate = async () => {
             showToast('App is up to date in development channel!');
         }
     } catch (error) {
-        console.error(error.message);
-        showToast(error.message);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error(errorMessage);
+        showToast(errorMessage);
     } finally {
         isChecking.value = false;
     }
@@ -198,8 +199,9 @@ const tryUpdate = async () => {
             showToast('No updates available in development channel');
         }
     } catch (error) {
-        console.error(error.message);
-        showToast(error.message);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error(errorMessage);
+        showToast(errorMessage);
     } finally {
         isUpdating.value = false;
     }
@@ -231,7 +233,8 @@ const revertToNative = async () => {
         }, 1000);
         
     } catch (error) {
-        console.error('Error during revert:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error during revert:', errorMessage);
         showToast('Revert failed. Check console for details.');
         isReverting.value = false;
     }
@@ -266,7 +269,8 @@ const revertToBundle = async (bundleId: string) => {
         }, 1000);
         
     } catch (error) {
-        console.error('Error during bundle switch:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error during bundle switch:', errorMessage);
         showToast('Switch failed. Check console for details.');
         isReverting.value = false;
     }
@@ -288,7 +292,8 @@ const loadAvailableBundles = async () => {
             });
         });
     } catch (error) {
-        console.error('Error loading bundles:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error loading bundles:', errorMessage);
         availableBundles.value = [];
     }
 };
@@ -298,7 +303,8 @@ const refreshBundleInfo = async () => {
         currentBundle.value = await CapacitorUpdater.current(); 
         await loadAvailableBundles();
     } catch (error) {
-        console.error('Error refreshing bundle info:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error refreshing bundle info:', errorMessage);
     }
 };
 
@@ -382,7 +388,8 @@ const deleteBundle = async (bundleId: string) => {
         await refreshBundleInfo();
         
     } catch (error) {
-        console.error('Error deleting bundle:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error deleting bundle:', errorMessage);
         showToast('Failed to delete bundle. Check console for details.');
     } finally {
         isDeletingBundle.value = false;
