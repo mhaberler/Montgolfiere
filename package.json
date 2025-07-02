@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.5.7",
+  "version": "1.5.8",
   "type": "module",
   "scripts": {
     "watch": "vue-tsc --watch",
