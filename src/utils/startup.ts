@@ -1,7 +1,7 @@
 import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 import { Toast } from "@capacitor/toast";
-import { CapacitorUpdater } from "@capgo/capacitor-updater";
+// import { CapacitorUpdater } from "@capgo/capacitor-updater";
 import { Capacitor } from "@capacitor/core";
 
 import { ref, computed } from "vue";
@@ -9,7 +9,7 @@ import { startLocation, stopLocation } from "../sensors/location";
 import { usePersistedRef } from "../composables/usePersistedRef";
 // import { initializeBLE } from '../sensors/blesensors';
 
-
+const platform = Capacitor.getPlatform();
 
 const wakeLockAvailable = ref(false);
 const showDebugInfo = usePersistedRef<boolean>(
