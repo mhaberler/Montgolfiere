@@ -30,7 +30,14 @@ import {
   locationError,
 } from "../sensors/location";
 
-import { wakeLockAvailable, showDebugInfo, isNativePlatform } from "./startup";
+import {
+  wakeLockAvailable,
+  showDebugInfo,
+  isNativePlatform,
+  isIOSPlatform,
+  isAndroidPlatform,
+  isWebPlatform,
+} from "./startup";
 
 export {
   // persistent state
@@ -59,4 +66,7 @@ export {
   showDebugInfo,
   sensorSource,
   isNativePlatform,
+  isIOSPlatform,
+  isAndroidPlatform,
+  isWebPlatform,
 };

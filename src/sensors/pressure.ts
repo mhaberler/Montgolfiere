@@ -8,6 +8,13 @@ import type { PluginListenerHandle } from "@capacitor/core";
 
 import { altitudeByPressure, isaToQnhAltitude } from "../utils/meteo-utils";
 import { usePersistedRef } from "@/composables/usePersistedRef";
+import {
+  // isNativePlatform,
+  isIOSPlatform,
+  isAndroidPlatform,
+  isWebPlatform,
+} from "@/utils/state";
+
 import { Kalman } from "../ekf/kalman";
 
 import { RateStats } from "../stats/RateStats";
@@ -25,7 +32,9 @@ interface BarometerData {
 // persistent config state - automatically restored from Capacitor Preferences
 const pressureQNH = usePersistedRef<number>("pressureQNH", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
 const transitionAltitude = usePersistedRef<number>("transitionAltitude", 7000); // altitude in ft where we transition from QNH to ISA model
-const historySamples = usePersistedRef<number>("historySamples", 20); // variance window
+const historySamples = usePersistedRef<number>(
+  "historySamples",
+  20); // variance window
 
 // volatile state
 // Sensor source selection
@@ -76,6 +85,12 @@ watch(
    { immediate: true }
 );
 
+// function bestWindowSize() : number {
+//   if (isIOSPlatform) return 5;
+//   if (isAndroidPlatform) return 5*7;
+//   if (isWebPlatform) return 5 * 4;;
+//   return 20;
+// };
 
 function setInitialAltitude() {
   const p = barometer.getPressure();
@@ -85,6 +100,7 @@ function setInitialAltitude() {
     ekf.setAltitude(alt);
   }
 }
+
 
 async function switchSource(source: string) {
   await stopBarometer();
