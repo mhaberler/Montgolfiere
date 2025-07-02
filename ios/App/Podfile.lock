@@ -12,7 +12,7 @@ PODS:
   - CapacitorBarcodeScanner (2.0.3):
     - Capacitor
     - OSBarcodeLib (~> 1.1.3)
-  - CapacitorBarometer (1.0.3):
+  - CapacitorBarometer (1.0.2):
     - Capacitor
   - CapacitorBrowser (7.0.1):
     - Capacitor
@@ -78,7 +78,7 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorScreenshot (7.0.1):
     - Capacitor
-  - CapgoCapacitorUpdater (7.4.0):
+  - CapgoCapacitorUpdater (7.6.0):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -103,7 +103,7 @@ DEPENDENCIES:
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorAppLauncher (from `../../node_modules/@capacitor/app-launcher`)"
   - "CapacitorBarcodeScanner (from `../../node_modules/@capacitor/barcode-scanner`)"
-  - CapacitorBarometer (from `../../node_modules/capacitor-barometer`)
+  - CapacitorBarometer (from `../../../capacitor-barometer`)
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
@@ -163,7 +163,7 @@ EXTERNAL SOURCES:
   CapacitorBarcodeScanner:
     :path: "../../node_modules/@capacitor/barcode-scanner"
   CapacitorBarometer:
-    :path: "../../node_modules/capacitor-barometer"
+    :path: "../../../capacitor-barometer"
   CapacitorBrowser:
     :path: "../../node_modules/@capacitor/browser"
   CapacitorCamera:
@@ -241,7 +241,7 @@ SPEC CHECKSUMS:
   CapacitorApp: febecbb9582cb353aed037e18ec765141f880fe9
   CapacitorAppLauncher: bab4ca931a308252d2bafcb78ca6a364bd1d4c4e
   CapacitorBarcodeScanner: 29c88bf098adb0830975d4f14c107a6bb7722e3d
-  CapacitorBarometer: 84ff37be4be2d8bf6aa8eef31eeb8d6300807a31
+  CapacitorBarometer: 933a8911531eda4a7d8762e7aa055c0802d95b41
   CapacitorBrowser: 6299776d496e968505464884d565992faa20444a
   CapacitorCamera: 6e73f1fc6c629a672658705a02409b60854bc0f1
   CapacitorClipboard: 70bfdb42b877b320a6e511ab94fa7a6a55d57ecb
@@ -273,7 +273,7 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorFilePicker: 0f4a913a00e39dd77213449f0d917e92f35a5ca9
   CapawesomeCapacitorScreenOrientation: c6cc24949bb2aede006277f0fa0c7832073c9ca1
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
-  CapgoCapacitorUpdater: 5db8a3e19ac24e265bfad628f6a141c3c8d15441
+  CapgoCapacitorUpdater: d4f8bb99fa6a821f68d00fb2f2e6ce669ee0d501
   CapgoNativeAudio: 2bb8b4ab9239404342e57affef2d7fd3087ad623
   IONFilesystemLib: ceacae793975039530458eabab0c495c70515a0d
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
@@ -284,6 +284,6 @@ SPEC CHECKSUMS:
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: 700753d65d61ce2d3d200c8d48cc25eb2ce51ccc
+PODFILE CHECKSUM: 0251b18615b2b5207fdd16fc407038da2be1b143
 
 COCOAPODS: 1.16.2

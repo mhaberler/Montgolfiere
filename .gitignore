@@ -44,3 +44,4 @@ android_logs.txt
 .capgo_key_v2.pub
 /dist.capgo.production
 /dist.capgo.development
+/dist.webtest
