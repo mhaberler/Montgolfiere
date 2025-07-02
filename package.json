@@ -13,7 +13,9 @@
     "bump-major": "bunx npm version major --no-git-tag-version && fastlane bump",
     "build": "vue-tsc && vite build --mode development",
     "preview": "vite preview",
-    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync",
+    "prepare-beta": "npm run clean && npm run build && npm run sync",
+    "ios-beta": "fastlane ios beta",
+    "android-beta": "fastlane android beta",
     "deploy-mah.priv.at": "vite build --mode development --outDir ./dist.webtest --base=/apps/montgolfiere/  && rsync -avz --delete ./dist.webtest/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
     "debug-android": "bunx cap run android  --live-reload --host 172.16.0.212 --port 8100  --target R3CX90A30EW",
     "debug-ios": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --host  172.16.0.212 --port 8100  --target 00008140-0002692C1E79801C",
@@ -29,8 +31,6 @@
     "capgo-list-apps": "bunx @capgo/cli@latest app list",
     "capgo-debug-app": "bunx @capgo/cli@latest app debug",
     "capgo-clean": "bunx rimraf  ./dist.capgo.development",
-    "ios-beta": "fastlane ios beta",
-    "android-beta": "fastlane android beta",
     "ios-log": "idevicesyslog",
     "logcat:all": "adb logcat",
     "logcat:clear": "adb logcat -c",
@@ -40,7 +40,8 @@
     "logcat:app:mydevice": "adb -s RF8MC11LGDW logcat -v threadtime Capacitor:D 'Capacitor/Console':D *:S",
     "logcat:app:output": "adb logcat -d -v threadtime Capacitor:D 'Capacitor/Console':D *:S > android_logs.txt",
     "open-in-Xcode": "bunx cap open ios",
-    "open-in-Android-Studio": "bunx cap open android"
+    "open-in-Android-Studio": "bunx cap open android",
+    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync"
   },
   "scripts-disabled": {
     "deploy-nocache-mah.priv.at": "vite build --mode development --base=/apps/montgolfiere/  && rsync -avz --delete dist/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps-nocache/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps-nocache/montgolfiere/?simulateBarometer=true",
