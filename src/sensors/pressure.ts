@@ -1,15 +1,17 @@
 import { ref, watch } from "vue";
+import { Capacitor } from "@capacitor/core";
 
+import { MockBarometer } from "../simulated/MockBarometer";
 import { Barometer } from "capacitor-barometer";
+
 import type { PluginListenerHandle } from "@capacitor/core";
 
-import { altitudeByPressure } from "../utils/meteo-utils";
+import { altitudeByPressure, isaToQnhAltitude } from "../utils/meteo-utils";
 import { usePersistedRef } from "@/composables/usePersistedRef";
-import BalloonEKF from "../ekf/BalloonEKF";
+import { Kalman } from "../ekf/kalman";
 
-
-import { WindowVariance } from "../stats/WindowVariance";
 import { RateStats } from "../stats/RateStats";
+import { number } from "mathjs";
 
 interface BarometerAvailable {
   available: boolean;
@@ -21,21 +23,23 @@ interface BarometerData {
 }
 
 // persistent config state - automatically restored from Capacitor Preferences
-const referencePressure = usePersistedRef<number>("referencePressure", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
-const useReferencePressure = usePersistedRef("useReferencePressure", false); // for driving ekf
+const pressureQNH = usePersistedRef<number>("pressureQNH", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
 const transitionAltitude = usePersistedRef<number>("transitionAltitude", 7000); // altitude in ft where we transition from QNH to ISA model
 const historySamples = usePersistedRef<number>("historySamples", 20); // variance window
 
 // volatile state
+// Sensor source selection
+const sensorSource = ref(Capacitor.isNativePlatform() ? 'native' : 'simulated');
+
 const barometerAvailable = ref<boolean>(false);
 const baroActive = ref(false);
 const pressure = ref<number>(1013.25);
-const altitudeQNH = ref<number>(0.0);
-const altitudeISA = ref<number>(0.0);
+const rawAltitudeISA = ref<number>(0.0);
 const currentVariance = ref<number>(0.0);
 const baroRate = ref<number>(0.0);
 
-const ekfAltitude = ref<number>(0);
+const ekfAltitudeISA = ref<number>(0);
+const ekfAltitudeQNH = ref<number>(0);
 const ekfVelocity = ref<number>(0);
 const ekfAcceleration = ref<number>(0);
 const ekfBurnerGain = ref<number>(0);
@@ -45,10 +49,10 @@ const ekfZeroSpeedAltitude = ref<number>(0);
 const ekfZeroSpeedValid = ref<boolean>(false);
 
 let baroListener: PluginListenerHandle;
+let barometer: any;
 
-const ekf = new BalloonEKF();
+const ekf = new Kalman();
 const rateStats = new RateStats();
-let computeVariance: WindowVariance;
 
 let previousTimestamp = 0; // seconds/ Unix timestamp
 
@@ -57,71 +61,98 @@ watch(
   historySamples,
   (newSampleCount) => {
     console.log(`historySamples: ${newSampleCount}`);
-    computeVariance = new WindowVariance(newSampleCount);
+    ekf.setVarianceHistoryWindow(newSampleCount);
   },
   { immediate: true }
 );
 
-if (import.meta.env.MODE === "development") {
-  // dev-only logic
+
+watch(
+  sensorSource,
+  (newSource) => {
+    console.log(`sensorSource: ${newSource}`);
+    switchSource(newSource);
+  },
+   { immediate: true }
+);
+
+
+function setInitialAltitude() {
+  const p = barometer.getPressure();
+  const alt = p !== undefined ? altitudeByPressure(p, 1013.25) : undefined;
+  if (alt !== undefined) {
+    // TODO    ekf.reset();
+    ekf.setAltitude(alt);
+  }
 }
 
-const startBarometer = async () => {
-  const result = (await Barometer.isAvailable()) as BarometerAvailable;
+async function switchSource(source: string) {
+  await stopBarometer();
+  switch (source) {
+    case "native":
+      barometer = Barometer;
+      setInitialAltitude();
+      startBarometer();
+      break;
+    case "simulated":
+      barometer = new MockBarometer();
+      setInitialAltitude();
+      startBarometer();
+      break;
+    // case "mqtt":
+    //   return "Deleting...";
+    // case "logfile":
+    //   return "Deleting...";
+    default:
+      throw new Error(`Unhandled source: ${source}`);
+  }
+}
+
+async function startBarometer() {
+  const result = (await barometer.isAvailable()) as BarometerAvailable;
   barometerAvailable.value = result.available;
 
   if (barometerAvailable.value && !baroActive.value) {
-    baroListener = Barometer.addListener("onPressureChange", (data: BarometerData) => {
-      rateStats.push();
-      baroRate.value = rateStats.averageRate();
-      
-      pressure.value = data.pressure;
-      const altQNH = altitudeByPressure(
-        pressure.value,
-        referencePressure.value
-      );
-      altitudeQNH.value = altQNH !== undefined ? altQNH : 0.0;
-      const altISA = altitudeByPressure(pressure.value, 1013.25);
-      altitudeISA.value = altISA !== undefined ? altISA : 0.0;
+    baroListener = await barometer.addListener(
+      "onPressureChange",
+      (data: BarometerData) => {
+        rateStats.push();
+        baroRate.value = rateStats.averageRate();
+        pressure.value = data.pressure;
+  
+        const altISA = altitudeByPressure(pressure.value, 1013.25);
+        if (altISA === undefined) {
+          return;
+        }
+        rawAltitudeISA.value = altISA;
 
-      if (previousTimestamp > 0) {
-        const timeDiff = data.timestamp - previousTimestamp;
-        const loudness = 0.0;
-        const burnerDuration = 0.0;
-        const p = useReferencePressure.value
-          ? altitudeQNH.value
-          : altitudeISA.value;
-        computeVariance.add(p);
-        currentVariance.value = computeVariance.variance();
-        ekf.setVariance(currentVariance.value);
-        ekf.processMeasurement(
-          timeDiff,
-          useReferencePressure.value ? altitudeQNH.value : altitudeISA.value,
-          loudness,
-          burnerDuration
-        );
-
-        ekfAltitude.value = ekf.getAltitude();
-        ekfVelocity.value = ekf.getVelocity();
-        ekfAcceleration.value = ekf.getAcceleration();
-        ekfBurnerGain.value = ekf.getBurnerGain();
-        const deceleration = ekf.isDecelerating();
-        ekfIsDecelerating.value = deceleration.isDecelerating;
-        ekfTimeToZeroSpeed.value = deceleration.timeToZeroSpeed;
-        const zeroSpeed = ekf.getZeroSpeedAltitude();
-        ekfZeroSpeedAltitude.value = zeroSpeed.altitude;
-        ekfZeroSpeedValid.value = zeroSpeed.valid;
+        if (previousTimestamp > 0) {
+          const timeDiff = data.timestamp - previousTimestamp;
+          ekf.altitudeSample(timeDiff, altISA, 0, 0);
+          currentVariance.value = ekf.currentVariance();
+          ekfAltitudeISA.value = ekf.getAltitude();
+          ekfAltitudeQNH.value = isaToQnhAltitude(ekf.getAltitude(), pressureQNH.value);
+          ekfVelocity.value = ekf.getVelocity();
+          ekfAcceleration.value = ekf.getAcceleration();
+          ekfBurnerGain.value = ekf.getBurnerGain();
+          const deceleration = ekf.isDecelerating();
+          ekfIsDecelerating.value = deceleration.isDecelerating;
+          ekfTimeToZeroSpeed.value = deceleration.timeToZeroSpeed;
+          const zeroSpeed = ekf.getZeroSpeedAltitude();
+          ekfZeroSpeedAltitude.value = zeroSpeed.altitude;
+          ekfZeroSpeedValid.value = zeroSpeed.valid;
+        }
+        previousTimestamp = data.timestamp;
       }
-      previousTimestamp = data.timestamp;
-    });
-    await Barometer.start();
+    );
+    await barometer.start();
     baroActive.value = true;
   }
 };
 
-const stopBarometer = async () => {
+async function stopBarometer() {
   if (!baroActive.value) return;
-  await Barometer.stop();
+  await barometer.stop();
   if (baroListener) {
     await baroListener.remove();
   }
@@ -129,20 +160,16 @@ const stopBarometer = async () => {
 };
 
 export {
-  referencePressure,
-  useReferencePressure,
+  pressureQNH,
   transitionAltitude,
   historySamples,
-  startBarometer,
-  stopBarometer,
-
   // volatile state
   barometerAvailable,
   baroActive,
   pressure,
-  altitudeQNH,
-  altitudeISA,
-  ekfAltitude,
+  rawAltitudeISA,
+  ekfAltitudeISA,
+  ekfAltitudeQNH,
   ekfVelocity,
   ekfAcceleration,
   ekfBurnerGain,
@@ -152,4 +179,5 @@ export {
   ekfZeroSpeedValid,
   currentVariance,
   baroRate,
+  sensorSource,
 };

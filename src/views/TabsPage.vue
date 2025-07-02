@@ -15,7 +15,7 @@
 
         <ion-tab-button v-if="showDebugInfo" tab="tab3" href="/tabs/tab3">
           <!-- <ion-icon aria-hidden="true" :icon="square" /> -->
-          <ion-label>Debug</ion-label>
+          <ion-label>Update</ion-label>
         </ion-tab-button>
 
         <ion-tab-button tab="settings" href="/tabs/settings">
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { ellipse, square, triangle } from 'ionicons/icons';
+// import { ellipse, square, triangle } from 'ionicons/icons';
 import {
   showDebugInfo,
 } from '@/utils/state';

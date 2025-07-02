@@ -1,18 +1,17 @@
 <template>
     <div>
         <ion-card v-if="showDebugInfo" class="debug-panel">
-            <ion-card-header>
+            <!-- <ion-card-header>
                 <ion-card-subtitle>EKF & pressure</ion-card-subtitle>
-            </ion-card-header>
+            </ion-card-header> -->
             <ion-card-content>
-                <p>EKF Altitude (m): {{ ekfAltitude.toFixed(2) }}</p>
+                <p>raw Altitude ISA: {{ rawAltitudeISA.toFixed(1) }}</p>
+                <p>EKF Altitude ISA/QNH (m): {{ ekfAltitudeISA.toFixed(1) }} / {{ ekfAltitudeQNH.toFixed(1) }}</p>
                 <p>EKF Velocity (m/s): {{ ekfVelocity.toFixed(2) }}</p>
-                <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration*1000.0).toFixed(2) }}</p>
+                <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration*1000.0).toFixed(1) }}</p>
                 <p>Variance: {{ currentVariance.toFixed(6) }}</p>
                 <p>Pressure (hPa): {{ pressure.toFixed(1) }}</p>
                 <p>Baro rate samples/sec: {{ baroRate.toFixed(1) }}</p>
-                <p>Alt ISA (m): {{ altitudeISA.toFixed(1) }}</p>
-                <p>Alt QNH (m): {{ altitudeQNH.toFixed(1) }}</p>
             </ion-card-content>
         </ion-card>
     </div>
@@ -21,16 +20,15 @@
 <script setup lang="ts">
 import { IonCard, IonCardHeader, IonCardSubtitle, IonCardContent } from '@ionic/vue';
 import {
-    ekfAltitude,
+    ekfAltitudeISA,
+    ekfAltitudeQNH,
     ekfVelocity,
     ekfAcceleration,
     showDebugInfo,
     currentVariance,
     baroRate,
     pressure,
-    altitudeISA,
-    altitudeQNH,
-
+    rawAltitudeISA,
 } from '@/utils/state';
 </script>
 

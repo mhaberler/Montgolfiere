@@ -38,11 +38,14 @@
 
           <ion-grid class="sensor-grid">
             <ion-row>
-              <ion-col size="6" class="sensor-col">
-                <SensorDisplay name="alt" :value="ekfAltitude" unit="m" :decimals="1" />
+              <ion-col size="4" class="sensor-col">
+                <SensorDisplay name="alt qnh" :value="ekfAltitudeQNH" unit="m" :decimals="0" />
               </ion-col>
-              <ion-col size="6" class="sensor-col">
-                <SensorDisplay name="vspeed" :value="ekfVelocity" unit="m/s" :decimals="2" />
+              <ion-col size="4" class="sensor-col">
+                <SensorDisplay name="vspeed" :value="ekfVelocity" unit="m/s" :decimals="1" />
+              </ion-col>
+              <ion-col size="4" class="sensor-col">
+                <SensorDisplay name="accel" :value="ekfAcceleration * 1000" unit="mm/s^2" :decimals="0" />
               </ion-col>
             </ion-row>
 
@@ -52,7 +55,7 @@
                   ekfTimeToZeroSpeed,
                   ekfZeroSpeedAltitude,
                   ekfZeroSpeedValid,
-                  ekfAltitude)" unit="m" :decimals="0" />
+                  ekfAltitudeISA)" unit="m" :decimals="0" />
               </ion-col>
               <ion-col size="6" class="sensor-col">
                 <SensorDisplay name="leveloff in" :value="levelOffSeconds" unit="s" :decimals="0" />
@@ -67,7 +70,7 @@
 
       <!-- <ion-card class="sensor-container" v-if="showDebugInfo">
         <ion-card-header> -->
-          <!-- <ion-card-title>Current Location</ion-card-title> -->
+      <!-- <ion-card-title>Current Location</ion-card-title> -->
       <!-- <ion-card-subtitle>Debug info</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
@@ -107,14 +110,14 @@ import {
   // locationAvailable,
   location,
   // locationError,
-  // referencePressure,
-  // useReferencePressure,
+  // pressureQNH,
   // pressure,
   // altitudeQNH,
   // altitudeISA,
   barometerAvailable,
 
-  ekfAltitude,
+  ekfAltitudeISA,
+  ekfAltitudeQNH,
   ekfVelocity,
   ekfAcceleration,
   ekfBurnerGain,
@@ -146,18 +149,18 @@ function levelOffMeters(
   timeToZeroSpeed: number | null,
   zeroSpeedAltitude: number | null,
   zeroSpeedValid: boolean,
-  ekfAltitude: number | null
+  ekfAltitudeISA: number | null
 ) {
   if (
     !isDecelerating ||
     !zeroSpeedValid ||
     timeToZeroSpeed === null ||
     zeroSpeedAltitude === null ||
-    ekfAltitude === null
+    ekfAltitudeISA === null
   ) {
     return '--'
   }
-  return zeroSpeedAltitude - ekfAltitude
+  return zeroSpeedAltitude - ekfAltitudeISA
 }
 
 
@@ -313,11 +316,7 @@ declare module '.vue' {
 
 
 
-<!-- <ion-text class="sensor-reading">
-          <h3>Altitude</h3>
-          <p class="reading-value">{{ altitudeQNH.toFixed(2) }} <span class="unit">m</span></p>
-        </ion-text>
-      </div> -->
+
 
 
 <!-- <div class="sensor-container text-frame"> -->
@@ -337,11 +336,7 @@ declare module '.vue' {
 
 
 
-<!-- <ion-text class="sensor-reading">
-          <h3>Altitude</h3>
-          <p class="reading-value">{{ altitudeQNH.toFixed(2) }} <span class="unit">m</span></p>
-        </ion-text>
-      </div> -->
+
 
 
 <!-- <div>

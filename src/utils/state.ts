@@ -1,8 +1,7 @@
 // consolidate the state management for barometer and location sensors
 import {
   // persistent state
-  referencePressure,
-  useReferencePressure,
+  pressureQNH,
   transitionAltitude,
   historySamples,
 
@@ -10,9 +9,9 @@ import {
   barometerAvailable,
   baroActive,
   pressure,
-  altitudeQNH,
-  altitudeISA,
-  ekfAltitude,
+  rawAltitudeISA,
+  ekfAltitudeISA,
+  ekfAltitudeQNH,
   ekfVelocity,
   ekfAcceleration,
   ekfBurnerGain,
@@ -22,28 +21,28 @@ import {
   ekfZeroSpeedValid,
   currentVariance,
   baroRate,
+  sensorSource
 } from "../sensors/pressure";
 
 import {
-    locationAvailable,
-    location,
-    locationError,
-} from '../sensors/location';
+  locationAvailable,
+  location,
+  locationError,
+} from "../sensors/location";
 
 import { wakeLockAvailable, showDebugInfo } from "./startup";
 
 export {
   // persistent state
-  referencePressure,
-  useReferencePressure,
+  pressureQNH,
   transitionAltitude,
   historySamples,
   barometerAvailable,
   baroActive,
   pressure,
-  altitudeQNH,
-  altitudeISA,
-  ekfAltitude,
+  rawAltitudeISA,
+  ekfAltitudeISA,
+  ekfAltitudeQNH,
   ekfVelocity,
   ekfAcceleration,
   ekfBurnerGain,
@@ -58,4 +57,5 @@ export {
   locationError,
   wakeLockAvailable,
   showDebugInfo,
+  sensorSource,
 };

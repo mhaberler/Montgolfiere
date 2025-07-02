@@ -10,47 +10,31 @@
                 <p>Channel: Development</p>
                 <p>Status: {{ currentBundle?.bundle?.status }}</p>
                 <p>Downloaded: {{ currentBundle?.bundle?.downloaded ? 'Yes' : 'No' }}</p>
-                <p>Native: {{ currentBundle?.native ? 'Yes' : 'No' }}</p>
-                
-                <IonButton 
-                    fill="outline" 
-                    size="default" 
-                    @click="checkForUpdate"
-                    :disabled="isChecking || isDeletingBundle"
-                >
+                <p>Git SHA: {{ gitSha }}</p>
+                <p>Git branch: {{ gitBranch }}</p>
+                <p>Build date: {{ buildDate }}</p>
+                <p>App version: {{ appVersion }}</p>
+
+                <IonButton fill="outline" size="default" @click="checkForUpdate"
+                    :disabled="isChecking || isDeletingBundle">
                     {{ isChecking ? 'Checking...' : 'Check for Update' }}
                 </IonButton>
-                
-                <IonButton 
-                    fill="solid" 
-                    size="default" 
-                    @click="tryUpdate"
-                    :disabled="isUpdating || isDeletingBundle"
-                    color="primary"
-                >
+
+                <IonButton fill="solid" size="default" @click="tryUpdate" :disabled="isUpdating || isDeletingBundle"
+                    color="primary">
                     {{ isUpdating ? 'Updating...' : 'download new' }}
                 </IonButton>
-                
-                <IonButton 
-                    fill="outline" 
-                    size="default" 
-                    @click="revertToNative"
-                    :disabled="isReverting || isDeletingBundle"
-                    color="warning"
-                >
+
+                <IonButton fill="outline" size="default" @click="revertToNative"
+                    :disabled="isReverting || isDeletingBundle" color="warning">
                     {{ isReverting ? 'Reverting...' : 'Revert to Native' }}
                 </IonButton>
-                
-                <IonButton 
-                    fill="clear" 
-                    size="small" 
-                    @click="refreshBundleInfo"
-                    :disabled="isChecking || isUpdating || isReverting || isDeletingBundle"
-                    color="medium"
-                >
+
+                <IonButton fill="clear" size="small" @click="refreshBundleInfo"
+                    :disabled="isChecking || isUpdating || isReverting || isDeletingBundle" color="medium">
                     {{ isDeletingBundle ? '🗑️ Deleting...' : '🔄 Refresh' }}
                 </IonButton>
-                
+
                 <div v-if="availableBundles.length > 0" class="bundles-section">
                     <h4>Available Bundles</h4>
                     <div v-for="bundle in availableBundles" :key="bundle.id" class="bundle-item">
@@ -58,28 +42,20 @@
                             <span class="bundle-version">{{ formatBundleVersion(bundle) }}</span>
                             <span class="bundle-id">ID: {{ bundle.id }}</span>
                             <span class="bundle-status">{{ bundle.status }}</span>
-                            <span class="bundle-downloaded">{{ bundle.downloaded ? 'Downloaded' : 'Not Downloaded' }}</span>
+                            <span class="bundle-downloaded">{{ bundle.downloaded ? 'Downloaded' : 'Not Downloaded'
+                                }}</span>
                         </div>
                         <div class="bundle-actions">
-                            <IonButton 
-                                size="small" 
-                                fill="outline" 
-                                @click="revertToBundle(bundle.id)"
+                            <IonButton size="small" fill="outline" @click="revertToBundle(bundle.id)"
                                 :disabled="isReverting || isDeletingBundle || bundle.id === currentBundle?.bundle?.id"
-                                color="secondary"
-                            >
+                                color="secondary">
                                 {{ bundle.id === currentBundle?.bundle?.id ? 'Current' : 'Use This' }}
                             </IonButton>
-                            
-                            <IonButton 
+
+                            <IonButton
                                 v-if="bundle.downloaded && bundle.id !== currentBundle?.bundle?.id && bundle.id !== 'builtin'"
-                                size="small" 
-                                fill="clear" 
-                                @click="deleteBundle(bundle.id)"
-                                :disabled="isReverting || isDeletingBundle"
-                                color="danger"
-                                title="Delete this bundle"
-                            >
+                                size="small" fill="clear" @click="deleteBundle(bundle.id)"
+                                :disabled="isReverting || isDeletingBundle" color="danger" title="Delete this bundle">
                                 🗑️
                             </IonButton>
                         </div>
@@ -108,6 +84,10 @@ const showToast = async (message: string) => {
         duration: 'long'
     });
 };
+const gitSha = __GIT_COMMIT_HASH__ || 'N/A';
+const gitBranch = __GIT_BRANCH_NAME__ || 'N/A';
+const buildDate = __VITE_BUILD_DATE__ || 'N/A';
+const appVersion = __APP_VERSION__ || 'N/A';
 
 const currentBundle = ref<CurrentBundleResult>();
 const availableBundles = ref<BundleInfo[]>([]);
