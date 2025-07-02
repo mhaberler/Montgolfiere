@@ -5,7 +5,7 @@ import { CapacitorUpdater } from "@capgo/capacitor-updater";
 import { Capacitor } from "@capacitor/core";
 
 import { ref, computed } from "vue";
-import { startLocation } from "../sensors/location";
+import { startLocation, stopLocation } from "../sensors/location";
 import { usePersistedRef } from "../composables/usePersistedRef";
 // import { initializeBLE } from '../sensors/blesensors';
 
@@ -29,6 +29,7 @@ const isKeptAwake = async () => {
 
 const cameToForeground = async () => {
   console.log("App is in the foreground");
+  startLocation();
   if (wakeLockAvailable.value) {
     if (!(await isKeptAwake())) {
       console.log("Keeping the app awake");
@@ -39,6 +40,7 @@ const cameToForeground = async () => {
 
 const wentToBackground = async () => {
   console.log("App is in the background");
+  stopLocation();
   if (wakeLockAvailable.value) {
     if (await isKeptAwake()) {
       console.log("letting the app sleep");
