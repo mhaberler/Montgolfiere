@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ion-card class="debug-panel">
+        <ion-card v-if="isNativePlatform" class="debug-panel">
             <ion-card-header>
                 <ion-card-subtitle>CapGo</ion-card-subtitle>
             </ion-card-header>
@@ -63,19 +63,36 @@
                 </div>
             </ion-card-content>
         </ion-card>
+        <ion-card v-if="!isNativePlatform" class="debug-panel">
+            <ion-card-header>
+                <ion-card-subtitle>Build information</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                <p>Git SHA: {{ gitSha }}</p>
+                <p>Git branch: {{ gitBranch }}</p>
+                <p>Build date: {{ buildDate }}</p>
+                <p>App version: {{ appVersion }}</p>
+            </ion-card-content>
+        </ion-card>
     </div>
 </template>
 
 
 <script setup lang="ts">
 import { IonCard, IonCardHeader, IonCardSubtitle, IonCardContent, IonButton } from '@ionic/vue';
+import { Toast } from '@capacitor/toast';
+
 import { ref } from "vue";
 import {
     CapacitorUpdater,
     CurrentBundleResult,
     BundleInfo,
 } from "@capgo/capacitor-updater";
-import { Toast } from '@capacitor/toast';
+
+import {
+    isNativePlatform
+} from '@/utils/state';
+
 
 const showToast = async (message: string) => {
     await Toast.show({

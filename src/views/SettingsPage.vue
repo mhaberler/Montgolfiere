@@ -104,7 +104,6 @@ import {
 import { computed, ref, watch } from 'vue';
 import { mqttBrokerUrl, mqttUser, mqttPassword } from '@/utils/mqtt';
 import mqtt from 'mqtt';
-import { Capacitor } from '@capacitor/core';
 
 
 import {
@@ -113,6 +112,7 @@ import {
   historySamples,
   showDebugInfo,
   sensorSource,
+  isNativePlatform
 } from '@/utils/state';
 
 
@@ -120,9 +120,6 @@ const toggleDebugInfo = () => {
   showDebugInfo.value = !showDebugInfo.value;
 };
 
-const isNativePlatform = computed(() => {
-  return Capacitor.isNativePlatform()
-});
 
 // Get sensor source options based on platform
 const sensorSourceOptions = computed(() => {
