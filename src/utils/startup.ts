@@ -2,7 +2,9 @@ import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 import { Toast } from "@capacitor/toast";
 import { CapacitorUpdater } from "@capgo/capacitor-updater";
-import { ref } from "vue";
+import { Capacitor } from "@capacitor/core";
+
+import { ref, computed } from "vue";
 import { startLocation } from "../sensors/location";
 import { usePersistedRef } from "../composables/usePersistedRef";
 // import { initializeBLE } from '../sensors/blesensors';
@@ -45,6 +47,11 @@ const wentToBackground = async () => {
   }
 };
 
+const isNativePlatform = computed(() => {
+  return Capacitor.isNativePlatform();
+});
+
+
 const initializeApp = async () => {
   console.log("Initializing app...");
   console.log("git sha: ", __GIT_COMMIT_HASH__);
@@ -69,4 +76,4 @@ const initializeApp = async () => {
   console.log("App initialized and ready to use.");
 };
 
-export { initializeApp, wakeLockAvailable, showDebugInfo };
+export { initializeApp, wakeLockAvailable, showDebugInfo, isNativePlatform };
