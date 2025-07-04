@@ -45,3 +45,4 @@ android_logs.txt
 /dist.capgo.production
 /dist.capgo.development
 /dist.webtest
+*.zip

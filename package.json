@@ -1,26 +1,21 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.6.0",
+  "version": "1.5.10",
   "type": "module",
-  "config": {
-    "bundle": "1.5.47"
-  },
+  "description": "An Ionic project",
   "scripts": {
     "watch": "vue-tsc --watch",
     "dev": "vite --port=8100 --host",
     "clean": "bunx rimraf ./dist",
-    "bundle-id": "jq -r '.bundleversion' bundle.json",
-    "bump-bundle-id": "node scripts/bump-capgo-bundle-version.js",
-    "capgo-upload-bundle": "vue-tsc && vite build --mode development --outDir ./dist.capgo.development && bunx @capgo/cli@latest bundle upload --path ./dist.capgo.development --channel=development",
-    "bump-minor": "bunx npm version minor --no-git-tag-version && fastlane bump",
-    "bump-major": "bunx npm version major --no-git-tag-version && fastlane bump",
+    "current-bundle-id": "jq -r '.bundleversion' bundle.json",
+    "capgo-upload-bundle": "npm run bump-bundle-id && vue-tsc && vite build --mode development --outDir ./dist.capgo.development && bunx @capgo/cli@latest bundle upload -b $(jq -r '.bundleversion' bundle.json) --path ./dist.capgo.development --channel=development",
     "build": "vue-tsc && vite build --mode development",
     "preview": "vite preview",
     "prepare-beta": "npm run clean && npm run build && npm run sync",
     "ios-beta": "fastlane ios beta",
     "android-beta": "fastlane android beta",
-    "deploy-mah.priv.at": "vite build --mode development --outDir ./dist.webtest --base=/apps/montgolfiere/  && rsync -avz --delete ./dist.webtest/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
+    "deploy-mah.priv.at": "vite build --mode development --outDir ./dist.webtest --base=/apps/montgolfiere/  && rsync -avz --delete ./dist.webtest/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/ && echo  https://static.mah.priv.at/apps/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
     "debug-android": "bunx cap run android  --live-reload --host 172.16.0.212 --port 8100  --target R3CX90A30EW",
     "debug-ios": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --host  172.16.0.212 --port 8100  --target 00008140-0002692C1E79801C",
     "run-on-galaxy-s24": "bunx cap run android --target R3CX90A30EW",
@@ -45,17 +40,20 @@
     "logcat:app:output": "adb logcat -d -v threadtime Capacitor:D 'Capacitor/Console':D *:S > android_logs.txt",
     "open-in-Xcode": "bunx cap open ios",
     "open-in-Android-Studio": "bunx cap open android",
-    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync",
+    "bump-bundle-id": "node scripts/bump-capgo-bundle-version.js",
+    "capgo-zip-bundle": "vue-tsc && vite build --mode development --outDir ./dist.capgo.development && bunx @capgo/cli@latest bundle zip -b $(jq -r '.bundleversion' bundle.json) --path ./dist.capgo.development",
+    "app-bump-patch": "bunx npm version patch --no-git-tag-version && fastlane bump",
+    "app-bump-minor": "bunx npm version minor --no-git-tag-version && fastlane bump",
+    "app-bump-major": "bunx npm version major --no-git-tag-version && fastlane bump",
+    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync"
+  },
+  "scripts-disabled": {
     "test": "cross-var echo bundle version $npm_package_bundle $npm_package_name v${npm_package_version}",
     "env": "echo cb $npm_package_config_bundle  b $npm_package_bundle",
     "ios-build-number": "cd ios/App && agvtool what-version ",
     "bundle-version": "cd ios/App && agvtool what-version ",
     "environ": "printenv",
-    "zipitb": "bunx @capgo/cli@latest bundle zip com.haberler.montgolfiere --path ./dist.capgo.development -b $npm_package_config_bundle "
-  },
-  "scripts-disabled": {
-    "genbundle": "// npx @capgo/cli@latest bundle zip com.haberler.montgolfiere --path ./dist.capgo.development -b 1.5.10",
-    "deploy-nocache-mah.priv.at": "vite build --mode development --base=/apps/montgolfiere/  && rsync -avz --delete dist/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps-nocache/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps-nocache/montgolfiere/?simulateBarometer=true",
+    "zipitb": "bunx @capgo/cli@latest bundle zip com.haberler.montgolfiere --path ./dist.capgo.development -b $npm_package_config_bundle ",
     "run-on-ios": "bunx cap run ios",
     "test:e2e": "bunx cypress run",
     "test:unit": "bunx vitest",
@@ -151,6 +149,5 @@
     "vite-plugin-qrcode": "^0.2.4",
     "vitest": "^0.34.6",
     "vue-tsc": "^2.2.12"
-  },
-  "description": "An Ionic project"
+  }
 }
