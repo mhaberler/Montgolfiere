@@ -10,7 +10,8 @@
     "watch": "vue-tsc --watch",
     "dev": "vite --port=8100 --host",
     "clean": "bunx rimraf ./dist",
-    "bump-bundle": "bunx npm version patch --no-git-tag-version && fastlane bump",
+    "bundle-id": "jq -r '.bundleversion' bundle.json",
+    "bump-bundle-id": "node scripts/bump-capgo-bundle-version.js",
     "capgo-upload-bundle": "vue-tsc && vite build --mode development --outDir ./dist.capgo.development && bunx @capgo/cli@latest bundle upload --path ./dist.capgo.development --channel=development",
     "bump-minor": "bunx npm version minor --no-git-tag-version && fastlane bump",
     "bump-major": "bunx npm version major --no-git-tag-version && fastlane bump",
@@ -49,6 +50,7 @@
     "env": "echo cb $npm_package_config_bundle  b $npm_package_bundle",
     "ios-build-number": "cd ios/App && agvtool what-version ",
     "bundle-version": "cd ios/App && agvtool what-version ",
+    "environ": "printenv",
     "zipitb": "bunx @capgo/cli@latest bundle zip com.haberler.montgolfiere --path ./dist.capgo.development -b $npm_package_config_bundle "
   },
   "scripts-disabled": {
