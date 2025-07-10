@@ -21,7 +21,7 @@ import {
   ekfZeroSpeedValid,
   currentVariance,
   baroRate,
-  sensorSource
+  sensorSource,
 } from "../sensors/pressure";
 
 import {
@@ -31,6 +31,21 @@ import {
 } from "../sensors/location";
 
 import {
+  bleScanTimeouts,
+  resetbleScanTimeouts,
+  bleInitErrors,
+  bleAdvertisements,
+  bleDeviceUpdates,
+  bleScanStarts,
+  bleScanErrors,
+  bleErrorMsg,
+  devices,
+  isScanning,
+  restartBLEScan,
+  clearBLEDevices,
+} from "../sensors/blesensors";
+
+import {
   wakeLockAvailable,
   showDebugInfo,
   isNativePlatform,
@@ -38,6 +53,13 @@ import {
   isAndroidPlatform,
   isWebPlatform,
 } from "./startup";
+
+import {
+  startTimer,
+  stopTimer,
+  ticker,
+  tickerRunning
+} from "../utils/ticker";
 
 export {
   // persistent state
@@ -69,4 +91,20 @@ export {
   isIOSPlatform,
   isAndroidPlatform,
   isWebPlatform,
+  bleScanTimeouts,
+  resetbleScanTimeouts,
+  bleInitErrors,
+  bleAdvertisements,
+  bleDeviceUpdates,
+  bleScanStarts,
+  bleScanErrors,
+  bleErrorMsg,
+  devices,
+  isScanning,
+  restartBLEScan,
+  clearBLEDevices,
+  startTimer,
+  stopTimer,
+  ticker,
+  tickerRunning
 };

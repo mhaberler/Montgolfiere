@@ -10,6 +10,14 @@ export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
     .join('');
 }
 
+// Helper function to log DataView as hex
+export function logDataViewAsHex(dataView: DataView, prefix: string = 'DataView'): void {
+  const bytes = new Uint8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength);
+  const hexString = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+  console.log(`${prefix} (${dataView.byteLength} bytes): ${hexString}`);
+}
+
+
 /**
  * Serializes an object, converting any DataView attributes into a hexadecimal string
  * representation of their underlying bytes. This is particularly useful for

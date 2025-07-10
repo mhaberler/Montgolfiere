@@ -5,6 +5,15 @@ const config: CapacitorConfig = {
   appId: "com.haberler.montgolfiere",
   appName: "Montgolfiere",
   webDir: "dist",
+  loggingBehavior: "none", // <--- Add this line
+  // Or for production builds only:
+  // loggingBehavior: 'debug', // or 'production' if you want logs always
+  // android: {
+  //   loggingBehavior: 'none' // Override for Android if needed
+  // },
+  // ios: {
+  //   loggingBehavior: 'none' // Override for iOS if needed
+  // }
   server: {
     cleartext: true,
   },

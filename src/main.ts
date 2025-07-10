@@ -35,10 +35,23 @@ import '@ionic/vue/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* Tailwind import */
+import "./assets/main.css";
+
+import { SafeArea } from '@capacitor-community/safe-area';
 
 import { initializeApp } from './utils/startup';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
+SafeArea.enable({
+    config: {
+        customColorsForSystemBars: true,
+        statusBarColor: '#00000000', // transparent
+        statusBarContent: 'light',
+        navigationBarColor: '#00000000', // transparent
+        navigationBarContent: 'light',
+    },
+});
 // Add global error handling for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
@@ -50,7 +63,7 @@ window.addEventListener('unhandledrejection', (event) => {
     }
 });
 
-// Add global error handler for Vue errors
+// // Add global error handler for Vue errors
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
     if (event.error && event.error instanceof Error && 

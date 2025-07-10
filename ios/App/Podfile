@@ -45,9 +45,11 @@ def capacitor_pods
   pod 'CapawesomeCapacitorFilePicker', :path => '../../node_modules/@capawesome/capacitor-file-picker'
   pod 'CapawesomeCapacitorScreenOrientation', :path => '../../node_modules/@capawesome/capacitor-screen-orientation'
   pod 'CapawesomeCapacitorScreenshot', :path => '../../node_modules/@capawesome/capacitor-screenshot'
+  pod 'CapgoCapacitorShake', :path => '../../node_modules/@capgo/capacitor-shake'
   pod 'CapgoCapacitorUpdater', :path => '../../node_modules/@capgo/capacitor-updater'
+  pod 'CapgoCapacitorUploader', :path => '../../node_modules/@capgo/capacitor-uploader'
   pod 'CapgoNativeAudio', :path => '../../node_modules/@capgo/native-audio'
-  pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
+  pod 'CapgoNativegeocoder', :path => '../../node_modules/@capgo/nativegeocoder'
   pod 'CapacitorBarometer', :path => '../../../capacitor-barometer'
 end
 

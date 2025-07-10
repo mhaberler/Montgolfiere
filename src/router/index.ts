@@ -24,11 +24,15 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/Tab2Page.vue')
       },
       {
+        path: 'dash',
+        component: () => import('@/views/DashboardView.vue')
+      },
+      {
         path: 'tab3',
         component: () => import('@/views/Tab3Page.vue')
       },
       {
-        path: '/tabs/settings',
+        path: 'settings',
         component: () => import('@/views/SettingsPage.vue')
       }
     ]

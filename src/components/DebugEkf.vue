@@ -12,13 +12,26 @@
                 <p>Variance: {{ currentVariance.toFixed(6) }}</p>
                 <p>Pressure (hPa): {{ pressure.toFixed(1) }}</p>
                 <p>Baro rate samples/sec: {{ baroRate.toFixed(1) }}</p>
+                <div class="restart-counter">
+                    <span>BLE scan restarts: {{ bleScanTimeouts }}</span>
+                    <ion-button 
+                        v-if="bleScanTimeouts > 0"
+                        fill="outline" 
+                        size="small"
+                        color="warning"
+                        @click="resetbleScanTimeouts"
+                        class="reset-button"
+                    >
+                        Reset
+                    </ion-button>
+                </div>
             </ion-card-content>
         </ion-card>
     </div>
 </template>
 
 <script setup lang="ts">
-import { IonCard, IonCardHeader, IonCardSubtitle, IonCardContent } from '@ionic/vue';
+import { IonCard, IonCardContent, IonButton } from '@ionic/vue';
 import {
     ekfAltitudeISA,
     ekfAltitudeQNH,
@@ -29,6 +42,8 @@ import {
     baroRate,
     pressure,
     rawAltitudeISA,
+    bleScanTimeouts,
+    resetbleScanTimeouts
 } from '@/utils/state';
 </script>
 
@@ -115,6 +130,20 @@ import {
     line-height: 1.2;
     font-weight: 700;
     opacity: 0.8;
+}
+
+.restart-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+}
+
+.reset-button {
+    margin-left: 8px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 24px;
 }
 
 /* Dark mode support */

@@ -1,7 +1,7 @@
 PODS:
   - Alamofire (5.10.2)
   - BigInt (5.2.0)
-  - Capacitor (7.4.1):
+  - Capacitor (7.4.2):
     - CapacitorCordova
   - CapacitorActionSheet (7.0.1):
     - Capacitor
@@ -32,7 +32,7 @@ PODS:
     - Capacitor
   - CapacitorCommunitySafeArea (7.0.0-alpha.1):
     - Capacitor
-  - CapacitorCordova (7.4.1)
+  - CapacitorCordova (7.4.2)
   - CapacitorDevice (7.0.1):
     - Capacitor
   - CapacitorDialog (7.0.1):
@@ -45,9 +45,9 @@ PODS:
     - IONGeolocationLib (~> 1.0)
   - CapacitorHaptics (7.0.1):
     - Capacitor
-  - CapacitorInappbrowser (2.0.1):
+  - CapacitorInappbrowser (2.1.1):
     - Capacitor
-    - OSInAppBrowserLib (~> 1.0)
+    - OSInAppBrowserLib (~> 2.0.1)
   - CapacitorKeyboard (7.0.1):
     - Capacitor
   - CapacitorLocalNotifications (7.0.1):
@@ -78,22 +78,24 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorScreenshot (7.0.1):
     - Capacitor
-  - CapgoCapacitorUpdater (7.7.0):
+  - CapgoCapacitorShake (7.1.14):
+    - Capacitor
+  - CapgoCapacitorUpdater (7.7.3):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
     - SSZipArchive (= 2.4.3)
     - Version (= 0.8.0)
-  - CapgoNativeAudio (7.3.34):
+  - CapgoCapacitorUploader (7.1.7):
+    - Capacitor
+  - CapgoNativeAudio (7.3.35):
+    - Capacitor
+  - CapgoNativegeocoder (7.1.7):
     - Capacitor
   - IONFilesystemLib (1.0.0)
   - IONGeolocationLib (1.0.0)
   - OSBarcodeLib (1.1.3)
-  - OSInAppBrowserLib (1.0.0)
-  - Sentry/HybridSDK (8.48.0)
-  - SentryCapacitor (1.5.0):
-    - Capacitor
-    - Sentry/HybridSDK (= 8.48.0)
+  - OSInAppBrowserLib (2.0.1)
   - SSZipArchive (2.4.3)
   - Version (0.8.0)
 
@@ -135,9 +137,11 @@ DEPENDENCIES:
   - "CapawesomeCapacitorFilePicker (from `../../node_modules/@capawesome/capacitor-file-picker`)"
   - "CapawesomeCapacitorScreenOrientation (from `../../node_modules/@capawesome/capacitor-screen-orientation`)"
   - "CapawesomeCapacitorScreenshot (from `../../node_modules/@capawesome/capacitor-screenshot`)"
+  - "CapgoCapacitorShake (from `../../node_modules/@capgo/capacitor-shake`)"
   - "CapgoCapacitorUpdater (from `../../node_modules/@capgo/capacitor-updater`)"
+  - "CapgoCapacitorUploader (from `../../node_modules/@capgo/capacitor-uploader`)"
   - "CapgoNativeAudio (from `../../node_modules/@capgo/native-audio`)"
-  - "SentryCapacitor (from `../../node_modules/@sentry/capacitor`)"
+  - "CapgoNativegeocoder (from `../../node_modules/@capgo/nativegeocoder`)"
 
 SPEC REPOS:
   trunk:
@@ -147,7 +151,6 @@ SPEC REPOS:
     - IONGeolocationLib
     - OSBarcodeLib
     - OSInAppBrowserLib
-    - Sentry
     - SSZipArchive
     - Version
 
@@ -226,17 +229,21 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capawesome/capacitor-screen-orientation"
   CapawesomeCapacitorScreenshot:
     :path: "../../node_modules/@capawesome/capacitor-screenshot"
+  CapgoCapacitorShake:
+    :path: "../../node_modules/@capgo/capacitor-shake"
   CapgoCapacitorUpdater:
     :path: "../../node_modules/@capgo/capacitor-updater"
+  CapgoCapacitorUploader:
+    :path: "../../node_modules/@capgo/capacitor-uploader"
   CapgoNativeAudio:
     :path: "../../node_modules/@capgo/native-audio"
-  SentryCapacitor:
-    :path: "../../node_modules/@sentry/capacitor"
+  CapgoNativegeocoder:
+    :path: "../../node_modules/@capgo/nativegeocoder"
 
 SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
-  Capacitor: 78ad32d4b0d9dfa25402eb8b0ac46c2b8a4696b8
+  Capacitor: 9d9e481b79ffaeacaf7a85d6a11adec32bd33b59
   CapacitorActionSheet: 4213427449132ae4135674d93010cb011725647e
   CapacitorApp: febecbb9582cb353aed037e18ec765141f880fe9
   CapacitorAppLauncher: bab4ca931a308252d2bafcb78ca6a364bd1d4c4e
@@ -251,13 +258,13 @@ SPEC CHECKSUMS:
   CapacitorCommunityCameraPreview: a45e3974b2f96fbc118d9cde1c8e5990fadf364f
   CapacitorCommunityKeepAwake: 05c75aab989f60e621870cf03b24a144a5544c30
   CapacitorCommunitySafeArea: 3f049619072ab5d0da2529bcb05b358ff6c13dc1
-  CapacitorCordova: 34618fa1b14b6b091fd60a7658f7654044ae8d8a
+  CapacitorCordova: 5e58d04631bc5094894ac106e2bf1da18a9e6151
   CapacitorDevice: c6f6d587dd310527f8a48bf09c4e7b4a4cf14329
   CapacitorDialog: 0e09f242f6c3f5e82e4dc76b20f2a056be57a579
   CapacitorFilesystem: 337eeaf16a9fa5a44d2329df411523fa3a9a6ee9
   CapacitorGeolocation: 5e8f3f1bbf3bd914edb0a6a121f2dc55f7ea5c4e
   CapacitorHaptics: 1f1e17041f435d8ead9ff2a34edd592c6aa6a8d6
-  CapacitorInappbrowser: c8915884dd9f8d8cfb8a51da02fc7c4f2e320b9a
+  CapacitorInappbrowser: 614dedc76631d29280e60983afe2cd3472c3c1ed
   CapacitorKeyboard: 09fd91dcde4f8a37313e7f11bde553ad1ed52036
   CapacitorLocalNotifications: c2212755b33d2513b8bb325096ce3a64d4039ae3
   CapacitorNetwork: 15cb4385f0913a8ceb5e9a4d7af1ec554bdb8de8
@@ -273,17 +280,18 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorFilePicker: 0f4a913a00e39dd77213449f0d917e92f35a5ca9
   CapawesomeCapacitorScreenOrientation: c6cc24949bb2aede006277f0fa0c7832073c9ca1
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
-  CapgoCapacitorUpdater: c9595a157a75b0447a400152af2fa156e42c2269
-  CapgoNativeAudio: 2bb8b4ab9239404342e57affef2d7fd3087ad623
+  CapgoCapacitorShake: 59e3400e69bced5b812423c1b6628948e797485f
+  CapgoCapacitorUpdater: 63874783ecdb5128664672d4b80809d91a001ddb
+  CapgoCapacitorUploader: a1d9189c8ac9b4cd6629254d6ee1417694d4e5be
+  CapgoNativeAudio: ecb7d184c7e5af2d04d3c39f95392ecfb61760dc
+  CapgoNativegeocoder: 3330c994f8d3d513d075aa4dc52ed0ae8a20c7eb
   IONFilesystemLib: ceacae793975039530458eabab0c495c70515a0d
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   OSBarcodeLib: f2e981270a64faf476cb790864262b29ab8cd68a
-  OSInAppBrowserLib: c3d0b21a0c8b6d81e69117ad08bb6b8a4849c4e1
-  Sentry: 1ca8405451040482877dcd344dfa3ef80b646631
-  SentryCapacitor: 74486dd0026038ff026bdd8a84c63ff7fa16390c
+  OSInAppBrowserLib: cf8bfbe5d611a423a4153d8eb6ffbd92556dddb1
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: 0251b18615b2b5207fdd16fc407038da2be1b143
+PODFILE CHECKSUM: d3c697a0be93d3554edca5858c7d6615e48cb699
 
 COCOAPODS: 1.16.2

@@ -10,6 +10,7 @@
                 <p>Channel: Development</p>
                 <p>Status: {{ currentBundle?.bundle?.status }}</p>
                 <p>Downloaded: {{ currentBundle?.bundle?.downloaded ? 'Yes' : 'No' }}</p>
+                <p>Git Commit Message: {{ gitCommitMessage }}</p>
                 <p>Git SHA: {{ gitSha }}</p>
                 <p>Git branch: {{ gitBranch }}</p>
                 <p>Build date: {{ buildDate }}</p>
@@ -68,6 +69,7 @@
                 <ion-card-subtitle>Build information</ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
+                <p>Git Commit Message: {{ gitCommitMessage }}</p>
                 <p>Git SHA: {{ gitSha }}</p>
                 <p>Git branch: {{ gitBranch }}</p>
                 <p>Build date: {{ buildDate }}</p>
@@ -102,6 +104,7 @@ const showToast = async (message: string) => {
     });
 };
 const gitSha = __GIT_COMMIT_HASH__ || 'N/A';
+const gitCommitMessage = __GIT_COMMIT_MESSAGE__ || 'N/A';
 const gitBranch = __GIT_BRANCH_NAME__ || 'N/A';
 const buildDate = __VITE_BUILD_DATE__ || 'N/A';
 const appVersion = __APP_VERSION__ || 'N/A';

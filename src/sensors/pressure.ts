@@ -92,28 +92,38 @@ watch(
 //   return 20;
 // };
 
-function setInitialAltitude() {
-  const p = barometer.getPressure();
-  const alt = p !== undefined ? altitudeByPressure(p, 1013.25) : undefined;
-  if (alt !== undefined) {
-    // TODO    ekf.reset();
-    ekf.setAltitude(alt);
+async function setInitialAltitude() {
+  try {
+    const result = await barometer.getPressure();
+    const p = result?.pressure;
+    const alt = p !== undefined ? altitudeByPressure(p, 1013.25) : undefined;
+    if (alt !== undefined) {
+      // TODO    ekf.reset();
+      ekf.setAltitude(alt);
+      console.log(`Initial altitude set to ${alt.toFixed(2)} ft from pressure ${p.toFixed(2)} hPa`);
+    }
+  } catch (error) {
+    console.warn('Failed to get initial pressure reading:', error);
+    // Set a default altitude if we can't get pressure
+    ekf.setAltitude(0);
+    console.log('Initial altitude set to default 0 ft');
   }
 }
 
 
 async function switchSource(source: string) {
+  console.log(`setting barometer source to ${source}`);
   await stopBarometer();
   switch (source) {
     case "native":
       barometer = Barometer;
-      setInitialAltitude();
-      startBarometer();
+      await startBarometer();
+      await setInitialAltitude();
       break;
     case "simulated":
       barometer = new MockBarometer();
-      setInitialAltitude();
-      startBarometer();
+      await startBarometer();
+      await setInitialAltitude();
       break;
     // case "mqtt":
     //   return "Deleting...";
@@ -125,55 +135,81 @@ async function switchSource(source: string) {
 }
 
 async function startBarometer() {
-  const result = (await barometer.isAvailable()) as BarometerAvailable;
-  barometerAvailable.value = result.available;
+  try {
+    const result = (await barometer.isAvailable()) as BarometerAvailable;
+    barometerAvailable.value = result.available;
+    
+    if (!barometerAvailable.value) {
+      console.warn('Barometer is not available on this device');
+      return;
+    }
 
-  if (barometerAvailable.value && !baroActive.value) {
-    baroListener = await barometer.addListener(
-      "onPressureChange",
-      (data: BarometerData) => {
-        rateStats.push();
-        baroRate.value = rateStats.averageRate();
-        pressure.value = data.pressure;
-  
-        const altISA = altitudeByPressure(pressure.value, 1013.25);
-        if (altISA === undefined) {
-          return;
-        }
-        rawAltitudeISA.value = altISA;
+    if (barometerAvailable.value && !baroActive.value) {
+      baroListener = await barometer.addListener(
+        "onPressureChange",
+        (data: BarometerData) => {
+          rateStats.push();
+          baroRate.value = rateStats.averageRate();
+          pressure.value = data.pressure;
+    
+          const altISA = altitudeByPressure(pressure.value, 1013.25);
+          if (altISA === undefined) {
+            return;
+          }
+          rawAltitudeISA.value = altISA;
 
-        if (previousTimestamp > 0) {
-          const timeDiff = data.timestamp - previousTimestamp;
-          ekf.altitudeSample(timeDiff, altISA, 0, 0);
-          currentVariance.value = ekf.currentVariance();
-          ekfAltitudeISA.value = ekf.getAltitude();
-          ekfAltitudeQNH.value = isaToQnhAltitude(ekf.getAltitude(), pressureQNH.value);
-          ekfVelocity.value = ekf.getVelocity();
-          ekfAcceleration.value = ekf.getAcceleration();
-          ekfBurnerGain.value = ekf.getBurnerGain();
-          const deceleration = ekf.isDecelerating();
-          ekfIsDecelerating.value = deceleration.isDecelerating;
-          ekfTimeToZeroSpeed.value = deceleration.timeToZeroSpeed;
-          const zeroSpeed = ekf.getZeroSpeedAltitude();
-          ekfZeroSpeedAltitude.value = zeroSpeed.altitude;
-          ekfZeroSpeedValid.value = zeroSpeed.valid;
+          if (previousTimestamp > 0) {
+            const timeDiff = data.timestamp - previousTimestamp;
+            ekf.altitudeSample(timeDiff, altISA, 0, 0);
+            currentVariance.value = ekf.currentVariance();
+            ekfAltitudeISA.value = ekf.getAltitude();
+            ekfAltitudeQNH.value = isaToQnhAltitude(ekf.getAltitude(), pressureQNH.value);
+            ekfVelocity.value = ekf.getVelocity();
+            ekfAcceleration.value = ekf.getAcceleration();
+            ekfBurnerGain.value = ekf.getBurnerGain();
+            const deceleration = ekf.isDecelerating();
+            ekfIsDecelerating.value = deceleration.isDecelerating;
+            ekfTimeToZeroSpeed.value = deceleration.timeToZeroSpeed;
+            const zeroSpeed = ekf.getZeroSpeedAltitude();
+            ekfZeroSpeedAltitude.value = zeroSpeed.altitude;
+            ekfZeroSpeedValid.value = zeroSpeed.valid;
+          }
+          previousTimestamp = data.timestamp;
         }
-        previousTimestamp = data.timestamp;
-      }
-    );
-    await barometer.start();
-    baroActive.value = true;
+      );
+      await barometer.start();
+      baroActive.value = true;
+      console.log('Barometer started successfully');
+    }
+  } catch (error) {
+    console.error('Failed to start barometer:', error);
+    barometerAvailable.value = false;
+    baroActive.value = false;
+    
+    // If we're on iOS and the barometer is not implemented, switch to simulated mode
+    if (isIOSPlatform && error instanceof Error && error.message && error.message.includes('not implemented')) {
+      console.log('Barometer not implemented on iOS, switching to simulated mode');
+      sensorSource.value = 'simulated';
+    }
   }
-};
+}
 
 async function stopBarometer() {
   if (!baroActive.value) return;
-  await barometer.stop();
-  if (baroListener) {
-    await baroListener.remove();
+  
+  try {
+    await barometer.stop();
+    if (baroListener) {
+      await baroListener.remove();
+    }
+    baroActive.value = false;
+    console.log('Barometer stopped successfully');
+  } catch (error) {
+    console.error('Failed to stop barometer:', error);
+    // Still set as inactive even if stop failed
+    baroActive.value = false;
   }
-  baroActive.value = false;
-};
+}
 
 export {
   pressureQNH,
