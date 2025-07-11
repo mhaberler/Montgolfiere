@@ -92,24 +92,6 @@ watch(
 //   return 20;
 // };
 
-async function setInitialAltitude() {
-  try {
-    const result = await barometer.getPressure();
-    const p = result?.pressure;
-    const alt = p !== undefined ? altitudeByPressure(p, 1013.25) : undefined;
-    if (alt !== undefined) {
-      // TODO    ekf.reset();
-      ekf.setAltitude(alt);
-      console.log(`Initial altitude set to ${alt.toFixed(2)} ft from pressure ${p.toFixed(2)} hPa`);
-    }
-  } catch (error) {
-    console.warn('Failed to get initial pressure reading:', error);
-    // Set a default altitude if we can't get pressure
-    ekf.setAltitude(0);
-    console.log('Initial altitude set to default 0 ft');
-  }
-}
-
 
 async function switchSource(source: string) {
   console.log(`setting barometer source to ${source}`);
@@ -118,12 +100,10 @@ async function switchSource(source: string) {
     case "native":
       barometer = Barometer;
       await startBarometer();
-      await setInitialAltitude();
       break;
     case "simulated":
       barometer = new MockBarometer();
       await startBarometer();
-      await setInitialAltitude();
       break;
     // case "mqtt":
     //   return "Deleting...";

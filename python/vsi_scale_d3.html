@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSI Scale - D3.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .title {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .control-group label {
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .control-group input[type="checkbox"] {
+            cursor: pointer;
+        }
+        .scale-line {
+            stroke: black;
+            stroke-width: 2;
+            fill: none;
+        }
+        .tick-major {
+            stroke: black;
+            stroke-width: 2;
+        }
+        .tick-medium {
+            stroke: black;
+            stroke-width: 1;
+        }
+        .tick-minor {
+            stroke: black;
+            stroke-width: 0.5;
+        }
+        .label-major {
+            font-size: 12px;
+            font-weight: bold;
+            fill: black;
+        }
+        .arrow {
+            font-size: 16px;
+            font-weight: bold;
+            fill: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Vertical Speed Indicator Scale<br>(m/s)</div>
+        <div class="controls">
+            <div class="control-group">
+                <input type="checkbox" id="showLeft" checked>
+                <label for="showLeft">Left Ticks</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="showRight" checked>
+                <label for="showRight">Right Ticks</label>
+            </div>
+        </div>
+        <svg id="vsi-scale" width="400" height="800"></svg>
+    </div>
+
+    <script>
+        // SVG dimensions and margins
+        const width = 400;
+        const height = 800;
+        const centerX = width / 2;
+        
+        // Create SVG
+        const svg = d3.select("#vsi-scale");
+        
+        // Define logarithmic scale function
+        function logScale(value) {
+            if (value === 0) return 0;
+            const sign = value > 0 ? 1 : -1;
+            const absVal = Math.abs(value);
+            if (absVal <= 1) {
+                return sign * absVal * 150; // Scale factor for linear region
+            } else {
+                // Logarithmic scaling for values > 1
+                return sign * (150 + Math.log10(absVal) * 100);
+            }
+        }
+        
+        // Define tick positions
+        const majorValues = [-10, -5, -1, 0, 1, 5, 10];
+        const mediumValues = [0.5, -0.5];
+        const minorValues = [];
+        const smallIntegerValues = [];
+        
+        // Generate minor ticks (0.1 intervals between 0 and ±1)
+        for (let i = -10; i <= 10; i++) {
+            const val = i * 0.1;
+            if (!majorValues.includes(val) && !mediumValues.includes(val) && val !== 0) {
+                minorValues.push(val);
+            }
+        }
+        
+        // Generate small integer ticks (integers between 1-10, excluding major positions)
+        for (let val = -10; val <= 10; val++) {
+            if (val !== 0 && !majorValues.includes(val) && Math.abs(val) > 1) {
+                smallIntegerValues.push(val);
+            }
+        }
+        
+        // Convert to screen coordinates
+        const centerY = height / 2;
+        const majorTicks = majorValues.map(val => ({value: val, y: centerY - logScale(val)}));
+        const mediumTicks = mediumValues.map(val => ({value: val, y: centerY - logScale(val)}));
+        const minorTicks = minorValues.map(val => ({value: val, y: centerY - logScale(val)}));
+        const smallIntegerTicks = smallIntegerValues.map(val => ({value: val, y: centerY - logScale(val)}));
+        
+        // Tick mark properties
+        const majorTickLength = 60;
+        const mediumTickLength = 40;
+        const minorTickLength = 20;
+        
+        function drawScale() {
+            // Clear existing scale
+            svg.selectAll("*").remove();
+            
+            // Get checkbox states
+            const showLeft = document.getElementById('showLeft').checked;
+            const showRight = document.getElementById('showRight').checked;
+            
+            // Draw main scale line
+            const scaleHeight = logScale(10);
+            svg.append("line")
+                .attr("class", "scale-line")
+                .attr("x1", centerX)
+                .attr("y1", centerY - scaleHeight)
+                .attr("x2", centerX)
+                .attr("y2", centerY + scaleHeight);
+            
+            // Draw major ticks with labels
+            majorTicks.forEach(tick => {
+                // Left tick
+                if (showLeft) {
+                    svg.append("line")
+                        .attr("class", "tick-major")
+                        .attr("x1", centerX - majorTickLength/2)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX)
+                        .attr("y2", tick.y);
+                }
+                
+                // Right tick
+                if (showRight) {
+                    svg.append("line")
+                        .attr("class", "tick-major")
+                        .attr("x1", centerX)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX + majorTickLength/2)
+                        .attr("y2", tick.y);
+                }
+                
+                // Labels (don't label zero)
+                if (tick.value !== 0) {
+                    const labelValue = Math.abs(tick.value);
+                    
+                    // Left label
+                    if (showLeft) {
+                        svg.append("text")
+                            .attr("class", "label-major")
+                            .attr("x", centerX - majorTickLength/2 - 10)
+                            .attr("y", tick.y)
+                            .attr("text-anchor", "end")
+                            .attr("dominant-baseline", "middle")
+                            .text(labelValue);
+                    }
+                    
+                    // Right label
+                    if (showRight) {
+                        svg.append("text")
+                            .attr("class", "label-major")
+                            .attr("x", centerX + majorTickLength/2 + 10)
+                            .attr("y", tick.y)
+                            .attr("text-anchor", "start")
+                            .attr("dominant-baseline", "middle")
+                            .text(labelValue);
+                    }
+                }
+            });
+            
+            // Draw medium ticks (0.5 intervals)
+            mediumTicks.forEach(tick => {
+                // Left tick
+                if (showLeft) {
+                    svg.append("line")
+                        .attr("class", "tick-medium")
+                        .attr("x1", centerX - mediumTickLength/2)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX)
+                        .attr("y2", tick.y);
+                }
+                
+                // Right tick
+                if (showRight) {
+                    svg.append("line")
+                        .attr("class", "tick-medium")
+                        .attr("x1", centerX)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX + mediumTickLength/2)
+                        .attr("y2", tick.y);
+                }
+            });
+            
+            // Draw minor ticks (0.1 intervals)
+            minorTicks.forEach(tick => {
+                // Left tick
+                if (showLeft) {
+                    svg.append("line")
+                        .attr("class", "tick-minor")
+                        .attr("x1", centerX - minorTickLength/2)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX)
+                        .attr("y2", tick.y);
+                }
+                
+                // Right tick
+                if (showRight) {
+                    svg.append("line")
+                        .attr("class", "tick-minor")
+                        .attr("x1", centerX)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX + minorTickLength/2)
+                        .attr("y2", tick.y);
+                }
+            });
+            
+            // Draw small integer ticks (same size as minor ticks)
+            smallIntegerTicks.forEach(tick => {
+                // Left tick
+                if (showLeft) {
+                    svg.append("line")
+                        .attr("class", "tick-minor")
+                        .attr("x1", centerX - minorTickLength/2)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX)
+                        .attr("y2", tick.y);
+                }
+                
+                // Right tick
+                if (showRight) {
+                    svg.append("line")
+                        .attr("class", "tick-minor")
+                        .attr("x1", centerX)
+                        .attr("y1", tick.y)
+                        .attr("x2", centerX + minorTickLength/2)
+                        .attr("y2", tick.y);
+                }
+            });
+            
+            // Add up/down arrows
+            svg.append("text")
+                .attr("class", "arrow")
+                .attr("x", centerX)
+                .attr("y", centerY - scaleHeight - 20)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .text("↑");
+            
+            svg.append("text")
+                .attr("class", "arrow")
+                .attr("x", centerX)
+                .attr("y", centerY + scaleHeight + 20)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .text("↓");
+        }
+        
+        // Initial draw
+        drawScale();
+        
+        // Add event listeners for checkboxes
+        document.getElementById('showLeft').addEventListener('change', drawScale);
+        document.getElementById('showRight').addEventListener('change', drawScale);
+    </script>
+</body>
+</html>

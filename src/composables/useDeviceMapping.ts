@@ -50,34 +50,34 @@ const SENSOR_CLEANUP_THRESHOLD = 10 * 60 * 1000;
 // Per-sensor-type status thresholds (in milliseconds)
 const SENSOR_STATUS_THRESHOLDS = {
   Ruuvi: {
-    online: 4000, // broadcasts every 1-2s
-    warning: 7000, // 10 seconds
-    offline: 10000,
+    online: 5 * 1000, // broadcasts every 1-2s
+    warning: 10 * 1000, // 10 seconds
+    offline: 15 * 1000,
   },
   Mopeka: {
-    online: 20000, // 15 seconds (broadcasts every 5-10s)
-    warning: 30000, // 30 seconds
-    offline: 60000,
+    online: 20 * 1000, // 15 seconds (broadcasts every 5-10s)
+    warning: 30 * 1000, // 30 seconds
+    offline: 60 * 1000,
   },
   TPMS: {
-    online: 60000, // 1 minute (broadcasts every 30-60s)
-    warning: 120000, // 2 minutes
-    offline: 15000,
+    online: 400 * 1000, // 1 minute (broadcasts every 360s)
+    warning: 500 * 1000, // 2 minutes
+    offline: 800 * 1000,
   },
   Otodata: {
-    online: 15000, // 5 seconds
-    warning: 20000, // 10 seconds
-    offline: 30000,
+    online: 15 * 1000, // 5 seconds
+    warning: 20 * 1000, // 10 seconds
+    offline: 30 * 1000,
   },
   "BTHome-v2": {
-    online: 4000, // 3 seconds (very frequent)
-    warning: 7000, // 5 seconds
-    offline: 10000,
+    online: 4 * 1000, // 3 seconds (very frequent)
+    warning: 10 * 1000, // 5 seconds
+    offline: 30 * 1000,
   },
   default: {
-    online: 30000, // Default 30 seconds
-    warning: 60000, // Default 60 seconds
-    offline: 120000,
+    online: 30 * 1000, // Default 30 seconds
+    warning: 60 * 1000, // Default 60 seconds
+    offline: 120 * 1000,
   },
 };
 
