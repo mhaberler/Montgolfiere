@@ -2,7 +2,7 @@ import { ref, watch } from "vue";
 import { Capacitor } from "@capacitor/core";
 
 import { MockBarometer } from "../simulated/MockBarometer";
-import { Barometer } from "capacitor-barometer";
+import { Barometer } from "@mhaberler/capacitor-barometer";
 
 import type { PluginListenerHandle } from "@capacitor/core";
 

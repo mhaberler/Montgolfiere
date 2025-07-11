@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.6.2",
+  "version": "1.6.3",
   "type": "module",
   "description": "An Ionic project",
   "config": {
@@ -74,8 +74,7 @@
     "cmdline-ios-build": "npx cap build ios",
     "cmdline-android-build": "npx cap build android",
     "build-production": "vue-tsc && vite build --mode production",
-    "preview-host": "vite --host $npm_package_config_host --port 4712 preview",
-    "///capacitor-barometer": "file:../capacitor-barometer"
+    "preview-host": "vite --host $npm_package_config_host --port 4712 preview"
   },
   "dependencies": {
     "@capacitor-community/apple-sign-in": "7.0.1",
@@ -125,9 +124,9 @@
     "@ionic/remote-log": "^0.0.2",
     "@ionic/vue": "^8.6.4",
     "@ionic/vue-router": "^8.6.4",
+    "@mhaberler/capacitor-barometer": "^1.1.4",
     "@types/yup": "^0.32.0",
     "canvas-gauges": "^2.1.7",
-    "capacitor-barometer": "file:../capacitor-barometer",
     "capacitor-set-version": "^2.2.0",
     "core-js": "^3.44.0",
     "dotenv": "^17.1.0",

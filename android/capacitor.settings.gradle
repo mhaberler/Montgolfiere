@@ -119,5 +119,5 @@ project(':capgo-native-audio').projectDir = new File('../node_modules/@capgo/nat
 include ':capgo-nativegeocoder'
 project(':capgo-nativegeocoder').projectDir = new File('../node_modules/@capgo/nativegeocoder/android')
 
-include ':capacitor-barometer'
-project(':capacitor-barometer').projectDir = new File('../../capacitor-barometer/android')
+include ':mhaberler-capacitor-barometer'
+project(':mhaberler-capacitor-barometer').projectDir = new File('../node_modules/@mhaberler/capacitor-barometer/android')

@@ -48,7 +48,7 @@ dependencies {
     implementation project(':capgo-capacitor-uploader')
     implementation project(':capgo-native-audio')
     implementation project(':capgo-nativegeocoder')
-    implementation project(':capacitor-barometer')
+    implementation project(':mhaberler-capacitor-barometer')
 
 }
 

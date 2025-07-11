@@ -12,8 +12,6 @@ PODS:
   - CapacitorBarcodeScanner (2.0.3):
     - Capacitor
     - OSBarcodeLib (~> 1.1.3)
-  - CapacitorBarometer (1.0.2):
-    - Capacitor
   - CapacitorBrowser (7.0.1):
     - Capacitor
   - CapacitorCamera (7.0.1):
@@ -94,6 +92,8 @@ PODS:
     - Capacitor
   - IONFilesystemLib (1.0.0)
   - IONGeolocationLib (1.0.0)
+  - MhaberlerCapacitorBarometer (1.1.4):
+    - Capacitor
   - OSBarcodeLib (1.1.3)
   - OSInAppBrowserLib (2.0.1)
   - SSZipArchive (2.4.3)
@@ -105,7 +105,6 @@ DEPENDENCIES:
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorAppLauncher (from `../../node_modules/@capacitor/app-launcher`)"
   - "CapacitorBarcodeScanner (from `../../node_modules/@capacitor/barcode-scanner`)"
-  - CapacitorBarometer (from `../../../capacitor-barometer`)
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
@@ -142,6 +141,7 @@ DEPENDENCIES:
   - "CapgoCapacitorUploader (from `../../node_modules/@capgo/capacitor-uploader`)"
   - "CapgoNativeAudio (from `../../node_modules/@capgo/native-audio`)"
   - "CapgoNativegeocoder (from `../../node_modules/@capgo/nativegeocoder`)"
+  - "MhaberlerCapacitorBarometer (from `../../node_modules/@mhaberler/capacitor-barometer`)"
 
 SPEC REPOS:
   trunk:
@@ -165,8 +165,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/app-launcher"
   CapacitorBarcodeScanner:
     :path: "../../node_modules/@capacitor/barcode-scanner"
-  CapacitorBarometer:
-    :path: "../../../capacitor-barometer"
   CapacitorBrowser:
     :path: "../../node_modules/@capacitor/browser"
   CapacitorCamera:
@@ -239,6 +237,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capgo/native-audio"
   CapgoNativegeocoder:
     :path: "../../node_modules/@capgo/nativegeocoder"
+  MhaberlerCapacitorBarometer:
+    :path: "../../node_modules/@mhaberler/capacitor-barometer"
 
 SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
@@ -248,7 +248,6 @@ SPEC CHECKSUMS:
   CapacitorApp: febecbb9582cb353aed037e18ec765141f880fe9
   CapacitorAppLauncher: bab4ca931a308252d2bafcb78ca6a364bd1d4c4e
   CapacitorBarcodeScanner: 29c88bf098adb0830975d4f14c107a6bb7722e3d
-  CapacitorBarometer: 933a8911531eda4a7d8762e7aa055c0802d95b41
   CapacitorBrowser: 6299776d496e968505464884d565992faa20444a
   CapacitorCamera: 6e73f1fc6c629a672658705a02409b60854bc0f1
   CapacitorClipboard: 70bfdb42b877b320a6e511ab94fa7a6a55d57ecb
@@ -287,11 +286,12 @@ SPEC CHECKSUMS:
   CapgoNativegeocoder: 3330c994f8d3d513d075aa4dc52ed0ae8a20c7eb
   IONFilesystemLib: ceacae793975039530458eabab0c495c70515a0d
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
+  MhaberlerCapacitorBarometer: b93a10ce692cd2d90d97b9bb0ddca89b1362c915
   OSBarcodeLib: f2e981270a64faf476cb790864262b29ab8cd68a
   OSInAppBrowserLib: cf8bfbe5d611a423a4153d8eb6ffbd92556dddb1
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: d3c697a0be93d3554edca5858c7d6615e48cb699
+PODFILE CHECKSUM: df435958653cf20c9d8d07aaf674ceb332f0fea1
 
 COCOAPODS: 1.16.2
