@@ -1,4 +1,5 @@
 /* TAILWIND */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant android (.md &);
+@custom-variant ios (.ios &);

@@ -36,7 +36,7 @@ import '@ionic/vue/css/palettes/dark.system.css';
 import './theme/variables.css';
 
 /* Tailwind import */
-import "./assets/main.css";
+// import "./assets/main.css";
 
 import { SafeArea } from '@capacitor-community/safe-area';
 
@@ -45,11 +45,11 @@ import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
 SafeArea.enable({
     config: {
-        customColorsForSystemBars: true,
-        statusBarColor: '#00000000', // transparent
-        statusBarContent: 'light',
-        navigationBarColor: '#00000000', // transparent
-        navigationBarContent: 'light',
+        // customColorsForSystemBars: true,
+        // statusBarColor: '#00000000', // transparent
+        // statusBarContent: 'light',
+        // navigationBarColor: '#00000000', // transparent
+        // navigationBarContent: 'light',
     },
 });
 // Add global error handling for unhandled promise rejections
