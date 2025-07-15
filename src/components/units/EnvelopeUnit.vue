@@ -408,3 +408,26 @@ const getMetricAgeClass = (lastUpdate: number): string => {
     /* padding: 20px; */
 }
 </style>
+
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+  plugins: [vue()],
+  optimizeDeps: {
+    exclude: [
+      '@capacitor-community/safe-area',
+      '@capgo/capacitor-updater',
+      'capacitor-barometer'
+    ],
+    include: [
+      '@ionic/vue',
+      '@ionic/vue/css/core.css'
+    ]
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/]
+    }
+  }
+})
