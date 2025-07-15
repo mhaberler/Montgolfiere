@@ -31,7 +31,7 @@
                         <ValueCard :value="ekfVelocity" :name="'vSpeed'" :decimals="1" :unit="'m/s'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s2'" />
+                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s\u00B2'" />
                     </div>
                     <div>
                         <ValueCard :value="ekfZeroSpeedAltitude" :name="'Level'" :decimals="0" :unit="'m'" />
