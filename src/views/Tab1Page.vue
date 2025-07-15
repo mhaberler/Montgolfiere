@@ -20,8 +20,8 @@
             </div> -->
 
             <div class="bg-white">
-                <div class=" grid grid-cols-4 grid-rows-6 gap-1 ">
-                    <ValueCard name=" GPS alt" :value="location?.coords?.altitude" unit="m" :decimals="0" />
+                <div class=" grid grid-cols-4 grid-rows-4 gap-1 ">
+                    <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
                     <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
                     <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
@@ -31,10 +31,10 @@
                         <ValueCard :value="ekfVelocity" :name="'vSpeed'" :decimals="1" :unit="'m/s'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="3" :unit="'m/s2'" />
+                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s2'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfZeroSpeedAltitude * 1000" :name="'Level'" :decimals="0" :unit="'m'" />
+                        <ValueCard :value="ekfZeroSpeedAltitude" :name="'Level'" :decimals="0" :unit="'m'" />
                     </div>
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
@@ -43,7 +43,7 @@
                     <div class="row-span-3 col-span-1">
                         <!-- <div> -->
 
-                        <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="10"
+                        <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
                             :percentCenter="50" :percentMid="30" :percentOuter="20" :indicatorSize="20"
                             :confidenceRangePercent="10" :confidenceBoxCrossDimension="20" :transitionDuration="0.95"
                             :majorTicks="vsiMajorTicks" :minorTicks="vsiMinorTicks"
@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="row-span-3 col-span-1">
-                        <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="10"
+                        <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="15"
                             :percentCenter="50" :percentMid="30" :percentOuter="20" :indicatorSize="20"
                             :confidenceRangePercent="10" :confidenceBoxCrossDimension="20" :transitionDuration="0.95"
                             :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
