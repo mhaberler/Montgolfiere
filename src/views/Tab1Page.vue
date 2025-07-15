@@ -39,14 +39,14 @@
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
                     </div>
-                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full h-full pl-2">
+                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
                         <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
                             :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="10"
                             :transitionDuration="0.95" :majorTicks="vsiMajorTicks" :minorTicks="vsiMinorTicks"
                             :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
                             :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="22" />
                     </div>
-                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full h-full">
+                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50">
                         <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="15"
                             :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="10"
                             :transitionDuration="0.95" :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
