@@ -6,19 +6,6 @@
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
-            <!-- <div>
-                <div v-if="locationAvailable">
-
-                    <div class=" bg-white p-0 sm:p-6">
-                        <div
-                            class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 xl:gap-4 mx-auto">
-
-
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
             <div class="bg-white shadow-1xl rounded-1xl">
                 <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
                     <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
@@ -53,9 +40,6 @@
                             :intermediateTicks="vaccIntermediateTicks" :weights="vaccWeights"
                             :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22" />
                     </div>
-
-
-
                 </div>
                 <div>
                 </div>
@@ -66,17 +50,6 @@
                     <TankUnit unit-type="Tank2" @assign-device="goToDeviceAssignment" />
                     <TankUnit unit-type="Tank3" @assign-device="goToDeviceAssignment" />
                     <BoxUnit unit-type="Box" @assign-device="goToDeviceAssignment" />
-                    <!-- <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 xl:gap-4 mx-auto">
-                        <ValueCard v-for="(card, index) in cardData" :key="index" :value="card.value" :name="card.name"
-                            :decimals="card?.decimals" :unit="card.unit" :batteryStatus="card.batteryStatus"
-                            :frameClass="card.frameClass" />
-                    </div>
-                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 xl:gap-4 mx-auto">
-                        <ValueCard v-for="(card, index) in cardData" :key="index" :value="card.value" :name="card.name"
-                            :decimals="card?.decimals" :unit="card.unit" :batteryStatus="card.batteryStatus"
-                            :frameClass="card.frameClass" />
-                    </div> -->
-
                 </div>
             </div>
         </ion-content>
@@ -100,23 +73,15 @@ import { ticker } from '../utils/state';
 import { ref } from 'vue';
 
 import ValueCard from '../components/ValueCard.vue';
-// import LinearGauge from '../gauges/LinearGauge.vue';
-// import RadialGauge from '../gauges/RadialGauge.vue';
-// import TemperatureGauge from '../gauges/TemperatureGauge.vue'
-// import VarioGauge from '../gauges/VarioGauge.vue'
-// import SingleLinear from '../gauges/SingleLinear.vue'
-import ResponsiveLinearGauge from '../gauges/ResponsiveLinearGauge.vue'
 import LinearScale from '../components/LinearScale.vue';
 
 const vsiMajorTicks = ref([-10, -5, -1, 0, 1, 5, 10]);
-// const vsiMinorTicks = ref([-9, -8, -7, -6, -4, -3, -2, -1, 1, 2, 3, 4, 6, 7, 8, 9,]);
 const vsiMinorTicks = ref([-0.9, -0.8, -0.7, -0.6, -0.4, -0.3, -0.2, -0.1,
     0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9
 ]);
 const vsiIntermediateTicks = ref([-9, -8, -7, -6, -4, -3, -2, -0.5, 0.5, 2, 3, 4, 6, 7, 8, 9]);
 const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]); // Must sum to ~1.0 and match segments
 const vsiMajorTickTextOffset = ref(5)
-
 
 
 const vaccMajorTicks = ref([-1.0, -0.5, -0.1, 0, 0.1, 0.5, 1.0]);
@@ -167,55 +132,6 @@ function formatSpeed(speed: number | null | undefined) {
     }    // Convert from m/s to km/h if needed, or just round
     return Math.round(speed * 3.6)
 }
-// Define the data for the 6 ValueCard instances
-// const cardData = [
-//     {
-//         value: 42,
-//         name: 'VSPEED',
-//         unit: 'm/S',
-//         decimals: 1,
-
-//         // batteryStatus: 85,
-//         frameClass: ''
-//     },
-//     {
-//         value: '60%',
-//         name: 'Hum',
-//         unit: 'Rel',
-//         batteryStatus: 33,
-//         frameClass: '' // 'border-2 border-blue-400'
-//     },
-//     {
-//         value: '1012.3',
-//         name: 'Pres',
-//         unit: 'hPa',
-//         batteryStatus: 61,
-//         frameClass: ''
-//     },
-//     {
-//         value: 7.1234,
-//         name: 'Water',
-//         unit: 'pH',
-//         decimals: 1,
-//         batteryStatus: 85,
-//         frameClass: '' // 'border-2 border-red-400'
-//     },
-//     {
-//         value: '300',
-//         name: 'CO2',
-//         unit: 'ppm',
-//         batteryStatus: 75,
-//         frameClass: ''
-//     },
-//     {
-//         value: 3.1415,
-//         name: 'Light',
-//         unit: 'Lux',
-//         decimals: 4,
-//         batteryStatus: null,
-//         frameClass: ''
-//     }
-// ];
 </script>
 
 <style scoped>
