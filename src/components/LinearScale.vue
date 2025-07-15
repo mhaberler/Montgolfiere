@@ -90,6 +90,7 @@ const svgHeight = ref(200);
 
 let scale; // D3 scale instance
 let resizeObserver; // To observe container resizing
+// Removed: let mainGroup; // D3 selection for the main group element
 
 /**
  * Creates a custom piecewise linear scale function based on majorTicks and weights.
@@ -169,9 +170,9 @@ function createCustomScale(totalDimension, majorTicks, weights, orientation, pad
  * Updates the position of the indicator triangle and the confidence range box.
  */
 function updateIndicatorAndConfidence() {
-    if (!scale || !svgRef.value) {
+    if (!scale || !svgRef.value) { // Reverted to using svgRef.value directly
         console.warn("updateIndicatorAndConfidence: Scale or SVG not initialized.");
-        return; // Ensure scale and SVG are initialized
+        return;
     }
 
     const pos = scale(props.value);
@@ -180,9 +181,16 @@ function updateIndicatorAndConfidence() {
 
     const d3svg = d3.select(svgRef.value);
 
-    // Apply transition duration
+    // Apply transition duration to elements within the main SVG
     d3svg.selectAll(".indicator-triangle, .confidence-box")
         .style("transition", `all ${props.transitionDuration}s ease-out`);
+
+    let scaleLinePos;
+    if (props.orientation === 'horizontal') {
+        scaleLinePos = svgHeight.value / 2;
+    } else {
+        scaleLinePos = svgWidth.value / 2;
+    }
 
     // Update indicator position
     d3svg.select(".indicator-triangle")
@@ -200,12 +208,12 @@ function updateIndicatorAndConfidence() {
     if (props.orientation === 'horizontal') {
         d3svg.select(".confidence-box")
             .attr("x", pos - confidencePx / 2)
-            .attr("y", svgHeight.value / 2 - (props.confidenceBoxCrossDimension / 2))
+            .attr("y", scaleLinePos - (props.confidenceBoxCrossDimension / 2)) // Position relative to scaleLinePos
             .attr("width", confidencePx)
             .attr("height", props.confidenceBoxCrossDimension);
     } else { // vertical
         d3svg.select(".confidence-box")
-            .attr("x", svgWidth.value / 2 - (props.confidenceBoxCrossDimension / 2))
+            .attr("x", scaleLinePos - (props.confidenceBoxCrossDimension / 2)) // Position relative to scaleLinePos
             .attr("y", pos - confidencePx / 2)
             .attr("width", props.confidenceBoxCrossDimension)
             .attr("height", confidencePx);
@@ -218,7 +226,7 @@ function updateIndicatorAndConfidence() {
 function drawScale() {
     if (!svgRef.value) {
         console.error("drawScale: SVG element is null. Cannot draw scale.");
-        return; // Ensure SVG element is available
+        return;
     }
 
     console.log("Drawing scale. Orientation:", props.orientation);
@@ -232,7 +240,9 @@ function drawScale() {
     const d3svg = d3.select(svgRef.value);
     d3svg.selectAll("*").remove(); // Clear previous SVG content
 
-    let scaleLinePos;
+    // Removed: mainGroup = d3svg.append("g").attr("class", "main-scale-group");
+
+    let scaleLinePos; // Position of the scale line within the SVG
     let indicatorPoints;
 
     const indicatorSize = props.indicatorSize;
@@ -245,33 +255,30 @@ function drawScale() {
     const transitionDuration = props.transitionDuration;
 
     // Set SVG dimensions and viewBox based on orientation and current size
+    d3svg.attr("width", svgWidth.value)
+        .attr("height", svgHeight.value)
+        .attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
+
+    // Create the custom scale based on the total dimension (width or height)
     if (props.orientation === 'horizontal') {
-        d3svg.attr("width", svgWidth.value)
-            .attr("height", svgHeight.value)
-            .attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
         scale = createCustomScale(svgWidth.value, props.majorTicks, props.weights, props.orientation, props.scalePadding);
-        scaleLinePos = svgHeight.value / 2; // Center vertically using dynamic height
+        scaleLinePos = svgHeight.value / 2; // Center vertically in SVG
 
-        // Calculate indicator position based on distance percentage of current SVG height
-        const indicatorDistancePx = (indicatorDistancePercent / 100) * svgHeight.value;
         // Indicator points DOWN towards the scale line (from above)
-        indicatorPoints = `0,${scaleLinePos - indicatorDistancePx + indicatorSize} -${indicatorSize / 2},${scaleLinePos - indicatorDistancePx} ${indicatorSize / 2},${scaleLinePos - indicatorDistancePx}`;
+        const indicatorVerticalOffset = (indicatorDistancePercent / 100) * svgHeight.value; // Still relative to full SVG height
+        indicatorPoints = `0,${scaleLinePos - indicatorVerticalOffset + indicatorSize} -${indicatorSize / 2},${scaleLinePos - indicatorVerticalOffset} ${indicatorSize / 2},${scaleLinePos - indicatorVerticalOffset}`;
     } else { // vertical
-        d3svg.attr("width", svgWidth.value)
-            .attr("height", svgHeight.value)
-            .attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
         scale = createCustomScale(svgHeight.value, props.majorTicks, props.weights, props.orientation, props.scalePadding);
-        scaleLinePos = svgWidth.value / 2; // Center horizontally using dynamic width
+        scaleLinePos = svgWidth.value / 2; // Center horizontally in SVG
 
-        // Calculate indicator position based on distance percentage of current SVG width
-        const indicatorDistancePx = (indicatorDistancePercent / 100) * svgWidth.value;
         // Indicator points LEFT towards the scale line (from right)
-        indicatorPoints = `${scaleLinePos - indicatorDistancePx + indicatorSize},0 ${scaleLinePos - indicatorDistancePx}, -${indicatorSize / 2} ${scaleLinePos - indicatorDistancePx},${indicatorSize / 2}`;
+        const indicatorHorizontalOffset = (indicatorDistancePercent / 100) * svgWidth.value; // Still relative to full SVG width
+        indicatorPoints = `${scaleLinePos - indicatorHorizontalOffset + indicatorSize},0 ${scaleLinePos - indicatorHorizontalOffset}, -${indicatorSize / 2} ${scaleLinePos - indicatorHorizontalOffset},${indicatorSize / 2}`;
     }
 
     console.log("Scale range after creation:", scale.range());
 
-    // Draw the main scale line
+    // Draw the main scale line within the SVG
     d3svg.append("line")
         .attr("class", "scale-line")
         .attr(props.orientation === 'horizontal' ? "x1" : "y1", scale.range()[0])
@@ -290,7 +297,7 @@ function drawScale() {
 
     console.log("All tick values for rendering:", allTickValues);
 
-    // Create a group for each tick mark
+    // Create a group for each tick mark, appended to SVG
     d3svg.selectAll(".tick")
         .data(allTickValues)
         .enter()
@@ -298,6 +305,7 @@ function drawScale() {
         .attr("class", "tick")
         .attr("transform", d => {
             const pos = scale(d);
+            // Ticks are positioned relative to the scale line
             return props.orientation === 'horizontal' ?
                 `translate(${pos}, ${scaleLinePos})` :
                 `translate(${scaleLinePos}, ${pos})`;
@@ -325,8 +333,6 @@ function drawScale() {
                 strokeColor = "#666";
                 textWeight = "normal";
             } else {
-                // Fallback for any other numbers that might sneak in, though ideally
-                // all tick values are explicitly defined in the props arrays
                 tickLength = 5;
                 strokeColor = "#ccc";
                 textWeight = "normal";
@@ -344,24 +350,33 @@ function drawScale() {
             // Add text labels only if showText is true (i.e., for major ticks)
             if (showText) {
                 g.append("text")
-                    .attr(props.orientation === 'horizontal' ? "y" : "x", tickLength + props.majorTickTextOffset) // Use new prop here
-                    .attr(props.orientation === 'horizontal' ? "text-anchor" : "dominant-baseline", props.orientation === 'horizontal' ? "middle" : "middle") // Vertically center for vertical ticks
+                    // Position text relative to the tick line
+                    .attr(props.orientation === 'horizontal' ? "y" : "x", tickLength + props.majorTickTextOffset)
+                    // Ensure proper alignment based on orientation
+                    .attr("text-anchor", props.orientation === 'horizontal' ? "middle" : "start") // 'middle' for horizontal, 'start' for vertical
+                    .attr("dominant-baseline", props.orientation === 'horizontal' ? "hanging" : "middle") // 'hanging' for horizontal (below line), 'middle' for vertical
                     .attr("fill", textColor)
                     .style("font-weight", textWeight)
                     .text(d);
             }
         });
 
-    // Add the confidence range box (drawn first so indicator is on top)
+    // Add the confidence range box (drawn first so indicator is on top), appended to SVG
     d3svg.append("rect")
         .attr("class", "confidence-box")
         .attr("rx", 4)
         .attr("ry", 4);
 
-    // Add the indicator triangle
+    // Add the indicator triangle, appended to SVG
     d3svg.append("polygon")
         .attr("class", "indicator-triangle")
         .attr("points", indicatorPoints);
+
+    // Removed: Bounding box calculation and translation
+    // const bbox = mainGroup.node().getBBox();
+    // const translateX = (svgWidth.value / 2) - (bbox.x + bbox.width / 2);
+    // const translateY = (svgHeight.value / 2) - (bbox.y + bbox.height / 2);
+    // mainGroup.attr("transform", `translate(${translateX}, ${translateY})`);
 
     // Initial update of indicator and confidence box
     updateIndicatorAndConfidence();
@@ -388,6 +403,7 @@ onMounted(() => {
         resizeObserver.observe(svgRef.value.parentElement);
     }
 
+    // Initial draw based on parent element's current size
     if (svgRef.value && svgRef.value.parentElement) {
         svgWidth.value = svgRef.value.parentElement.clientWidth;
         svgHeight.value = svgRef.value.parentElement.clientHeight;
@@ -424,13 +440,13 @@ watch(
     [
         () => props.orientation,
         () => props.scalePadding,
-        () => props.majorTicks, // Watch new props
+        () => props.majorTicks,
         () => props.minorTicks,
         () => props.intermediateTicks,
         () => props.weights,
         () => props.indicatorSize,
         () => props.indicatorDistancePercent,
-        () => props.majorTickTextOffset // Watch the new prop
+        () => props.majorTickTextOffset
     ],
     () => {
         drawScale();
@@ -482,7 +498,6 @@ svg {
     border-radius: 4px;
 }
 
-/* New style for the main scale line */
 .scale-line {
     stroke: #333;
     stroke-width: 2px;

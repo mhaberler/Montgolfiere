@@ -19,7 +19,7 @@
                 </div>
             </div> -->
 
-            <div class="bg-white">
+            <div class="bg-white shadow-1xl rounded-1xl">
                 <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
                     <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
                     <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
@@ -39,21 +39,16 @@
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
                     </div>
-
-                    <div class="row-span-3 col-span-1">
-                        <!-- <div> -->
-
+                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full h-full pl-2">
                         <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
-                            :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="20"
+                            :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="10"
                             :transitionDuration="0.95" :majorTicks="vsiMajorTicks" :minorTicks="vsiMinorTicks"
                             :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
                             :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="22" />
-                        <!-- </div> -->
                     </div>
-
-                    <div class="row-span-3 col-span-1">
+                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full h-full">
                         <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="15"
-                            :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="20"
+                            :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="10"
                             :transitionDuration="0.95" :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
                             :intermediateTicks="vaccIntermediateTicks" :weights="vaccWeights"
                             :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22" />
