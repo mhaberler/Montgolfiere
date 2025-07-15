@@ -41,7 +41,7 @@
                             :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22" />
                     </div>
                 </div>
-                <div class="h-80 overflow-y-auto overflow-x-hidden">
+                <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
                         <EnvelopeUnit @assign-device="goToDeviceAssignment" />
                         <OATUnit @assign-device="goToDeviceAssignment" />
