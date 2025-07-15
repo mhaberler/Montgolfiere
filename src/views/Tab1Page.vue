@@ -6,41 +6,32 @@
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
-            <div>
+            <!-- <div>
                 <div v-if="locationAvailable">
 
                     <div class=" bg-white p-0 sm:p-6">
                         <div
-                            class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 xl:gap-4 mx-auto">
-                            <ValueCard name="GPS alt" :value="location?.coords?.altitude" unit="m" :decimals="0" />
-                            <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0"
-                                unit="km/h" />
-                            <ValueCard name="heading"
-                                :value="formatHeading(location?.coords?.speed, location?.coords?.heading)" :decimals="0"
-                                unit="°" />
+                            class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 xl:gap-4 mx-auto">
+
+
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="bg-white">
-                <div class="grid grid-cols-4 grid-rows-3 gap-1 	">
-                    <div class="row-span-3">
-                        <ResponsiveLinearGauge :value="ekfVelocity" :minvalue="-5" :maxvalue="5" :rangeticks="10"
-                            :title="'Vspeed'" />
-                    </div>
-                    <div class="row-span-3">
-                        <ResponsiveLinearGauge :value="ekfAcceleration * 1000" :minvalue="-300" :maxvalue="300"
-                            :rangeticks="5" :title="'Vaccel'" />
-                    </div>
+            </div> -->
 
-                    <div>
-                        <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
-                    </div>
+            <div class="bg-white">
+                <div class=" grid grid-cols-4 grid-rows-6 gap-1 ">
+                    <ValueCard name=" GPS alt" :value="location?.coords?.altitude" unit="m" :decimals="0" />
+                    <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
+                    <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
+                    <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
+                        :decimals="0" unit="°" />
+
                     <div>
                         <ValueCard :value="ekfVelocity" :name="'vSpeed'" :decimals="1" :unit="'m/s'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfAcceleration * 1000" :name="'vAccel'" :decimals="0" :unit="'mm/s2'" />
+                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="3" :unit="'m/s2'" />
                     </div>
                     <div>
                         <ValueCard :value="ekfZeroSpeedAltitude * 1000" :name="'Level'" :decimals="0" :unit="'m'" />
@@ -48,6 +39,30 @@
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
                     </div>
+
+                    <div class="row-span-3 col-span-1">
+                        <!-- <div> -->
+
+                        <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="10"
+                            :percentCenter="50" :percentMid="30" :percentOuter="20" :indicatorSize="20"
+                            :confidenceRangePercent="10" :confidenceBoxCrossDimension="20" :transitionDuration="0.95"
+                            :majorTicks="vsiMajorTicks" :minorTicks="vsiMinorTicks"
+                            :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
+                            :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="12" />
+                        <!-- </div> -->
+                    </div>
+
+                    <div class="row-span-3 col-span-1">
+                        <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="10"
+                            :percentCenter="50" :percentMid="30" :percentOuter="20" :indicatorSize="20"
+                            :confidenceRangePercent="10" :confidenceBoxCrossDimension="20" :transitionDuration="0.95"
+                            :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
+                            :intermediateTicks="vaccIntermediateTicks" :weights="vaccWeights"
+                            :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="12" />
+                    </div>
+
+
+
                 </div>
                 <div>
                 </div>
@@ -89,6 +104,8 @@ import {
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import { ticker } from '../utils/state';
+import { ref } from 'vue';
+
 import ValueCard from '../components/ValueCard.vue';
 // import LinearGauge from '../gauges/LinearGauge.vue';
 // import RadialGauge from '../gauges/RadialGauge.vue';
@@ -96,6 +113,26 @@ import ValueCard from '../components/ValueCard.vue';
 // import VarioGauge from '../gauges/VarioGauge.vue'
 // import SingleLinear from '../gauges/SingleLinear.vue'
 import ResponsiveLinearGauge from '../gauges/ResponsiveLinearGauge.vue'
+import LinearScale from '../components/LinearScale.vue';
+
+const vsiMajorTicks = ref([-10, -5, -1, 0, 1, 5, 10]);
+// const vsiMinorTicks = ref([-9, -8, -7, -6, -4, -3, -2, -1, 1, 2, 3, 4, 6, 7, 8, 9,]);
+const vsiMinorTicks = ref([-0.9,-0.8,-0.7,-0.6,-0.4,-0.3,-0.2, -0.1,
+    0.1,0.2,0.3, 0.4, 0.6,0.7,0.8,0.9
+]);
+const vsiIntermediateTicks = ref([-9,-8,-7,-6,-4,-3,-2,-0.5, 0.5,2,3,4,6,7,8,9]);
+const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]); // Must sum to ~1.0 and match segments
+const vsiMajorTickTextOffset = ref(5)
+
+
+
+const vaccMajorTicks = ref([-1.0, -0.5, -0.1, 0, 0.1, 0.5, 1.0]);
+const vaccMinorTicks = ref([-0.09,-0.08,-0.07,-0.06,-0.04,-0.03,-0.02,-0.01,0.01,0.02,0.03,0.04,0.06,0.07,0.08,0.09
+]);
+const vaccIntermediateTicks = ref([-0.9,-0.8,-0.7,-0.6,-0.4,-0.3,-0.2,-0.1,-0.05, 0.05,0.2,0.3,0.4,0.6,0.7,0.8,0.9]);
+const vaccWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]); // Must sum to ~1.0 and match segments
+const vaccMajorTickTextOffset = ref(5)
+
 import EnvelopeUnit from '@/components/units/EnvelopeUnit.vue';
 import OATUnit from '@/components/units/OATUnit.vue';
 import TankUnit from '@/components/units/TankUnit.vue';
