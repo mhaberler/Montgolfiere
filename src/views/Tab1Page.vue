@@ -20,7 +20,7 @@
             </div> -->
 
             <div class="bg-white">
-                <div class=" grid grid-cols-4 grid-rows-4 gap-1 ">
+                <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
                     <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
                     <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
