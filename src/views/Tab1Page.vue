@@ -41,17 +41,17 @@
                             :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22" />
                     </div>
                 </div>
-                <div>
+                <div class="h-80 overflow-y-auto overflow-x-hidden">
+                    <div class=" bg-white p-2 sm:p-6">
+                        <EnvelopeUnit @assign-device="goToDeviceAssignment" />
+                        <OATUnit @assign-device="goToDeviceAssignment" />
+                        <TankUnit unit-type="Tank1" @assign-device="goToDeviceAssignment" />
+                        <TankUnit unit-type="Tank2" @assign-device="goToDeviceAssignment" />
+                        <TankUnit unit-type="Tank3" @assign-device="goToDeviceAssignment" />
+                        <BoxUnit unit-type="Box" @assign-device="goToDeviceAssignment" />
+                    </div>
                 </div>
-                <div class=" bg-white p-2 sm:p-6">
-                    <EnvelopeUnit @assign-device="goToDeviceAssignment" />
-                    <OATUnit @assign-device="goToDeviceAssignment" />
-                    <TankUnit unit-type="Tank1" @assign-device="goToDeviceAssignment" />
-                    <TankUnit unit-type="Tank2" @assign-device="goToDeviceAssignment" />
-                    <TankUnit unit-type="Tank3" @assign-device="goToDeviceAssignment" />
-                    <BoxUnit unit-type="Box" @assign-device="goToDeviceAssignment" />
                 </div>
-            </div>
         </ion-content>
     </ion-page>
 </template>
