@@ -38,7 +38,7 @@ PODS:
   - CapacitorFilesystem (7.1.2):
     - Capacitor
     - IONFilesystemLib (~> 1.0)
-  - CapacitorGeolocation (7.1.3):
+  - CapacitorGeolocation (7.1.4):
     - Capacitor
     - IONGeolocationLib (~> 1.0)
   - CapacitorHaptics (7.0.1):
@@ -78,7 +78,7 @@ PODS:
     - Capacitor
   - CapgoCapacitorShake (7.1.14):
     - Capacitor
-  - CapgoCapacitorUpdater (7.7.3):
+  - CapgoCapacitorUpdater (7.7.6):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -261,7 +261,7 @@ SPEC CHECKSUMS:
   CapacitorDevice: c6f6d587dd310527f8a48bf09c4e7b4a4cf14329
   CapacitorDialog: 0e09f242f6c3f5e82e4dc76b20f2a056be57a579
   CapacitorFilesystem: 337eeaf16a9fa5a44d2329df411523fa3a9a6ee9
-  CapacitorGeolocation: 5e8f3f1bbf3bd914edb0a6a121f2dc55f7ea5c4e
+  CapacitorGeolocation: 32a1f849c38c72b5071de36a28ebc548ef3bb611
   CapacitorHaptics: 1f1e17041f435d8ead9ff2a34edd592c6aa6a8d6
   CapacitorInappbrowser: 614dedc76631d29280e60983afe2cd3472c3c1ed
   CapacitorKeyboard: 09fd91dcde4f8a37313e7f11bde553ad1ed52036
@@ -280,7 +280,7 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorScreenOrientation: c6cc24949bb2aede006277f0fa0c7832073c9ca1
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
   CapgoCapacitorShake: 59e3400e69bced5b812423c1b6628948e797485f
-  CapgoCapacitorUpdater: 63874783ecdb5128664672d4b80809d91a001ddb
+  CapgoCapacitorUpdater: cbdc6c0923b26189a89871cf2b107584c463c2cd
   CapgoCapacitorUploader: a1d9189c8ac9b4cd6629254d6ee1417694d4e5be
   CapgoNativeAudio: ecb7d184c7e5af2d04d3c39f95392ecfb61760dc
   CapgoNativegeocoder: 3330c994f8d3d513d075aa4dc52ed0ae8a20c7eb
