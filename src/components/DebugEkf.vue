@@ -33,15 +33,14 @@
 
 <script setup lang="ts">
 import { IonCard, IonCardContent, IonButton } from '@ionic/vue';
-import { computed } from 'vue';
 
 import {
     ekfAltitudeISA,
     ekfAltitudeQNH,
     ekfVelocity,
     ekfAcceleration,
-    ekfVspeedStdDev,
-    ekfVaccelStdDev,
+    vspeedCI95,
+    vaccelCI95,
     showDebugInfo,
     currentVariance,
     baroRate,
@@ -50,15 +49,7 @@ import {
     bleScanTimeouts,
     resetbleScanTimeouts
 } from '@/utils/state';
-const zCI95 = 1.96;
-// const zCI99 = 2.576;
 
-const vspeedCI95 = computed(() => {
-    return { lower: ekfVelocity.value - zCI95 * ekfVspeedStdDev.value, upper: ekfVelocity.value + zCI95 * ekfVspeedStdDev.value }
-})
-const vaccelCI95 = computed(() => {
-    return { lower: ekfAcceleration.value - zCI95 * ekfVaccelStdDev.value, upper: ekfAcceleration.value + zCI95 * ekfVaccelStdDev.value }
-})
 </script>
 
 <style scoped>

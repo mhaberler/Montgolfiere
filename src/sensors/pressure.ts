@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { Capacitor } from "@capacitor/core";
 
 import { MockBarometer } from "../simulated/MockBarometer";
@@ -198,6 +198,16 @@ async function stopBarometer() {
   }
 }
 
+const zCI95 = 1.96;
+// const zCI99 = 2.576;
+
+const vspeedCI95 = computed(() => {
+  return { lower: ekfVelocity.value - zCI95 * ekfVspeedStdDev.value, upper: ekfVelocity.value + zCI95 * ekfVspeedStdDev.value }
+})
+const vaccelCI95 = computed(() => {
+  return { lower: ekfAcceleration.value - zCI95 * ekfVaccelStdDev.value, upper: ekfAcceleration.value + zCI95 * ekfVaccelStdDev.value }
+})
+
 export {
   pressureQNH,
   transitionAltitude,
@@ -219,6 +229,8 @@ export {
   ekfVaccelStdDev,
   ekfVspeedStdDev,
   currentVariance,
+  vspeedCI95,
+  vaccelCI95,
   baroRate,
   sensorSource,
 };

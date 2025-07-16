@@ -24,6 +24,8 @@ import {
   currentVariance,
   baroRate,
   sensorSource,
+  vspeedCI95,
+  vaccelCI95,
 } from "../sensors/pressure";
 
 import {
@@ -83,6 +85,8 @@ export {
   ekfZeroSpeedValid,
   ekfVspeedStdDev,
   ekfVaccelStdDev,
+  vspeedCI95,
+  vaccelCI95,
   currentVariance,
   baroRate,
   locationAvailable,

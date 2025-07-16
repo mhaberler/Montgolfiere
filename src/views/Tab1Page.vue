@@ -28,17 +28,20 @@
                     </div>
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
                         <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
-                            :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="10"
-                            :transitionDuration="0.95" :majorTicks="vsiMajorTicks" :minorTicks="vsiMinorTicks"
-                            :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
-                            :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="22" />
+                            :indicatorSize="20" :confidenceBoxCrossDimension="10" :confidenceLower="vspeedCI95.lower"
+                            :confidenceUpper="vspeedCI95.upper" :transitionDuration="0.95" :majorTicks="vsiMajorTicks"
+                            :minorTicks="vsiMinorTicks" :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
+                            :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="22"
+                            :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50">
                         <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="15"
-                            :indicatorSize="20" :confidenceRangePercent="10" :confidenceBoxCrossDimension="10"
-                            :transitionDuration="0.95" :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
+                            :indicatorSize="20" :confidenceBoxCrossDimension="10" :transitionDuration="0.95"
+                            :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
                             :intermediateTicks="vaccIntermediateTicks" :weights="vaccWeights"
-                            :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22" />
+                            :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22"
+                            :confidenceLower="vaccelCI95.lower" :confidenceUpper="vaccelCI95.upper"
+                            :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
@@ -51,7 +54,7 @@
                         <BoxUnit unit-type="Box" @assign-device="goToDeviceAssignment" />
                     </div>
                 </div>
-                </div>
+            </div>
         </ion-content>
     </ion-page>
 </template>
@@ -74,6 +77,10 @@ import { ref } from 'vue';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
+
+const confidenceColor = ref('#0de732');
+// const confidenceColor = ref('blue');
+
 
 const vsiMajorTicks = ref([-10, -5, -1, 0, 1, 5, 10]);
 const vsiMinorTicks = ref([-0.9, -0.8, -0.7, -0.6, -0.4, -0.3, -0.2, -0.1,
@@ -108,6 +115,8 @@ import {
     ekfTimeToZeroSpeed,
     ekfZeroSpeedAltitude,
     ekfZeroSpeedValid,
+    vspeedCI95,
+    vaccelCI95,
 } from '../utils/state';
 
 const router = useRouter();

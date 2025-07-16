@@ -24,9 +24,14 @@ const props = defineProps({
         type: Number,
         default: 5
     },
-    confidenceRangePercent: {
+    // Removed: confidenceRangePercent
+    confidenceLower: { // New prop for lower bound of confidence range
         type: Number,
-        default: 5
+        default: -1 // Default to a reasonable value within the scale's domain
+    },
+    confidenceUpper: { // New prop for upper bound of confidence range
+        type: Number,
+        default: 1 // Default to a reasonable value within the scale's domain
     },
     confidenceOpacity: {
         type: Number,
@@ -90,7 +95,6 @@ const svgHeight = ref(200);
 
 let scale; // D3 scale instance
 let resizeObserver; // To observe container resizing
-// Removed: let mainGroup; // D3 selection for the main group element
 
 /**
  * Creates a custom piecewise linear scale function based on majorTicks and weights.
@@ -170,16 +174,22 @@ function createCustomScale(totalDimension, majorTicks, weights, orientation, pad
  * Updates the position of the indicator triangle and the confidence range box.
  */
 function updateIndicatorAndConfidence() {
-    if (!scale || !svgRef.value) { // Reverted to using svgRef.value directly
+    if (!scale || !svgRef.value) {
         console.warn("updateIndicatorAndConfidence: Scale or SVG not initialized.");
         return;
     }
 
     const pos = scale(props.value);
-    const effectiveLength = scale.effectiveLength;
-    const confidencePx = (props.confidenceRangePercent / 100) * effectiveLength;
-
     const d3svg = d3.select(svgRef.value);
+
+    // Calculate pixel positions for confidence bounds
+    const lowerPx = scale(props.confidenceLower);
+    const upperPx = scale(props.confidenceUpper);
+
+    // Determine the start and end pixel for the confidence box, and its length
+    const confidenceStartPx = Math.min(lowerPx, upperPx);
+    const confidenceEndPx = Math.max(lowerPx, upperPx);
+    const confidenceLengthPx = Math.abs(upperPx - lowerPx);
 
     // Apply transition duration to elements within the main SVG
     d3svg.selectAll(".indicator-triangle, .confidence-box")
@@ -207,16 +217,16 @@ function updateIndicatorAndConfidence() {
 
     if (props.orientation === 'horizontal') {
         d3svg.select(".confidence-box")
-            .attr("x", pos - confidencePx / 2)
+            .attr("x", confidenceStartPx)
             .attr("y", scaleLinePos - (props.confidenceBoxCrossDimension / 2)) // Position relative to scaleLinePos
-            .attr("width", confidencePx)
+            .attr("width", confidenceLengthPx)
             .attr("height", props.confidenceBoxCrossDimension);
     } else { // vertical
         d3svg.select(".confidence-box")
             .attr("x", scaleLinePos - (props.confidenceBoxCrossDimension / 2)) // Position relative to scaleLinePos
-            .attr("y", pos - confidencePx / 2)
+            .attr("y", confidenceStartPx)
             .attr("width", props.confidenceBoxCrossDimension)
-            .attr("height", confidencePx);
+            .attr("height", confidenceLengthPx);
     }
 }
 
@@ -239,8 +249,6 @@ function drawScale() {
 
     const d3svg = d3.select(svgRef.value);
     d3svg.selectAll("*").remove(); // Clear previous SVG content
-
-    // Removed: mainGroup = d3svg.append("g").attr("class", "main-scale-group");
 
     let scaleLinePos; // Position of the scale line within the SVG
     let indicatorPoints;
@@ -372,12 +380,6 @@ function drawScale() {
         .attr("class", "indicator-triangle")
         .attr("points", indicatorPoints);
 
-    // Removed: Bounding box calculation and translation
-    // const bbox = mainGroup.node().getBBox();
-    // const translateX = (svgWidth.value / 2) - (bbox.x + bbox.width / 2);
-    // const translateY = (svgHeight.value / 2) - (bbox.y + bbox.height / 2);
-    // mainGroup.attr("transform", `translate(${translateX}, ${translateY})`);
-
     // Initial update of indicator and confidence box
     updateIndicatorAndConfidence();
 }
@@ -422,7 +424,8 @@ onUnmounted(() => {
 watch(
     [
         () => props.value,
-        () => props.confidenceRangePercent,
+        () => props.confidenceLower, // Watch new props
+        () => props.confidenceUpper, // Watch new props
         () => props.indicatorColor,
         () => props.indicatorOpacity,
         () => props.confidenceColor,
