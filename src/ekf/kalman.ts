@@ -3,7 +3,6 @@
 
 import BalloonEKF from "./BalloonEKF";
 import { WindowVariance } from "../stats/WindowVariance";
-import { forEach } from "mathjs";
 
 interface KalmanInterface {
   altitudeSample(
@@ -12,19 +11,29 @@ interface KalmanInterface {
     loudness: number,
     duration: number
   ): void;
-  setVarianceHistoryWindow(samples: number): void;
+  setAltitudeVarianceHistoryWindow(samples: number): void;
+  setVspeedStdDevHistoryWindow(samples: number): void;
+  setVaccelStdDevHistoryWindow(samples: number): void;
   currentVariance(): number;
   setAltitude(altitude: number): void;
+  vspeedstandardDeviation(): number;
+  vaccelstandardDeviation(): number;
 }
 
 export class Kalman extends BalloonEKF implements KalmanInterface {
-  private varianceHistory: WindowVariance;
-  private windowSize: number = 5;
-  private windowVariance = 0;
+  private altiudeVarianceHistory: WindowVariance;
+  private vspeedHistory: WindowVariance;
+  private vaccelHistory: WindowVariance;
+  private altiudeVarianceWindowSize: number = 5;
+  private vspeedHistoryWindowSize: number = 5;
+  private vaccelHistoryWindowSize: number = 5;
+  private windowedAltiudeVariance = 0;
 
   constructor() {
     super();
-    this.varianceHistory = new WindowVariance(this.windowSize);
+    this.altiudeVarianceHistory = new WindowVariance(this.altiudeVarianceWindowSize);
+    this.vspeedHistory = new WindowVariance(this.vspeedHistoryWindowSize);
+    this.vaccelHistory = new WindowVariance(this.vaccelHistoryWindowSize);
   }
 
   altitudeSample(
@@ -33,24 +42,44 @@ export class Kalman extends BalloonEKF implements KalmanInterface {
     loudness: number = 0,
     duration: number = 0
   ) {
-    this.varianceHistory.add(altitude);
-    this.windowVariance = this.varianceHistory.variance();
-    this.setVariance(this.windowVariance);
+    this.altiudeVarianceHistory.add(altitude);
+    this.windowedAltiudeVariance = this.altiudeVarianceHistory.variance();
+    this.setVariance(this.windowedAltiudeVariance);
     this.processMeasurement(deltaT, altitude, loudness, duration);
+    this.vspeedHistory.add(this.getVelocity());
+    this.vaccelHistory.add(this.getAcceleration());
+  }
+  
+  setAltitudeVarianceHistoryWindow(samples: number) {
+    this.altiudeVarianceWindowSize = samples;
+    this.altiudeVarianceHistory = new WindowVariance(this.altiudeVarianceWindowSize);
   }
 
-  setVarianceHistoryWindow(samples: number) {
-    this.windowSize = samples;
-    this.varianceHistory = new WindowVariance(this.windowSize);
+  setVspeedStdDevHistoryWindow(samples: number) {
+    this.vspeedHistoryWindowSize = samples;
+    this.vspeedHistory = new WindowVariance(this.vspeedHistoryWindowSize);
+
+  }
+  setVaccelStdDevHistoryWindow(samples: number) {
+    this.vaccelHistoryWindowSize = samples;
+    this.vaccelHistory = new WindowVariance(this.vaccelHistoryWindowSize);
   }
 
   currentVariance(): number {
-    return this.windowVariance;
+    return this.windowedAltiudeVariance;
+  }
+
+  vspeedstandardDeviation(): number {
+    return this.vspeedHistory.standardDeviation();
+  }
+
+  vaccelstandardDeviation(): number {
+    return this.vaccelHistory.standardDeviation();
   }
 
   // prime the KF to quickly converge once real samples come
   setAltitude(altitude: number): void {
-    for (let i = 0; i < this.windowSize; i++) {
+    for (let i = 0; i < this.altiudeVarianceWindowSize; i++) {
       this.altitudeSample(i, altitude);
     }
   }

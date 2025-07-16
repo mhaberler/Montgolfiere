@@ -8,20 +8,21 @@
                 <p>raw Altitude ISA: {{ rawAltitudeISA.toFixed(1) }}</p>
                 <p>EKF Altitude ISA/QNH (m): {{ ekfAltitudeISA.toFixed(1) }} / {{ ekfAltitudeQNH.toFixed(1) }}</p>
                 <p>EKF Velocity (m/s): {{ ekfVelocity.toFixed(2) }}</p>
-                <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration*1000.0).toFixed(1) }}</p>
-                <p>Variance: {{ currentVariance.toFixed(6) }}</p>
+                <p>EKF Acceleration (mm/s^2): {{ (ekfAcceleration * 1000.0).toFixed(1) }}</p>
+                <p>Variance: {{ currentVariance.toFixed(4) }}</p>
+                <!-- <p>Vspeed sigma: {{ ekfVspeedStdDev.toFixed(4) }}</p> -->
+                <p>Vspeed 95%: {{ vspeedCI95.lower.toFixed(2) }} .. {{ vspeedCI95.upper.toFixed(2) }}</p>
+
+                <!-- <p>Vaccel sigma: {{ ekfVaccelStdDev.toFixed(4) }}</p> -->
+                <p>Vaccel 95%: {{ vaccelCI95.lower.toFixed(2) }} .. {{ vaccelCI95.upper.toFixed(2) }}</p>
+
+
                 <p>Pressure (hPa): {{ pressure.toFixed(1) }}</p>
                 <p>Baro rate samples/sec: {{ baroRate.toFixed(1) }}</p>
                 <div class="restart-counter">
                     <span>BLE scan restarts: {{ bleScanTimeouts }}</span>
-                    <ion-button 
-                        v-if="bleScanTimeouts > 0"
-                        fill="outline" 
-                        size="small"
-                        color="warning"
-                        @click="resetbleScanTimeouts"
-                        class="reset-button"
-                    >
+                    <ion-button v-if="bleScanTimeouts > 0" fill="outline" size="small" color="warning"
+                        @click="resetbleScanTimeouts" class="reset-button">
                         Reset
                     </ion-button>
                 </div>
@@ -32,11 +33,15 @@
 
 <script setup lang="ts">
 import { IonCard, IonCardContent, IonButton } from '@ionic/vue';
+import { computed } from 'vue';
+
 import {
     ekfAltitudeISA,
     ekfAltitudeQNH,
     ekfVelocity,
     ekfAcceleration,
+    ekfVspeedStdDev,
+    ekfVaccelStdDev,
     showDebugInfo,
     currentVariance,
     baroRate,
@@ -45,6 +50,15 @@ import {
     bleScanTimeouts,
     resetbleScanTimeouts
 } from '@/utils/state';
+const zCI95 = 1.96;
+// const zCI99 = 2.576;
+
+const vspeedCI95 = computed(() => {
+    return { lower: ekfVelocity.value - zCI95 * ekfVspeedStdDev.value, upper: ekfVelocity.value + zCI95 * ekfVspeedStdDev.value }
+})
+const vaccelCI95 = computed(() => {
+    return { lower: ekfAcceleration.value - zCI95 * ekfVaccelStdDev.value, upper: ekfAcceleration.value + zCI95 * ekfVaccelStdDev.value }
+})
 </script>
 
 <style scoped>

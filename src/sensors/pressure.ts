@@ -57,6 +57,9 @@ const ekfTimeToZeroSpeed = ref<number>(0);
 const ekfZeroSpeedAltitude = ref<number>(0);
 const ekfZeroSpeedValid = ref<boolean>(false);
 
+const ekfVspeedStdDev = ref<number>(0);
+const ekfVaccelStdDev = ref<number>(0);
+
 let baroListener: PluginListenerHandle;
 let barometer: any;
 
@@ -70,7 +73,9 @@ watch(
   historySamples,
   (newSampleCount) => {
     console.log(`historySamples: ${newSampleCount}`);
-    ekf.setVarianceHistoryWindow(newSampleCount);
+    ekf.setAltitudeVarianceHistoryWindow(newSampleCount);
+    ekf.setVspeedStdDevHistoryWindow(newSampleCount);
+    ekf.setVaccelStdDevHistoryWindow(newSampleCount);
   },
   { immediate: true }
 );
@@ -153,6 +158,8 @@ async function startBarometer() {
             const zeroSpeed = ekf.getZeroSpeedAltitude();
             ekfZeroSpeedAltitude.value = zeroSpeed.altitude;
             ekfZeroSpeedValid.value = zeroSpeed.valid;
+            ekfVspeedStdDev.value = ekf.vspeedstandardDeviation();
+            ekfVaccelStdDev.value = ekf.vaccelstandardDeviation();
           }
           previousTimestamp = data.timestamp;
         }
@@ -209,6 +216,8 @@ export {
   ekfTimeToZeroSpeed,
   ekfZeroSpeedAltitude,
   ekfZeroSpeedValid,
+  ekfVaccelStdDev,
+  ekfVspeedStdDev,
   currentVariance,
   baroRate,
   sensorSource,
