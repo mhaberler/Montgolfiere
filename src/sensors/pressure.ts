@@ -8,17 +8,11 @@ import type { PluginListenerHandle } from "@capacitor/core";
 
 import { altitudeByPressure, isaToQnhAltitude } from "../utils/meteo-utils";
 import { usePersistedRef } from "@/composables/usePersistedRef";
-import {
-  // isNativePlatform,
-  isIOSPlatform,
-  isAndroidPlatform,
-  isWebPlatform,
-} from "@/utils/state";
 
+import { isIOSPlatform, isNativePlatform } from '@/utils/platform';
 import { Kalman } from "../ekf/kalman";
 
 import { RateStats } from "../stats/RateStats";
-import { number } from "mathjs";
 
 interface BarometerAvailable {
   available: boolean;
@@ -38,7 +32,7 @@ const historySamples = usePersistedRef<number>(
 
 // volatile state
 // Sensor source selection
-const sensorSource = ref(Capacitor.isNativePlatform() ? 'native' : 'simulated');
+const sensorSource = ref(isNativePlatform ? 'native' : 'simulated');
 
 const barometerAvailable = ref<boolean>(false);
 const baroActive = ref(false);

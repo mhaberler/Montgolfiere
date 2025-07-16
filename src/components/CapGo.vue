@@ -44,7 +44,7 @@
                             <span class="bundle-id">ID: {{ bundle.id }}</span>
                             <span class="bundle-status">{{ bundle.status }}</span>
                             <span class="bundle-downloaded">{{ bundle.downloaded ? 'Downloaded' : 'Not Downloaded'
-                                }}</span>
+                            }}</span>
                         </div>
                         <div class="bundle-actions">
                             <IonButton size="small" fill="outline" @click="revertToBundle(bundle.id)"
@@ -91,9 +91,7 @@ import {
     BundleInfo,
 } from "@capgo/capacitor-updater";
 
-import {
-    isNativePlatform
-} from '@/utils/state';
+import { isNativePlatform } from '@/utils/platform';
 
 
 const showToast = async (message: string) => {
@@ -121,38 +119,38 @@ const formatBundleVersion = (bundle: BundleInfo) => {
     if (bundle.version && bundle.version !== 'builtin') {
         return bundle.version;
     }
-    
+
     // For bundles without version or builtin, show first 8 chars of ID
     if (bundle.id === 'builtin') {
         return 'Native App';
     }
-    
+
     return bundle.id.substring(0, 8) + '...';
 };
 
 const formatCurrentBundleVersion = () => {
     if (!currentBundle.value?.bundle) return 'N/A';
-    
+
     const bundle = currentBundle.value.bundle;
     if (bundle.version && bundle.version !== 'builtin') {
         return bundle.version;
     }
-    
+
     if (bundle.id === 'builtin' || currentBundle.value.native) {
         return 'Native App';
     }
-    
+
     return bundle.id?.substring(0, 8) + '...' || 'Unknown';
 };
 
 const checkForUpdate = async () => {
     if (isChecking.value) return;
-    
+
     isChecking.value = true;
     try {
         showToast('Checking for updates in development channel...');
         const latest = await CapacitorUpdater.getLatest();
-        
+
         if (latest.version && latest.version !== currentBundle.value?.bundle?.version) {
             showToast(`New version available: ${latest.version}`);
         } else {
@@ -169,15 +167,15 @@ const checkForUpdate = async () => {
 
 const tryUpdate = async () => {
     if (isUpdating.value) return;
-    
+
     isUpdating.value = true;
     try {
         showToast('Looking for updates in development channel...');
         const latest = await CapacitorUpdater.getLatest();
-        
+
         if (latest.version && latest.version !== currentBundle.value?.bundle?.version) {
             showToast(`Downloading update: ${latest.version}`);
-            
+
             // Download the update
             const bundleInfo = await CapacitorUpdater.download({
                 url: latest.url || '',
@@ -185,15 +183,15 @@ const tryUpdate = async () => {
                 sessionKey: latest.sessionKey,
                 checksum: latest.checksum
             });
-            
+
             showToast(`Update downloaded! Setting as next version...`);
-            
+
             // Set as next bundle (will be applied on next app restart)
             await CapacitorUpdater.next({ id: bundleInfo.id });
-            
+
             // Refresh bundle info to show the new bundle in the list
             await refreshBundleInfo();
-            
+
             showToast('Update ready! Restart app to apply.');
         } else {
             showToast('No updates available in development channel');
@@ -209,16 +207,16 @@ const tryUpdate = async () => {
 
 const revertToNative = async () => {
     if (isReverting.value) return;
-    
+
     isReverting.value = true;
     try {
         showToast('Reverting to native bundle...');
-        
+
         // Reset to the builtin bundle (the one from app store)
         await CapacitorUpdater.reset({ toLastSuccessful: false });
-        
+
         showToast('Reverted to native bundle! Reloading app...');
-        
+
         // Use setTimeout to ensure the toast is shown before reload
         setTimeout(async () => {
             try {
@@ -231,7 +229,7 @@ const revertToNative = async () => {
                 }
             }
         }, 1000);
-        
+
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         console.error('Error during revert:', errorMessage);
@@ -242,19 +240,19 @@ const revertToNative = async () => {
 
 const revertToBundle = async (bundleId: string) => {
     if (isReverting.value) return;
-    
+
     isReverting.value = true;
     try {
         const bundle = availableBundles.value.find(b => b.id === bundleId);
         const version = bundle?.version || bundleId;
-        
+
         showToast(`Switching to version ${version}...`);
-        
+
         // Set the selected bundle as next
         await CapacitorUpdater.next({ id: bundleId });
-        
+
         showToast(`Version ${version} set! Reloading app...`);
-        
+
         // Use setTimeout to ensure the toast is shown before reload
         setTimeout(async () => {
             try {
@@ -267,7 +265,7 @@ const revertToBundle = async (bundleId: string) => {
                 }
             }
         }, 1000);
-        
+
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         console.error('Error during bundle switch:', errorMessage);
@@ -280,7 +278,7 @@ const loadAvailableBundles = async () => {
     try {
         const result = await CapacitorUpdater.list();
         availableBundles.value = result.bundles || [];
-        
+
         // Debug: Log bundle information to see what we're working with
         console.log('Available bundles:', result.bundles);
         result.bundles?.forEach((bundle, index) => {
@@ -300,7 +298,7 @@ const loadAvailableBundles = async () => {
 
 const refreshBundleInfo = async () => {
     try {
-        currentBundle.value = await CapacitorUpdater.current(); 
+        currentBundle.value = await CapacitorUpdater.current();
         await loadAvailableBundles();
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -309,7 +307,7 @@ const refreshBundleInfo = async () => {
 };
 
 const initializeCapGo = async () => {
-    currentBundle.value = await CapacitorUpdater.current(); 
+    currentBundle.value = await CapacitorUpdater.current();
     await loadAvailableBundles();
 
     // Add CapGo event listeners with toast notifications
@@ -365,28 +363,28 @@ const initializeCapGo = async () => {
 
 const deleteBundle = async (bundleId: string) => {
     if (isDeletingBundle.value) return;
-    
+
     // Don't allow deleting the current bundle or native bundle
     if (bundleId === currentBundle.value?.bundle?.id || bundleId === 'builtin') {
         showToast('Cannot delete current or native bundle');
         return;
     }
-    
+
     isDeletingBundle.value = true;
     try {
         const bundle = availableBundles.value.find(b => b.id === bundleId);
         const version = bundle?.version || bundleId.substring(0, 8) + '...';
-        
+
         showToast(`Deleting bundle ${version}...`);
-        
+
         // Delete the bundle
         await CapacitorUpdater.delete({ id: bundleId });
-        
+
         showToast(`Bundle ${version} deleted successfully`);
-        
+
         // Refresh bundle list to remove the deleted bundle
         await refreshBundleInfo();
-        
+
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         console.error('Error deleting bundle:', errorMessage);
@@ -401,7 +399,6 @@ initializeCapGo();
 </script>
 
 <style scoped>
-
 .debug-panel {
     margin: 1rem;
     padding: 1rem;
@@ -409,22 +406,27 @@ initializeCapGo();
     border-radius: 0.5rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .debug-panel ion-card-header {
     background-color: #e9ecef;
     border-bottom: 1px solid #dee2e6;
 }
+
 .debug-panel ion-card-content {
     font-size: 0.9rem;
     color: #495057;
 }
+
 .debug-panel p {
     margin: 0.5rem 0;
     line-height: 1.5;
 }
+
 .debug-panel ion-card-subtitle {
     font-weight: 600;
     color: #343a40;
 }
+
 .debug-panel ion-card {
     --background: var(--ion-color-light);
     --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -432,24 +434,29 @@ initializeCapGo();
     --padding: 1rem;
     --margin: 1rem;
 }
+
 .debug-panel ion-card-header {
     --background: var(--ion-color-light-shade);
     --border-bottom: 1px solid var(--ion-color-light-tint);
 }
+
 .debug-panel ion-card-content {
     --color: var(--ion-color-dark);
     --font-size: 0.9rem;
     --line-height: 1.5;
 }
+
 .debug-panel ion-card-subtitle {
     --font-weight: 600;
     --color: var(--ion-color-dark-shade);
 }
+
 .debug-panel ion-card-title {
     --font-size: 1.2rem;
     --font-weight: 700;
-    --color: var(--ion-color-dark);   
+    --color: var(--ion-color-dark);
 }
+
 .debug-panel ion-card p {
     margin: 0.5rem 0;
     line-height: 1.5;
@@ -466,7 +473,7 @@ initializeCapGo();
 .debug-panel ion-select {
     --padding-start: 8px;
     --padding-end: 8px;
-}   
+}
 
 .bundles-section {
     margin-top: 1.5rem;
@@ -535,27 +542,27 @@ initializeCapGo();
 }
 
 @media (prefers-color-scheme: dark) {
-  .bundles-section {
-    border-top-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  .bundles-section h4 {
-    color: #ecf0f1;
-  }
-  
-  .bundle-item {
-    background: rgba(52, 73, 94, 0.6);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .bundle-version {
-    color: #ecf0f1;
-  }
-  
-  .bundle-id,
-  .bundle-status,
-  .bundle-downloaded {
-    color: #bdc3c7;
-  }
+    .bundles-section {
+        border-top-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .bundles-section h4 {
+        color: #ecf0f1;
+    }
+
+    .bundle-item {
+        background: rgba(52, 73, 94, 0.6);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .bundle-version {
+        color: #ecf0f1;
+    }
+
+    .bundle-id,
+    .bundle-status,
+    .bundle-downloaded {
+        color: #bdc3c7;
+    }
 }
 </style>

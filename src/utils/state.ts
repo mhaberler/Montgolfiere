@@ -51,11 +51,7 @@ import {
 
 import {
   wakeLockAvailable,
-  showDebugInfo,
-  isNativePlatform,
-  isIOSPlatform,
-  isAndroidPlatform,
-  isWebPlatform,
+  showDebugInfo
 } from "./startup";
 
 import {
@@ -95,10 +91,6 @@ export {
   wakeLockAvailable,
   showDebugInfo,
   sensorSource,
-  isNativePlatform,
-  isIOSPlatform,
-  isAndroidPlatform,
-  isWebPlatform,
   bleScanTimeouts,
   resetbleScanTimeouts,
   bleInitErrors,

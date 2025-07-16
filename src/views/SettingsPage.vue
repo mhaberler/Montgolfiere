@@ -117,10 +117,11 @@ import {
   IonSelect, IonSelectOption, IonText, IonHeader, IonTitle, IonToolbar
 } from '@ionic/vue';
 import DebugEkf from '@/components/DebugEkf.vue';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { mqttBrokerUrl, mqttUser, mqttPassword } from '@/utils/mqtt';
 import mqtt from 'mqtt';
 
+import { isNativePlatform } from '@/utils/platform';
 
 import {
   pressureQNH,
@@ -128,7 +129,6 @@ import {
   historySamples,
   showDebugInfo,
   sensorSource,
-  isNativePlatform
 } from '@/utils/state';
 
 

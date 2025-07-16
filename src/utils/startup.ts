@@ -66,22 +66,6 @@ const wentToBackground = async () => {
   }
 };
 
-const isNativePlatform = computed(() => {
-  return Capacitor.isNativePlatform();
-});
-
-const isIOSPlatform = computed(() => {
-  return Capacitor.getPlatform() === 'ios';
-});
-
-const isAndroidPlatform = computed(() => {
-  return Capacitor.getPlatform() === "android";
-});
-
-const isWebPlatform = computed(() => {
-  return Capacitor.getPlatform() === "web";
-});
-
 
 const initializeApp = async () => {
   console.log("Initializing app...");
@@ -118,8 +102,4 @@ export {
   initializeApp,
   wakeLockAvailable,
   showDebugInfo,
-  isNativePlatform,
-  isIOSPlatform,
-  isAndroidPlatform,
-  isWebPlatform,
 };
