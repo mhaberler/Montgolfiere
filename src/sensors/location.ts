@@ -12,6 +12,12 @@ const options: PositionOptions = {
   maximumAge: 0, // Do not use cached position
 };
 
+const androidOptions: PositionOptions = {
+  enableHighAccuracy: false, // Battery saving mode
+  timeout: 20000,
+  maximumAge: 0,
+};
+
 const isWeb = Capacitor.getPlatform() === "web"; 
 // Create the appropriate geolocation instance based on platform
 const geolocation = isWeb ? new MockGeolocation() : Geolocation;
@@ -54,14 +60,15 @@ const requestPermissions = async () => {
 const startLocation = async () => {
   await checkPermissions();
   await requestPermissions();
+  
   try {
+    // Get initial position
     const result = await geolocation.getCurrentPosition(options);
     location.value = result;
     locationAvailable.value = true;
-    // console.log('Current position:', location.value);
 
     if (isWeb) {
-      // Use MockGeolocation's watchPosition method
+      // Web implementation (unchanged)
       watchId = (geolocation as MockGeolocation).watchPosition(
         (position: Position) => {
           location.value = position;
@@ -74,7 +81,7 @@ const startLocation = async () => {
         }
       );
     } else {
-      // Use real Geolocation's watchPosition method
+      // Enhanced implementation for native platforms
       watchId = await Geolocation.watchPosition(
         options,
         (position: any, err: any) => {
@@ -86,10 +93,15 @@ const startLocation = async () => {
           }
           if (position) {
             location.value = position;
-            // console.log('Updated position:', location.value);
+            console.log('Updated position:', location.value);
           }
         }
       );
+      
+      // For Android, supplement with periodic getCurrentPosition calls
+      if (Capacitor.getPlatform() === 'android') {
+        startAndroidLocationPolling();
+      }
     }
   } catch (error) {
     console.error("Error getting current position:" + error);
@@ -102,18 +114,37 @@ const startLocation = async () => {
   }
 };
 
+let androidPollingInterval: ReturnType<typeof setInterval> | null = null;
+
+const startAndroidLocationPolling = () => {
+  // Poll every 2 seconds on Android for more frequent updates
+  androidPollingInterval = setInterval(async () => {
+    try {
+      const result = await Geolocation.getCurrentPosition(androidOptions);
+      location.value = result;
+    } catch (error) {
+      console.error("Android polling error:", error);
+    }
+  }, 2000);
+};
+
 const stopLocation = async () => {
   if (watchId) {
     if (isWeb) {
-      // Use MockGeolocation's clearWatch method
       (geolocation as MockGeolocation).clearWatch(watchId);
     } else {
-      // Use real Geolocation's clearWatch method
       await Geolocation.clearWatch({ id: watchId });
     }
     watchId = null;
-    console.log("Stopped watching position");
   }
+  
+  // Stop Android polling
+  if (androidPollingInterval) {
+    clearInterval(androidPollingInterval);
+    androidPollingInterval = null;
+  }
+  
+  console.log("Stopped watching position");
 };
 
 export {
