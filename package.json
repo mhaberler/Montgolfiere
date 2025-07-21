@@ -1,11 +1,11 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.9.3",
+  "version": "1.9.4",
   "type": "module",
   "description": "An Ionic project",
   "config": {
-    "host": "172.16.0.212",
+    "host": "192.168.113.199",
     "port": "8100"
   },
   "scripts": {
@@ -140,6 +140,7 @@
     "mathjs": "^14.5.3",
     "meteojs": "^1.17.3",
     "mqtt": "^5.13.2",
+    "pmtiles": "^4.3.0",
     "qrcode-terminal": "^0.12.0",
     "rimraf": "^6.0.1",
     "sass": "^1.89.2",
