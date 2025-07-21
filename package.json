@@ -5,7 +5,7 @@
   "type": "module",
   "description": "An Ionic project",
   "config": {
-    "host": "192.168.113.199",
+    "host": "192.168.1.179",
     "port": "8100"
   },
   "scripts": {

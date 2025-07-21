@@ -6,6 +6,9 @@ import {
 import { MockGeolocation } from "../simulated/MockGeolocations";
 import { Capacitor } from "@capacitor/core";
 
+import { startDEMLookup } from './dem';
+
+
 const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode
   timeout: 20000, 
@@ -102,6 +105,7 @@ const startLocation = async () => {
       if (Capacitor.getPlatform() === 'android') {
         startAndroidLocationPolling();
       }
+      startDEMLookup()
     }
   } catch (error) {
     console.error("Error getting current position:" + error);

@@ -45,6 +45,20 @@
                 </ion-button>
               </div>
             </div>
+            <!-- URL Input -->
+            <!-- <div class="url-section">
+              <label for="pmtiles-url">PMTiles URL:</label>
+              <select v-model="selectedUrl" class="url-select" @change="loadDEM">
+                <option value="https://static.mah.priv.at/cors/AT-10m-png.pmtiles">Austria 10m PNG</option>
+                <option value="https://static.mah.priv.at/cors/AT-10m-webp.pmtiles">Austria 10m WebP</option>
+                <option value="https://static.mah.priv.at/cors/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m WebP
+                </option>
+                <option value="custom">Custom URL...</option>
+              </select>
+              <input v-if="selectedUrl === 'custom'" v-model="customUrl" class="custom-url-input"
+                placeholder="Enter custom PMTiles URL" @keyup.enter="loadDEM" />
+              <button class="load-btn" :disabled="loading" @click="loadDEM">Load DEM</button>
+            </div> -->
           </ion-card-content>
         </div>
 
