@@ -1,17 +1,17 @@
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import {
   Geolocation,
   Position,
 } from "@capacitor/geolocation";
 import { MockGeolocation } from "../simulated/MockGeolocations";
 import { Capacitor } from "@capacitor/core";
+import { DEMLookup, DEMInfo } from "../dem/DEMLookup";
 
-import { startDEMLookup } from './dem';
 
 
 const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode
-  timeout: 20000, 
+  timeout: 20000,
   maximumAge: 0, // Do not use cached position
 };
 
@@ -21,7 +21,7 @@ const androidOptions: PositionOptions = {
   maximumAge: 0,
 };
 
-const isWeb = Capacitor.getPlatform() === "web"; 
+const isWeb = Capacitor.getPlatform() === "web";
 // Create the appropriate geolocation instance based on platform
 const geolocation = isWeb ? new MockGeolocation() : Geolocation;
 
@@ -31,6 +31,49 @@ const location = ref<Position | null>(null);
 const locationError = ref<string | null>(null);
 
 let watchId: string | null = null;
+const demLookup = ref<DEMLookup | null>(null);
+const demUrl = ref('https://static.mah.priv.at/cors/DTM_Italy_20m_v2b_by_Sonny.pmtiles');
+const demInfo = ref<DEMInfo | null>(null);
+const elevation = ref<number | null>(null);
+
+
+watch(
+  demUrl,
+  async (newdemUrl, olddemUrl) => {
+    // instantiate new DEMlookupp here
+    try {
+      demLookup.value = new DEMLookup(demUrl.value, {
+        maxCacheSize: 100,
+        debug: true,
+      });
+      demInfo.value = await demLookup.value.getDEMInfo();
+      console.log(`DEM url is ${newdemUrl}, old = ${olddemUrl}`);
+      console.log(`demInfo: ${JSON.stringify(demInfo.value)}`);
+      // Handle the result
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  { immediate: true }
+)
+
+// lookup elevation on location change
+watch(location, async (newlocation) => {
+  console.log(`location is ${newlocation}`)
+  
+  if (newlocation && demLookup.value) {
+    try {
+      const result = await demLookup.value.getElevation(newlocation.coords.latitude, newlocation.coords.longitude);
+      elevation.value = result?.elevation ?? null;
+      console.log(`Elevation: ${elevation.value}m`);
+    } catch (error) {
+      console.error('Error getting elevation:', error);
+      elevation.value = null;
+    }
+  } else {
+    elevation.value = null;
+  }
+})
 
 const checkPermissions = async () => {
   try {
@@ -63,7 +106,7 @@ const requestPermissions = async () => {
 const startLocation = async () => {
   await checkPermissions();
   await requestPermissions();
-  
+
   try {
     // Get initial position
     const result = await geolocation.getCurrentPosition(options);
@@ -100,12 +143,12 @@ const startLocation = async () => {
           }
         }
       );
-      
+
       // For Android, supplement with periodic getCurrentPosition calls
       if (Capacitor.getPlatform() === 'android') {
         startAndroidLocationPolling();
       }
-      startDEMLookup()
+      // startDEMLookup()
     }
   } catch (error) {
     console.error("Error getting current position:" + error);
@@ -141,13 +184,13 @@ const stopLocation = async () => {
     }
     watchId = null;
   }
-  
+
   // Stop Android polling
   if (androidPollingInterval) {
     clearInterval(androidPollingInterval);
     androidPollingInterval = null;
   }
-  
+
   console.log("Stopped watching position");
 };
 
