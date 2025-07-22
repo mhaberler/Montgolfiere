@@ -32,6 +32,12 @@ import {
   locationAvailable,
   location,
   locationError,
+  startLocation,
+  stopLocation,
+  elevation,
+  demLookup,
+  demUrl,
+  demInfo
 } from "../sensors/location";
 
 import {
@@ -88,6 +94,12 @@ export {
   locationAvailable,
   location,
   locationError,
+  startLocation,
+  stopLocation,
+  elevation,
+  demLookup,
+  demUrl,
+  demInfo,
   wakeLockAvailable,
   showDebugInfo,
   sensorSource,

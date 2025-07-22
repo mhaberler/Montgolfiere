@@ -9,7 +9,8 @@
             <div class="bg-white shadow-1xl rounded-1xl">
                 <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
                     <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
-                    <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
+                    <ValueCard :value="ekfAltitudeQNH" :name="'altQNH'" :decimals="0" :unit="'m'" />
+
                     <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
                     <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
                         :decimals="0" unit="°" />
@@ -26,6 +27,11 @@
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
                     </div>
+
+
+
+
+
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
                         <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
                             :indicatorSize="20" :confidenceBoxCrossDimension="10" :confidenceLower="vspeedCI95.lower"
@@ -42,6 +48,12 @@
                             :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22"
                             :confidenceLower="vaccelCI95.lower" :confidenceUpper="vaccelCI95.upper"
                             :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
+                    </div>
+                    <div>
+                        <ValueCard :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'" />
+                    </div>
+                    <div>
+                        <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     </div>
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
@@ -105,6 +117,7 @@ import BoxUnit from '@/components/units/BoxUnit.vue';
 import {
     locationAvailable,
     location,
+    elevation,
     // locationError,
     // barometerAvailable,
     ekfAltitudeISA,

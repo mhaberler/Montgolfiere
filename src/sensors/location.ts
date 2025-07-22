@@ -44,7 +44,7 @@ watch(
     try {
       demLookup.value = new DEMLookup(demUrl.value, {
         maxCacheSize: 100,
-        debug: true,
+        debug: false,
       });
       demInfo.value = await demLookup.value.getDEMInfo();
       console.log(`DEM url is ${newdemUrl}, old = ${olddemUrl}`);
@@ -59,13 +59,13 @@ watch(
 
 // lookup elevation on location change
 watch(location, async (newlocation) => {
-  console.log(`location is ${newlocation}`)
-  
+  // console.log(`location is ${newlocation}`)
+
   if (newlocation && demLookup.value) {
     try {
       const result = await demLookup.value.getElevation(newlocation.coords.latitude, newlocation.coords.longitude);
       elevation.value = result?.elevation ?? null;
-      console.log(`Elevation: ${elevation.value}m`);
+      // console.log(`Elevation: ${elevation.value}m`);
     } catch (error) {
       console.error('Error getting elevation:', error);
       elevation.value = null;
@@ -139,7 +139,7 @@ const startLocation = async () => {
           }
           if (position) {
             location.value = position;
-            console.log('Updated position:', location.value);
+            // console.log('Updated position:', location.value);
           }
         }
       );
@@ -200,4 +200,8 @@ export {
   locationError,
   startLocation,
   stopLocation,
+  elevation,
+  demLookup, 
+  demUrl, 
+  demInfo
 };
