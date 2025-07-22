@@ -46,19 +46,18 @@
               </div>
             </div>
             <!-- URL Input -->
-            <!-- <div class="url-section">
-              <label for="pmtiles-url">PMTiles URL:</label>
-              <select v-model="selectedUrl" class="url-select" @change="loadDEM">
+            <div class="mt-4 space-y-2">
+              <label for="pmtiles-url" class="block text-sm font-medium">PMTiles URL:</label>
+              <select v-model="selectedUrl" class="w-full p-2 border border-gray-300 rounded-md" @change="updateDemUrl">
                 <option value="https://static.mah.priv.at/cors/AT-10m-png.pmtiles">Austria 10m PNG</option>
                 <option value="https://static.mah.priv.at/cors/AT-10m-webp.pmtiles">Austria 10m WebP</option>
                 <option value="https://static.mah.priv.at/cors/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m WebP
                 </option>
                 <option value="custom">Custom URL...</option>
               </select>
-              <input v-if="selectedUrl === 'custom'" v-model="customUrl" class="custom-url-input"
-                placeholder="Enter custom PMTiles URL" @keyup.enter="loadDEM" />
-              <button class="load-btn" :disabled="loading" @click="loadDEM">Load DEM</button>
-            </div> -->
+              <input v-if="selectedUrl === 'custom'" v-model="customUrl" class="w-full p-2 border border-gray-300 rounded-md"
+                placeholder="Enter custom PMTiles URL" @input="updateDemUrl" />
+            </div>
           </ion-card-content>
         </div>
 
@@ -143,11 +142,26 @@ import {
   historySamples,
   showDebugInfo,
   sensorSource,
+  demUrl,
 } from '@/utils/state';
 
 
 const toggleDebugInfo = () => {
   showDebugInfo.value = !showDebugInfo.value;
+};
+
+// PMTiles URL management
+const selectedUrl = ref(demUrl.value);
+const customUrl = ref('');
+
+const updateDemUrl = () => {
+  if (selectedUrl.value === 'custom') {
+    if (customUrl.value.trim()) {
+      demUrl.value = customUrl.value.trim();
+    }
+  } else {
+    demUrl.value = selectedUrl.value;
+  }
 };
 
 
