@@ -6,6 +6,7 @@ import {
 import { MockGeolocation } from "../simulated/MockGeolocations";
 import { Capacitor } from "@capacitor/core";
 import { DEMLookup, DEMInfo } from "../dem/DEMLookup";
+import { selectedDemUrl } from "@/composables/useDemUrl";
 
 
 
@@ -32,17 +33,16 @@ const locationError = ref<string | null>(null);
 
 let watchId: string | null = null;
 const demLookup = ref<DEMLookup | null>(null);
-const demUrl = ref('https://static.mah.priv.at/cors/DTM_Italy_20m_v2b_by_Sonny.pmtiles');
 const demInfo = ref<DEMInfo | null>(null);
 const elevation = ref<number | null>(null);
 
 
 watch(
-  demUrl,
+  selectedDemUrl,
   async (newdemUrl, olddemUrl) => {
     // instantiate new DEMlookupp here
     try {
-      demLookup.value = new DEMLookup(demUrl.value, {
+      demLookup.value = new DEMLookup(selectedDemUrl.value, {
         maxCacheSize: 100,
         debug: false,
       });
@@ -202,6 +202,6 @@ export {
   stopLocation,
   elevation,
   demLookup, 
-  demUrl, 
+  selectedDemUrl as demUrl, 
   demInfo
 };

@@ -159,7 +159,7 @@ import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';
 import { mqttBrokerUrl, mqttUser, mqttPassword } from '@/utils/mqtt';
 import mqtt from 'mqtt';
-import { usePersistedRef } from '@/composables/usePersistedRef';
+import { selectedDemUrl } from '@/composables/useDemUrl';
 
 import { isNativePlatform } from '@/utils/platform';
 
@@ -169,7 +169,6 @@ import {
   historySamples,
   showDebugInfo,
   sensorSource,
-  demUrl,
 } from '@/utils/state';
 
 
@@ -178,17 +177,17 @@ const toggleDebugInfo = () => {
 };
 
 // PMTiles URL management
-const selectedUrl = usePersistedRef<string>('selectedDemUrl', 'https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles');
+const selectedUrl = selectedDemUrl;
 const customUrl = ref('');
 
 const updateDemUrl = () => {
   if (selectedUrl.value === 'custom') {
     if (customUrl.value.trim()) {
-      demUrl.value = customUrl.value.trim();
+      selectedUrl.value = customUrl.value.trim();
     }
-  } else {
-    demUrl.value = selectedUrl.value;
   }
+  // selectedUrl.value is automatically updated when dropdown changes
+  // The watcher in location.ts will handle the DEM loading
 };
 
 
