@@ -159,6 +159,7 @@ import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';
 import { mqttBrokerUrl, mqttUser, mqttPassword } from '@/utils/mqtt';
 import mqtt from 'mqtt';
+import { usePersistedRef } from '@/composables/usePersistedRef';
 
 import { isNativePlatform } from '@/utils/platform';
 
@@ -177,7 +178,7 @@ const toggleDebugInfo = () => {
 };
 
 // PMTiles URL management
-const selectedUrl = ref('https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles');
+const selectedUrl = usePersistedRef<string>('selectedDemUrl', 'https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles');
 const customUrl = ref('');
 
 const updateDemUrl = () => {
