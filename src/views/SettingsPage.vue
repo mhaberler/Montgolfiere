@@ -45,18 +45,36 @@
                 </ion-button>
               </div>
             </div>
-            <!-- URL Input -->
             <div class="mt-4 space-y-2">
-              <label for="pmtiles-url" class="block text-sm font-medium">PMTiles URL:</label>
+              <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
               <select v-model="selectedUrl" class="w-full p-2 border border-gray-300 rounded-md" @change="updateDemUrl">
-                <option value="https://static.mah.priv.at/cors/AT-10m-png.pmtiles">Austria 10m PNG</option>
-                <option value="https://static.mah.priv.at/cors/AT-10m-webp.pmtiles">Austria 10m WebP</option>
-                <option value="https://static.mah.priv.at/cors/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m WebP
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">Austria 10m
                 </option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">Slovenia 20m
+                </option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">Germany 20m
+                </option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m
+                </option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">Switzerland
+                  10m
+                </option>
+                <!-- <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">Sweden 20m
+                </option> -->
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">Croatia 10m
+                </option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">Hungary 20m
+                </option>
+
+
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">Czechia 20m
+                </option>
+
                 <option value="custom">Custom URL...</option>
               </select>
-              <input v-if="selectedUrl === 'custom'" v-model="customUrl" class="w-full p-2 border border-gray-300 rounded-md"
-                placeholder="Enter custom PMTiles URL" @input="updateDemUrl" />
+              <input v-if="selectedUrl === 'custom'" v-model="customUrl"
+                class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter custom PMTiles URL"
+                @input="updateDemUrl" />
             </div>
           </ion-card-content>
         </div>
@@ -151,7 +169,7 @@ const toggleDebugInfo = () => {
 };
 
 // PMTiles URL management
-const selectedUrl = ref(demUrl.value);
+const selectedUrl = ref('https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles');
 const customUrl = ref('');
 
 const updateDemUrl = () => {
