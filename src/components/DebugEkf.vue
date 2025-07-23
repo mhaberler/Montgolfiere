@@ -17,7 +17,7 @@
                 <p>Vaccel 95%: {{ vaccelCI95.lower.toFixed(2) }} .. {{ vaccelCI95.upper.toFixed(2) }}</p>
 
 
-                <p>Pressure (hPa): {{ pressure.toFixed(1) }}</p>
+                <p>Pressure (hPa): {{ pressure.toFixed(2) }}</p>
                 <p>Baro rate samples/sec: {{ baroRate.toFixed(1) }}</p>
                 <div class="restart-counter">
                     <span>BLE scan restarts: {{ bleScanTimeouts }}</span>
