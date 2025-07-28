@@ -89,6 +89,16 @@ const wentToBackground = async () => {
   }
 };
 
+import { Share } from '@capacitor/share';
+
+const shareData = async () => {
+  await Share.share({
+    title: 'Shared Content',
+    text: 'Check this out!',
+    url: 'https://example.com',
+    dialogTitle: 'Share with',
+  });
+};
 
 const initializeApp = async () => {
   console.log("Initializing app...");
@@ -99,9 +109,10 @@ const initializeApp = async () => {
   wakeLockAvailable.value = await isSupported();
   console.log(`Wake lock supported: ${wakeLockAvailable.value}`);
 
-  await logDeviceInfo();
-  await logBatteryInfo();
-  await getDeviceId();
+  // await logDeviceInfo();
+  // await logBatteryInfo();
+  // await getDeviceId();
+  // await shareData();
 
   // Handle app state changes
   App.addListener("appStateChange", (state) => {
