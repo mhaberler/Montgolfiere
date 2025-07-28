@@ -2,6 +2,7 @@ import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 // import { CapacitorUpdater } from "@capgo/capacitor-updater";
 import { Capacitor } from "@capacitor/core";
+import { Device } from '@capacitor/device';
 
 import { ref, computed } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
@@ -13,6 +14,28 @@ import {
 } from "./ticker";
 
 const wakeLockAvailable = ref(false);
+
+const logDeviceInfo = async () => {
+  const info = await Device.getInfo();
+  console.log(info);
+};
+
+const logBatteryInfo = async () => {
+  const info = await Device.getBatteryInfo();
+
+  console.log(info);
+};
+
+const getDeviceId = async () => {
+  try {
+    const { identifier } = await Device.getId();
+    console.log('Device Unique ID:', identifier);
+    return identifier;
+  } catch (error) {
+    console.error('Error fetching device ID:', error);
+  }
+};
+
 const showDebugInfo = usePersistedRef<boolean>(
   "showDebugInfo",
   import.meta.env.MODE === "development"
@@ -38,7 +61,7 @@ const cameToForeground = async () => {
   } catch (e) {
     console.error('Failed to start BLE scanning in foreground:', e);
   }
-  
+
   if (wakeLockAvailable.value) {
     if (!(await isKeptAwake())) {
       console.log("Keeping the app awake");
@@ -57,7 +80,7 @@ const wentToBackground = async () => {
   } catch (e) {
     console.error('Failed to cleanup BLE in background:', e);
   }
-  
+
   if (wakeLockAvailable.value) {
     if (await isKeptAwake()) {
       console.log("letting the app sleep");
@@ -70,11 +93,15 @@ const wentToBackground = async () => {
 const initializeApp = async () => {
   console.log("Initializing app...");
   console.log("git sha: ", __GIT_COMMIT_HASH__);
-  console.log("git branch: ", __GIT_BRANCH_NAME__); 
-  console.log("build Date: ", __VITE_BUILD_DATE__); 
-  console.log("App version: ", __APP_VERSION__); 
+  console.log("git branch: ", __GIT_BRANCH_NAME__);
+  console.log("build Date: ", __VITE_BUILD_DATE__);
+  console.log("App version: ", __APP_VERSION__);
   wakeLockAvailable.value = await isSupported();
   console.log(`Wake lock supported: ${wakeLockAvailable.value}`);
+
+  await logDeviceInfo();
+  await logBatteryInfo();
+  await getDeviceId();
 
   // Handle app state changes
   App.addListener("appStateChange", (state) => {
