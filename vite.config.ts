@@ -23,9 +23,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [vue(), qrcode(),
-    devtoolsJson(),
-    // vueDevTools(), 
-    tailwindcss()
+    tailwindcss(),
+    ...(mode === "development" ? [devtoolsJson(), vueDevTools()] : []),
     ],
     optimizeDeps: {
       exclude: [

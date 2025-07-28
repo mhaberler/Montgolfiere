@@ -53,6 +53,8 @@
               -->
               <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
               <select v-model="selectedUrl" class="w-full p-2 border border-gray-300 rounded-md" @change="updateDemUrl">
+                <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">Europe 30m
+                </option>
                 <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">Austria 10m
                 </option>
                 <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">Slovenia 20m

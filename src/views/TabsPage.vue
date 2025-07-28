@@ -15,10 +15,10 @@
         </ion-tab-button>
 
 
-        <ion-tab-button tab="dash" href="/tabs/dash">
+        <!-- <ion-tab-button tab="dash" href="/tabs/dash">
           <ion-icon aria-hidden="true" :icon="hammerOutline" />
           <ion-label>Play</ion-label>
-        </ion-tab-button>
+        </ion-tab-button> -->
 
         <ion-tab-button tab="tab3" href="/tabs/tab3">
           <ion-icon aria-hidden="true" :icon="cloudDownloadOutline" />
