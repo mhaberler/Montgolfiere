@@ -60,8 +60,6 @@ export default defineConfig(({ mode }) => {
       environment: "jsdom",
     },
     define: {
-      // demo variable
-      __API_URL__: JSON.stringify(env.VITE_API_URL),
       __GIT_COMMIT_HASH__: JSON.stringify(commitHash),
       __GIT_COMMIT_MESSAGE__: JSON.stringify(commitMessage),
       __GIT_BRANCH_NAME__: JSON.stringify(branchName),

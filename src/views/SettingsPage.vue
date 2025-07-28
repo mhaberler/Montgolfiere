@@ -111,7 +111,7 @@
 
       <DebugEkf></DebugEkf>
 
-      <ion-card v-if="false">
+      <ion-card v-if="true">
         <ion-card-header>
           <ion-card-title>MQTT Broker Settings</ion-card-title>
         </ion-card-header>
@@ -223,12 +223,31 @@ const checkMqttConnection = async () => {
   mqttState.value = 'connecting';
   mqttStatusMsg.value = '';
   try {
-    const client = mqtt.connect(mqttBrokerUrl.value, {
-      username: mqttUser.value || undefined,
-      password: mqttPassword.value || undefined,
-      connectTimeout: 4000,
-      reconnectPeriod: 0,
-    });
+    if (!mqttBrokerUrl.value || mqttBrokerUrl.value.length === 0) {
+      mqttState.value = 'error';
+      mqttStatusMsg.value = 'Broker URL is required';
+      return;
+    }
+
+    const options: any = {
+      clientId: 'mg_' + Math.random().toString(16).substring(2, 10),
+      rejectUnauthorized: false, // ONLY for debugging, not production!
+      reconnectPeriod: 5000,
+      connectTimeout: 30 * 1000, 
+      keepalive: 60,
+      log: console.log.bind(console),
+
+    };
+
+    // Only add username/password if they have values
+    if (mqttUser.value && mqttUser.value.length > 0) {
+      options.username = mqttUser.value;
+    }
+    if (mqttPassword.value && mqttPassword.value.length > 0) {
+      options.password = mqttPassword.value;
+    }
+
+    const client = mqtt.connect(mqttBrokerUrl.value, options);
     await new Promise<void>((resolve, reject) => {
       client.on('connect', () => {
         mqttState.value = 'success';
