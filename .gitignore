@@ -47,3 +47,52 @@ android_logs.txt
 /dist.capgo.development
 /dist.webtest
 *.zip
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Build outputs  
+dist/
+build/
+www/
+
+# Capacitor - iOS ignores
+ios/build/
+ios/DerivedData/
+ios/App/public/
+ios/App/App.xcarchive/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcworkspace/xcshareddata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/Pods/
+ios/App/Podfile.lock
+
+# Keep these iOS files (your custom Info.plist changes)
+!ios/App/App/Info.plist
+!ios/App/App.xcodeproj/project.pbxproj
+!ios/App/Podfile
+
+# Capacitor - Android ignores
+android/app/build/
+android/build/
+android/.gradle/
+android/gradle/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/app/src/main/assets/public/
+android/app/src/main/res/values/strings.xml
+
+# Keep these Android files (your custom permissions/config)
+!android/app/src/main/AndroidManifest.xml
+!android/build.gradle
+!android/app/build.gradle
+!android/gradle.properties
+!android/settings.gradle
+
+# General
+.DS_Store
+*.log
+.env.local
+.env.*.local

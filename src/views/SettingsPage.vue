@@ -110,7 +110,7 @@
 
       <DebugEkf></DebugEkf>
 
-      <ion-card v-if="true">
+      <ion-card v-if="false">
         <ion-card-header>
           <ion-card-title>MQTT Broker Settings</ion-card-title>
         </ion-card-header>
@@ -158,8 +158,10 @@ import {
 } from '@ionic/vue';
 import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';
-import { mqttBrokerUrl, mqttUser, mqttPassword } from '@/utils/mqtt';
-import mqtt from 'mqtt';
+// import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, checkMqttConnection } from '@/utils/mqtt';
+import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, } from '@/utils/mqtt';
+import { initializeMqtt } from '@/utils/mqttService';
+
 import { selectedDemUrl } from '@/composables/useDemUrl';
 
 import { isNativePlatform } from '@/utils/platform';
@@ -173,6 +175,32 @@ import {
 import {
   showDebugInfo
 } from '@/utils/startup';
+
+
+interface MqttInitOptions {
+  brokerUrl: string;
+  topics: string[];
+  onMessageCallback: (topic: string, message: string | Buffer) => void;
+  onStatusChange: (status: string) => void;
+}
+
+const checkMqttConnection = async (): Promise<void> => {
+  console.log(`------------fooo`);
+  await initializeMqtt({
+    brokerUrl: 'wss://test.mosquitto.org:8081/mqtt',
+    // mqttBrokerUrl.value,
+    topics: ['location/updates', 'barometer/readings', 'ble/advertisements'],
+    onMessageCallback: (topic: string, message: string | Buffer): void => {
+      const data: unknown = JSON.parse(message.toString());
+      // Process location, barometer, or BLE data here
+      console.log(`Processed data from ${topic}:`, data);
+    },
+    onStatusChange: (status: string): void => {
+      console.log(`MQTT status updated: ${status}`);
+      // Update UI or app state based on status, e.g., show connection indicator
+    },
+  } as MqttInitOptions);
+};
 
 const toggleDebugInfo = () => {
   showDebugInfo.value = !showDebugInfo.value;
@@ -211,83 +239,6 @@ const sensorSourceOptions = computed(() => {
 
 
 
-// MQTT connection state
-// const mqttConnecting = ref(false);
-// const mqttConnected = ref(false);
-// const mqttState = ref < String > <'idle' | 'connecting' | 'success' | 'error'>('idle');
-
-const mqttState = ref<string>('idle');
-const mqttStatusMsg = ref<string>('');
-
-const checkMqttConnection = async () => {
-  mqttState.value = 'connecting';
-  mqttStatusMsg.value = '';
-  try {
-    if (!mqttBrokerUrl.value || mqttBrokerUrl.value.length === 0) {
-      mqttState.value = 'error';
-      mqttStatusMsg.value = 'Broker URL is required';
-      return;
-    }
-
-    const options: any = {
-      clientId: 'mg_' + Math.random().toString(16).substring(2, 10),
-      rejectUnauthorized: false, // ONLY for debugging, not production!
-      reconnectPeriod: 5000,
-      connectTimeout: 30 * 1000, 
-      keepalive: 60,
-      log: console.log.bind(console),
-
-    };
-
-    // Only add username/password if they have values
-    if (mqttUser.value && mqttUser.value.length > 0) {
-      options.username = mqttUser.value;
-    }
-    if (mqttPassword.value && mqttPassword.value.length > 0) {
-      options.password = mqttPassword.value;
-    }
-
-    const client = mqtt.connect(mqttBrokerUrl.value, options);
-    await new Promise<void>((resolve, reject) => {
-      client.on('connect', () => {
-        mqttState.value = 'success';
-        mqttStatusMsg.value = 'Connected!';
-        client.end();
-        resolve();
-      });
-      client.on('error', (err) => {
-        mqttState.value = 'error';
-        mqttStatusMsg.value = 'Connection failed: ' + err.message;
-        client.end();
-        reject(err);
-      });
-      setTimeout(() => {
-        if (mqttState.value === 'connecting') {
-          mqttState.value = 'error';
-          mqttStatusMsg.value = 'Connection timed out.';
-          client.end();
-          reject(new Error('Timeout'));
-        }
-      }, 4000);
-    });
-  } catch (e: any) {
-    if (mqttState.value !== 'error') {
-      mqttState.value = 'error';
-      mqttStatusMsg.value = 'Connection failed: ' + (e?.message || e);
-    }
-  }
-};
-
-const mqttStatusColor = computed(() => {
-  switch (mqttState.value) {
-    case 'success':
-      return 'success';
-    case 'error':
-      return 'danger';
-    default:
-      return 'medium';
-  }
-});
 </script>
 
 <style scoped>

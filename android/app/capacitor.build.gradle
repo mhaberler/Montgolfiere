@@ -49,6 +49,7 @@ dependencies {
     implementation project(':capgo-native-audio')
     implementation project(':capgo-nativegeocoder')
     implementation project(':mhaberler-capacitor-barometer')
+    implementation project(':mhaberler-capacitor-zeroconf-nsd')
 
 }
 

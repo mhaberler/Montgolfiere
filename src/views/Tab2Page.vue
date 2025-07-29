@@ -1,18 +1,11 @@
 <template>
   <ion-page>
     <ion-header>
-
       <ion-toolbar>
         <ion-title>BLE Scanner</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <!-- <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title >BLE Scanner</ion-title>
-        </ion-toolbar>
-      </ion-header> -->
-
       <ion-button class="basis-1/4" @click="exportMappings">
         Export
       </ion-button>

@@ -2,6 +2,7 @@ import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 import { Capacitor } from "@capacitor/core";
 import { Device } from '@capacitor/device';
+import { Network } from '@capacitor/network';
 
 import { ref } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
@@ -15,6 +16,16 @@ import {
 const isWeb = Capacitor.getPlatform() === "web";
 
 const wakeLockAvailable = ref(false);
+
+Network.addListener('networkStatusChange', status => {
+  console.log('Network status changed', status);
+});
+
+const logCurrentNetworkStatus = async () => {
+  const status = await Network.getStatus();
+
+  console.log('Network status:', status);
+};
 
 const logDeviceInfo = async () => {
   const info = await Device.getInfo();

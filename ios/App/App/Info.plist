@@ -64,7 +64,16 @@
 	<!-- @capawesome/capacitor-file-picker -->
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app needs access to the local network to discover MQTT devices</string>
 
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_mqtt-ws._tcp</string>
+		<string>_mqtt-wss._tcp</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to identify WiFi networks for device discovery</string>
 	<!-- Export Compliance: Set to false if app only uses standard encryption -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

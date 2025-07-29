@@ -15,9 +15,15 @@ const config: CapacitorConfig = {
   //   loggingBehavior: 'none' // Override for iOS if needed
   // }
   server: {
+    allowNavigation: [
+      "ws://10.*.*.*:*",    // Allow your local subnets
+      "ws://172.16.0.*:*", 
+      "ws://192.168.*.*:*"  // Common local networks
+    ],
     cleartext: true,
   },
   android: {
+    allowMixedContent: true,
     buildOptions: {
       keystorePath: process.env.ANDROID_KEYSTORE_PATH || "./debug.keystore", // Fallback to a debug keystore for development
 

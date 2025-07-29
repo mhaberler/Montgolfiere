@@ -23,10 +23,15 @@ const routes: Array<RouteRecordRaw> = [
         path: 'tab2',
         component: () => import('@/views/Tab2Page.vue')
       },
-      // {
-      //   path: 'dash',
-      //   component: () => import('@/views/DashboardView.vue')
-      // },
+      {
+        path: 'mdns',
+        component: () => import('@/views/ScannerView.vue')
+      },
+      {
+        path: 'mqtt',
+        name: 'MQTTClient',
+        component: () => import('@/views/MQTTClientView.vue')
+      },
       {
         path: 'tab3',
         component: () => import('@/views/Tab3Page.vue')

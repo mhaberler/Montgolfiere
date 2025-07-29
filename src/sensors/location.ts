@@ -4,8 +4,9 @@ import {
   Position,
 } from "@capacitor/geolocation";
 import { Capacitor } from "@capacitor/core";
-import { DEMLookup, DEMInfo } from "../dem/DEMLookup";
+import { DEMLookup, DEMInfo } from "@/dem/DEMLookup";
 import { selectedDemUrl } from "@/composables/useDemUrl";
+
 
 const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode

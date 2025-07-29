@@ -51,6 +51,7 @@ def capacitor_pods
   pod 'CapgoNativeAudio', :path => '../../node_modules/@capgo/native-audio'
   pod 'CapgoNativegeocoder', :path => '../../node_modules/@capgo/nativegeocoder'
   pod 'MhaberlerCapacitorBarometer', :path => '../../node_modules/@mhaberler/capacitor-barometer'
+  pod 'MhaberlerCapacitorZeroconfNsd', :path => '../../node_modules/@mhaberler/capacitor-zeroconf-nsd'
 end
 
 target 'App' do
