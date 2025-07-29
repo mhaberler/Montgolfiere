@@ -39,7 +39,7 @@ watch(
     // instantiate new DEMlookupp here
     try {
       demLookup.value = new DEMLookup(selectedDemUrl.value, {
-        maxCacheSize: 100,
+        maxCacheSize: 10,
         debug: false,
       });
       demInfo.value = await demLookup.value.getDEMInfo();
