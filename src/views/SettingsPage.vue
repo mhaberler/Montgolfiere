@@ -168,9 +168,11 @@ import {
   pressureQNH,
   transitionAltitude,
   historySamples,
-  showDebugInfo,
 } from '@/utils/state';
 
+import {
+  showDebugInfo
+} from '@/utils/startup';
 
 const toggleDebugInfo = () => {
   showDebugInfo.value = !showDebugInfo.value;

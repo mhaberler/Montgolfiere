@@ -41,14 +41,21 @@ import {
     ekfAcceleration,
     vspeedCI95,
     vaccelCI95,
-    showDebugInfo,
     currentVariance,
-    baroRate,
     pressure,
     rawAltitudeISA,
     bleScanTimeouts,
     resetbleScanTimeouts
 } from '@/utils/state';
+
+import {
+    showDebugInfo,
+} from '@/utils/startup';
+
+
+import {
+    baroRate,
+} from '@/sensors/barometer';
 
 </script>
 

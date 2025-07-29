@@ -1,18 +1,18 @@
 import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
-// import { CapacitorUpdater } from "@capgo/capacitor-updater";
-// import { Capacitor } from "@capacitor/core";
+import { Capacitor } from "@capacitor/core";
 import { Device } from '@capacitor/device';
 
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
 import { startBarometer, stopBarometer } from "../sensors/barometer";
 import { usePersistedRef } from "../composables/usePersistedRef";
-import { initializeAndStartBLEScan, cleanupBLE } from '../sensors/blesensors';
+import { initializeAndStartBLEScan, startBLEScan, cleanupBLE } from '../sensors/blesensors';
 import {
   startTimer,
   stopTimer,
 } from "./ticker";
+const isWeb = Capacitor.getPlatform() === "web";
 
 const wakeLockAvailable = ref(false);
 
@@ -57,13 +57,14 @@ const cameToForeground = async () => {
   startBarometer();
   startLocation();
   startTimer();
-  // Restart BLE scanning when app comes to foreground
-  try {
-    await initializeAndStartBLEScan();
-  } catch (e) {
-    console.error('Failed to start BLE scanning in foreground:', e);
+  if (!isWeb) {
+    // Restart BLE scanning when app comes to foreground
+    try {
+      await startBLEScan();
+    } catch (e) {
+      console.error('Failed to start BLE scanning in foreground:', e);
+    }
   }
-
   if (wakeLockAvailable.value) {
     if (!(await isKeptAwake())) {
       console.log("Keeping the app awake");
@@ -78,13 +79,14 @@ const wentToBackground = async () => {
 
   stopTimer();
   stopLocation();
-  // Stop BLE scanning when app goes to background to save battery
-  try {
-    await cleanupBLE();
-  } catch (e) {
-    console.error('Failed to cleanup BLE in background:', e);
+  if (!isWeb) {
+    // Stop BLE scanning when app goes to background to save battery
+    try {
+      await cleanupBLE();
+    } catch (e) {
+      console.error('Failed to cleanup BLE in background:', e);
+    }
   }
-
   if (wakeLockAvailable.value) {
     if (await isKeptAwake()) {
       console.log("letting the app sleep");
@@ -166,11 +168,13 @@ const initializeApp = async () => {
   });
   await startLocation();
   await startBarometer();
-  // Initialize BLE scanning
-  try {
-    await initializeAndStartBLEScan();
-  } catch (e) {
-    console.error('Failed to initialize BLE scanning:', e);
+  if (!isWeb) {
+    // Initialize BLE scanning
+    try {
+      await initializeAndStartBLEScan();
+    } catch (e) {
+      console.error('Failed to initialize BLE scanning:', e);
+    }
   }
   startTimer();
 
