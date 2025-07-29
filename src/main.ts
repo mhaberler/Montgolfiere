@@ -43,6 +43,7 @@ import { SafeArea } from '@capacitor-community/safe-area';
 import { initializeApp } from './utils/startup';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
+
 SafeArea.enable({
     config: {
         // customColorsForSystemBars: true,

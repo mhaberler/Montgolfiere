@@ -1,11 +1,12 @@
 import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 // import { CapacitorUpdater } from "@capgo/capacitor-updater";
-import { Capacitor } from "@capacitor/core";
+// import { Capacitor } from "@capacitor/core";
 import { Device } from '@capacitor/device';
 
 import { ref, computed } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
+import { startBarometer, stopBarometer } from "../sensors/barometer";
 import { usePersistedRef } from "../composables/usePersistedRef";
 import { initializeAndStartBLEScan, cleanupBLE } from '../sensors/blesensors';
 import {
@@ -53,6 +54,7 @@ const isKeptAwake = async () => {
 
 const cameToForeground = async () => {
   console.log("App is in the foreground");
+  startBarometer();
   startLocation();
   startTimer();
   // Restart BLE scanning when app comes to foreground
@@ -72,6 +74,8 @@ const cameToForeground = async () => {
 
 const wentToBackground = async () => {
   console.log("App is in the background");
+  stopBarometer();
+
   stopTimer();
   stopLocation();
   // Stop BLE scanning when app goes to background to save battery
@@ -90,6 +94,7 @@ const wentToBackground = async () => {
 };
 
 import { Share } from '@capacitor/share';
+import QRCode from 'qrcode';
 
 const shareData = async () => {
   await Share.share({
@@ -100,6 +105,40 @@ const shareData = async () => {
   });
 };
 
+// Function to generate QR code as a data URL
+const generateQRCode = async (text: string): Promise<string> => {
+  try {
+    // Generate QR code as a data URL (base64-encoded PNG)
+    const qrCodeDataUrl = await QRCode.toDataURL(text, {
+      errorCorrectionLevel: 'H', // High error correction
+      width: 300, // Size of the QR code
+    });
+    return qrCodeDataUrl;
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+    throw error;
+  }
+};
+
+// Function to share the QR code
+const shareQRCode = async (text: string) => {
+  try {
+    // Generate QR code data URL
+    const qrCodeDataUrl = await generateQRCode(text);
+    console.log(qrCodeDataUrl)
+
+
+    // Share the QR code
+    await Share.share({
+      title: 'My QR Code',
+      text: 'Scan this QR code',
+      url: qrCodeDataUrl, // Data URL of the QR code image
+      dialogTitle: 'Share QR Code', // Used on Android
+    });
+  } catch (error) {
+    console.error('Error sharing QR code:', error);
+  }
+};
 const initializeApp = async () => {
   console.log("Initializing app...");
   console.log("git sha: ", __GIT_COMMIT_HASH__);
@@ -113,6 +152,7 @@ const initializeApp = async () => {
   // await logBatteryInfo();
   // await getDeviceId();
   // await shareData();
+  // await shareQRCode("https://static.mah.priv.at/apps/flightview");
 
   // Handle app state changes
   App.addListener("appStateChange", (state) => {
@@ -124,7 +164,8 @@ const initializeApp = async () => {
       wentToBackground();
     }
   });
-  startLocation();
+  await startLocation();
+  await startBarometer();
   // Initialize BLE scanning
   try {
     await initializeAndStartBLEScan();

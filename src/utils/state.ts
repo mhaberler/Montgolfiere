@@ -1,13 +1,19 @@
 // consolidate the state management for barometer and location sensors
 import {
   // persistent state
-  pressureQNH,
-  transitionAltitude,
-  historySamples,
 
   // volatile
   barometerAvailable,
   baroActive,
+  
+  baroRate,
+
+} from "../sensors/barometer";
+
+import {
+  pressureQNH,
+  transitionAltitude,
+  historySamples,
   pressure,
   rawAltitudeISA,
   ekfAltitudeISA,
@@ -19,14 +25,13 @@ import {
   ekfTimeToZeroSpeed,
   ekfZeroSpeedAltitude,
   ekfZeroSpeedValid,
-  ekfVspeedStdDev,
   ekfVaccelStdDev,
+  ekfVspeedStdDev,
   currentVariance,
-  baroRate,
-  sensorSource,
   vspeedCI95,
   vaccelCI95,
-} from "../sensors/pressure";
+  processPressureSample
+} from "../process/pressure";
 
 import {
   locationAvailable,
@@ -90,6 +95,7 @@ export {
   vspeedCI95,
   vaccelCI95,
   currentVariance,
+  processPressureSample,
   baroRate,
   locationAvailable,
   location,
@@ -102,7 +108,6 @@ export {
   demInfo,
   wakeLockAvailable,
   showDebugInfo,
-  sensorSource,
   bleScanTimeouts,
   resetbleScanTimeouts,
   bleInitErrors,
@@ -118,5 +123,6 @@ export {
   startTimer,
   stopTimer,
   ticker,
-  tickerRunning
+  tickerRunning,
+  
 };

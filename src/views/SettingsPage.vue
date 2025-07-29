@@ -91,10 +91,9 @@
 
       </ion-card>
 
-      <ion-card>
+      <!-- <ion-card>
         <ion-card-header>
           <ion-card-title>Sensor source</ion-card-title>
-          <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
         </ion-card-header>
 
         <ion-card-content>
@@ -107,7 +106,7 @@
             </ion-select>
           </div>
         </ion-card-content>
-      </ion-card>
+      </ion-card> -->
 
       <DebugEkf></DebugEkf>
 
@@ -170,7 +169,6 @@ import {
   transitionAltitude,
   historySamples,
   showDebugInfo,
-  sensorSource,
 } from '@/utils/state';
 
 

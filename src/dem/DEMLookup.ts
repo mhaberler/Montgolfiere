@@ -112,7 +112,7 @@ export class DEMLookup {
       };
     } catch (error) {
       console.error('Failed to initialize DEM info:', error);
-      throw error;
+      // throw error;
     }
   }
 

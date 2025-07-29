@@ -8,8 +8,6 @@ import { Capacitor } from "@capacitor/core";
 import { DEMLookup, DEMInfo } from "../dem/DEMLookup";
 import { selectedDemUrl } from "@/composables/useDemUrl";
 
-
-
 const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode
   timeout: 20000,
@@ -59,13 +57,14 @@ watch(
 
 // lookup elevation on location change
 watch(location, async (newlocation) => {
-  // console.log(`location is ${newlocation}`)
+  // console.log(`location is ${JSON.stringify(newlocation)}`);
+
 
   if (newlocation && demLookup.value) {
     try {
       const result = await demLookup.value.getElevation(newlocation.coords.latitude, newlocation.coords.longitude);
       elevation.value = result?.elevation ?? null;
-      // console.log(`Elevation: ${elevation.value}m`);
+    //  console.log(`Elevation: ${elevation.value}m`);
     } catch (error) {
       console.error('Error getting elevation:', error);
       elevation.value = null;
