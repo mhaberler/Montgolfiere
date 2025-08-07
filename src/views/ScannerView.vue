@@ -245,6 +245,7 @@ const removeService = (key: string) => {
 
 const handleServicePress = (service: any) => {
   // Use query parameters instead of route params for complex objects
+  stopScan();
   router.push({
     path: 'mqtt',
     query: {
