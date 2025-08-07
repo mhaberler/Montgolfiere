@@ -28,10 +28,6 @@
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
                     </div>
 
-
-
-
-
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
                         <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
                             :indicatorSize="20" :confidenceBoxCrossDimension="10" :confidenceLower="vspeedCI95.lower"

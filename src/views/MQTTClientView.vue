@@ -22,16 +22,16 @@
               >
                 <ion-icon 
                   v-if="connecting" 
-                  name="sync-outline" 
+                  :icon="syncOutline" 
                   class="spinning-icon"
                 ></ion-icon>
                 <ion-icon 
                   v-else-if="connected" 
-                  name="checkmark-circle-outline"
+                  :icon="checkmarkCircleOutline"
                 ></ion-icon>
                 <ion-icon 
                   v-else 
-                  _icon="closeCircleOutline"
+                  :icon="closeCircleOutline"
                 ></ion-icon>
                 {{ connectionStatusText }}
               </ion-badge>
@@ -49,7 +49,7 @@
                 expand="block"
               >
                 <ion-icon 
-                  :name="connected ? 'powerOutline' : 'playOutline'" 
+                  :icon="connected ? powerOutline : playOutline" 
                   slot="start"
                 ></ion-icon>
                 {{ connected ? 'Disconnect' : connecting ? 'Connecting...' : 'Connect' }}
@@ -71,7 +71,7 @@
               size="small"
               @click="error = null"
             >
-              <ion-icon name="close-outline"></ion-icon>
+              <ion-icon :icon="closeOutline"></ion-icon>
             </ion-button>
           </div>
         </ion-card-content>
@@ -117,7 +117,7 @@
               expand="block"
               color="warning"
             >
-              <ion-icon name="send-outline" slot="start"></ion-icon>
+              <ion-icon :icon="sendOutline" slot="start"></ion-icon>
               Publish
             </ion-button>
           </div>
@@ -185,7 +185,17 @@ import {
   IonButton, IonIcon, IonBadge, IonText, IonSpinner, IonInput,
   IonTextarea, IonList, IonItem, IonLabel, IonChip
 } from '@ionic/vue'
-import { sendOutline, powerOutline, closeCircleOutline, playOutline, trashOutline, chatbubbleOutline } from 'ionicons/icons';
+import { 
+  syncOutline, 
+  sendOutline, 
+  powerOutline, 
+  closeCircleOutline, 
+  playOutline, 
+  trashOutline, 
+  chatbubbleOutline,
+  checkmarkCircleOutline,
+  closeOutline
+} from 'ionicons/icons';
 
 import mqtt from 'mqtt'
 

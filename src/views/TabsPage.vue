@@ -25,7 +25,7 @@
           <ion-label>MQTT</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button tab="tab3" href="/tabs/tab3">
+        <ion-tab-button v-if="showDebugInfo" tab="tab3" href="/tabs/tab3">
           <ion-icon aria-hidden="true" :icon="cloudDownloadOutline" />
           <ion-label>Update</ion-label>
         </ion-tab-button>
