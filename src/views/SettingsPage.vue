@@ -6,14 +6,14 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-card>
-        <div class="bg-white ">
 
-          <ion-card-header>
-            <ion-card-title>Configuration</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <div class="grid grid-cols-2  gap-1 ">
+      <ion-accordion-group>
+        <ion-accordion value="config">
+          <ion-item slot="header">
+            <ion-label>Configuration</ion-label>
+          </ion-item>
+          <div slot="content">
+            <div class="grid grid-cols-2 gap-1 p-4">
               <div>
                 <ion-label>QNH (hPa)</ion-label>
               </div>
@@ -45,51 +45,58 @@
                 </ion-button>
               </div>
             </div>
-            <div class="mt-4 space-y-2">
-
-
-              <!-- AT-10m-webp.pmtiles 
-         
-              -->
+            <div class="mt-4 space-y-2 p-4">
               <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
               <select v-model="selectedUrl" class="w-full p-2 border border-gray-300 rounded-md" @change="updateDemUrl">
-                <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">Europe 30m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">Austria 10m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">Slovenia 20m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">Germany 20m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">Switzerland
-                  10m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">Sweden 20m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">Croatia 10m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">Hungary 20m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles">Slovakia 20m
-                </option>
-
-
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">Czechia 20m
-                </option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles">Poland 20m
-                </option>
+                <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">Europe 30m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">Austria 10m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">Slovenia 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">Germany 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">Switzerland 10m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">Sweden 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">Croatia 10m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">Hungary 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles">Slovakia 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">Czechia 20m</option>
+                <option value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles">Poland 20m</option>
                 <option value="custom">Custom URL...</option>
               </select>
               <input v-if="selectedUrl === 'custom'" v-model="customUrl"
                 class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter custom PMTiles URL"
                 @input="updateDemUrl" />
             </div>
-          </ion-card-content>
-        </div>
-
-      </ion-card>
+          </div>
+        </ion-accordion>
+        <ion-accordion value="airport-qnh">
+          <ion-item slot="header">
+            <ion-label>Nearby Airport QNH</ion-label>
+          </ion-item>
+          <div slot="content">
+            <ion-card>
+              <ion-card-content>
+                <div v-if="airportQnhData.length > 0" class="space-y-2">
+                  <div v-for="airport in airportQnhData" :key="airport.icao" class="flex justify-between items-center">
+                    <div>
+                      <span class="font-semibold">{{ airport.site }}</span>
+                      <span class="ml-2 text-xs text-gray-500">({{ airport.icao }})</span>
+                      <span class="ml-2 text-xs text-gray-500">{{ airport.distance }} km</span>
+                    </div>
+                    <div>
+                      <span class="font-mono">QNH: {{ airport.qnh }} hPa</span>
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="text-gray-500">No airport QNH data available.</div>
+                <ion-button class="mt-4" expand="block" @click="handleUpdateQnh" :disabled="loadingQnh">
+                  {{ loadingQnh ? 'Updating...' : 'Update QNH from Location' }}
+                </ion-button>
+                <div v-if="qnhError" class="text-red-500 mt-2">{{ qnhError }}</div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
 
       <!-- <ion-card>
         <ion-card-header>
