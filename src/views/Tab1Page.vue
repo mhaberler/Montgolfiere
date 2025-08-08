@@ -23,13 +23,11 @@
                     </div>
                     <div>
                         <ValueCard :value="ekfZeroSpeedAltitude" :name="'Level'" :decimals="0" :unit="'m'"
-                            :frameClass="!willImpactGround ? 'bg-red-200' : 'bg-white'" />
+                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'"
-                            :frameClass="!willImpactGround ? 'bg-red-200' : 'bg-white'" />
-
-                        />
+                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
 
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
@@ -142,7 +140,7 @@ import {
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import { ticker } from '../utils/state';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters } from '../utils/meteo-utils'
 
@@ -157,38 +155,30 @@ const modalData = ref<{ name: string, value: number, unit: string } | null>(null
 const modal = ref();
 
 const groundReference = ref<number | null>(null);
+const heightOverGround = ref<number | null>(null);
 
-const willImpactGround = computed(() => {
-    if (groundReference.value == null || !ekfZeroSpeedValid.value)
-        return false;
-    if (elevation.value == null)
-        return false;
-    if (ekfZeroSpeedValid.value && ekfZeroSpeedAltitude.value < elevation.value) {
-        return true;
+const ekfAltitudeISAfeet = ref<number>(0);
+const flightLevel = ref<number>(0);
+const useFlightLevel = ref<boolean>(false);
+const willImpactGround = ref<boolean>(false);
+
+
+
+// watch(ticker, (newTicker) => {
+//     console.log(`ticker is ${newTicker}`)
+// })
+
+watch(ekfAltitudeISA, (newekfAltitudeISA) => {
+    // console.log(`ekfAltitudeISA is ${newekfAltitudeISA}`)
+    ekfAltitudeISAfeet.value = metersToFeet(ekfAltitudeISA.value);
+    useFlightLevel.value = ekfAltitudeISAfeet.value > transitionAltitude.value;
+    flightLevel.value = Math.round(ekfAltitudeISAfeet.value / 100.0);
+    if (groundReference.value !== null) {
+        heightOverGround.value = ekfAltitudeISA.value - groundReference.value;
+        willImpactGround.value = (elevation.value !== null && ekfZeroSpeedValid.value && ekfZeroSpeedAltitude.value < elevation.value)
+        // willImpactGround.value = true;
     }
-});
-
-const ekfAltitudeISAfeet = computed(() => {
-    if (ekfAltitudeISA.value) {
-        return metersToFeet(ekfAltitudeISA.value);
-    }
-});
-
-const useFlightLevel = computed(() => {
-    if (ekfAltitudeISA.value == null)
-        return false;
-    return 
-});
-
-// Computed property for height over ground
-const heightOverGround = computed(() => {
-    if (groundReference.value !== null &&
-        ekfAltitudeISA.value) {
-        return ekfAltitudeISA.value - groundReference.value;
-    }
-    return null;
-});
-
+})
 
 // Scale configuration
 const vsiMajorTicks = ref([-10, -5, -1, 0, 1, 5, 10]);
@@ -296,4 +286,8 @@ const setOnGround = () => {
 
 <style scoped>
 /* No custom CSS needed as Tailwind handles all styling */
+:deep(.impact-warning) {
+    background-color: #fecaca !important;
+    /* red-200 color */
+}
 </style>
