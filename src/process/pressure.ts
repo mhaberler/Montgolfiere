@@ -50,7 +50,7 @@ function processPressureSample(p: number, t: number) {
   pressure.value = p;
 
   const altISA = altitudeByPressure(pressure.value, 1013.25);
-  if (altISA === undefined) {
+  if (!altISA) {
     return;
   }
   rawAltitudeISA.value = altISA;

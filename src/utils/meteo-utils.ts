@@ -1,10 +1,10 @@
 
 
-function altitudeByPressure(p: number | undefined, qnh: number | undefined): number | undefined {
-    if (p === undefined ||
+function altitudeByPressure(p: number | null, qnh: number | null): number | null {
+    if (p === null ||
         isNaN(p))
-        return undefined;
-    if (qnh === undefined ||
+        return null;
+    if (qnh === null ||
         isNaN(qnh))
         qnh = 1013.25; // default QNH value in hPa
     return 44330.769 * (1 - Math.pow(p / qnh, 0.19029496));
