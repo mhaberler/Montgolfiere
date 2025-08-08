@@ -67,6 +67,10 @@
                             :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
 
+                    <div>
+                        <ValueCard :value="dynamicQNH" :name="'dnyQNH'" :decimals="0" :unit="'hPa'" />
+                    </div>
+
 
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
@@ -144,6 +148,8 @@ import { ticker } from '../utils/state';
 import { ref, computed, watch } from 'vue';
 import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters } from '../utils/meteo-utils'
+
+import { dynamicQNH } from '../process/qnh'
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
