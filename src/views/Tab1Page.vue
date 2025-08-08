@@ -52,11 +52,18 @@
                             } else {
                                 console.warn('Cannot show popup for elevation: invalid value', elevation)
                             }
-                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'" />
+                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
+                            :frameClass="!groundReference ? 'bg-yellow-200' : ''" />
                     </div>
                     <div>
-                        <ValueCard  :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
+                        <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     </div>
+                    <div>
+                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'m over ground'" :decimals="0" :unit="'m'" />
+                    </div>
+
+
+
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
@@ -130,7 +137,7 @@ import {
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import { ticker } from '../utils/state';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 
 import ValueCard from '../components/ValueCard.vue';
@@ -142,6 +149,20 @@ const confidenceColor = ref('#0de732');
 const isModalOpen = ref(false);
 const modalData = ref<{ name: string, value: number, unit: string } | null>(null);
 const modal = ref();
+
+const groundReference = ref<number | null>(null);
+
+// Computed property for height over ground
+const heightOverGround = computed(() => {
+    if (groundReference.value !== null && 
+        ekfAltitudeISA.value !== null && 
+        ekfAltitudeISA.value !== undefined && 
+        !isNaN(ekfAltitudeISA.value)) {
+        return ekfAltitudeISA.value - groundReference.value;
+    }
+    return null;
+});
+
 
 // Scale configuration
 const vsiMajorTicks = ref([-10, -5, -1, 0, 1, 5, 10]);
@@ -177,6 +198,7 @@ import {
     vspeedCI95,
     vaccelCI95,
 } from '../utils/state';
+
 
 const router = useRouter();
 
@@ -228,12 +250,13 @@ const setOnGround = () => {
         // - Set a ground reference value
         // - Update altitude calculations
         // - Store the reference in persistent storage
-
+        
         // Example implementation:
         if (modalData.value.name === 'elevation') {
             // Set ground reference logic here
             console.log('Ground elevation set to:', modalData.value.value);
             // You might want to emit an event or update a global state
+            groundReference.value = ekfAltitudeISA.value;
         }
 
         // Close the modal after action
