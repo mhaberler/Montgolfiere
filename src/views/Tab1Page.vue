@@ -46,11 +46,16 @@
                             :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
                     <div>
-                        <ValueCard v-on-long-press="handleLongPress" :value="elevation" :name="'elevation'"
+                        <ValueCard v-on-long-press="(event: any) => showPopup({ name: 'elevation', value: elevation, unit: 'm' }, event)"
+                        
+                        :value="elevation" :name="'elevation'"
                             :decimals="1" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard v-on-long-press="handleLongPress" :value="ekfAltitudeISA" :name="'altISA'"
+                        <ValueCard 
+                        v-on-long-press="handleLongPress"
+                        
+                        :value="ekfAltitudeISA" :name="'altISA'"
                             :decimals="0" :unit="'m'" />
                     </div>
                 </div>
@@ -158,8 +163,8 @@ const handlePressureLongPress = (data: any) => {
     // Show detailed view, edit mode, etc.
 }
 
-const handlePressureDoubleClick = (data: any) => {
-    console.log('Double clicked on:', data.name, data.value, data.unit)
+const showPopup = (data: any, event: any) => {
+    console.log('showPopup:', data, event)
     // Quick action, toggle unit, etc.
 }
 
