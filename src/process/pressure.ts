@@ -1,13 +1,13 @@
 import { ref, watch, computed } from "vue";
 import { usePersistedRef } from "@/composables/usePersistedRef";
 
+import { currentQNH } from '../process/qnh';
 
 import { altitudeByPressure, isaToQnhAltitude } from "../utils/meteo-utils";
 import { Kalman } from "../ekf/kalman";
 const platformEnv = import.meta.env.VITE_CAPACITOR_PLATFORM;
 
 // persistent config state - automatically restored from Capacitor Preferences
-const pressureQNH = usePersistedRef<number>("pressureQNH", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
 const transitionAltitude = usePersistedRef<number>("transitionAltitude", 7000); // altitude in ft where we transition from QNH to ISA model
 const historySamples = usePersistedRef<number>(
   "historySamples",
@@ -60,7 +60,7 @@ function processPressureSample(p: number, t: number) {
     ekf.altitudeSample(timeDiff, altISA, 0, 0);
     currentVariance.value = ekf.currentVariance();
     ekfAltitudeISA.value = ekf.getAltitude();
-    ekfAltitudeQNH.value = isaToQnhAltitude(ekf.getAltitude(), pressureQNH.value);
+    ekfAltitudeQNH.value = isaToQnhAltitude(ekf.getAltitude(), currentQNH.value);
     ekfVelocity.value = ekf.getVelocity();
     ekfAcceleration.value = ekf.getAcceleration();
     ekfBurnerGain.value = ekf.getBurnerGain();
@@ -87,7 +87,7 @@ const vaccelCI95 = computed(() => {
 })
 
 export {
-  pressureQNH,
+
   transitionAltitude,
   historySamples,
   pressure,

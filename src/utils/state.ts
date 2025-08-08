@@ -11,7 +11,6 @@ import {
 } from "../sensors/barometer";
 
 import {
-  pressureQNH,
   transitionAltitude,
   historySamples,
   pressure,
@@ -74,7 +73,6 @@ import {
 
 export {
   // persistent state
-  pressureQNH,
   transitionAltitude,
   historySamples,
   barometerAvailable,

@@ -156,7 +156,7 @@ import { metersToFeet } from '../utils/meteo-utils'
 import {
     airportQnhData
 } from '../process/qnh';
-import { pressureQNH } from '../process/pressure';
+import { manualQNH } from '../process/qnh';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';

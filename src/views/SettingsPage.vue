@@ -18,7 +18,7 @@
                 <ion-label>QNH (hPa)</ion-label>
               </div>
               <div>
-                <ion-input type="number" min="800" max="1100" step="1" v-model.number="pressureQNH"></ion-input>
+                <ion-input type="number" min="800" max="1100" step="1" v-model.number="manualQNH"></ion-input>
               </div>
               <div>
                 <ion-label>Transition alt (ft)</ion-label>
@@ -208,11 +208,11 @@ import { selectedDemUrl } from '@/composables/useDemUrl';
 import { isNativePlatform } from '@/utils/platform';
 
 import {
-  pressureQNH,
   transitionAltitude,
   historySamples,
 } from '@/utils/state';
 
+import { manualQNH } from '../process/qnh';
 import {
   showDebugInfo
 } from '@/utils/startup';
