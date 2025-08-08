@@ -46,17 +46,22 @@
                             :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
                     <div>
-                        <ValueCard v-on-long-press="(event: any) => showPopup({ name: 'elevation', value: elevation, unit: 'm' }, event)"
-                        
-                        :value="elevation" :name="'elevation'"
-                            :decimals="1" :unit="'m'" />
+                        <ValueCard v-on-long-press="() => {
+                            if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
+                                showPopup({ name: 'elevation', value: elevation, unit: 'm' })
+                            } else {
+                                console.warn('Cannot show popup for elevation: invalid value', elevation)
+                            }
+                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard 
-                        v-on-long-press="handleLongPress"
-                        
-                        :value="ekfAltitudeISA" :name="'altISA'"
-                            :decimals="0" :unit="'m'" />
+                        <ValueCard v-on-long-press="() => {
+                            if (ekfAltitudeISA !== null && ekfAltitudeISA !== undefined && !isNaN(ekfAltitudeISA)) {
+                                showPopup({ name: 'altISA', value: ekfAltitudeISA, unit: 'm' })
+                            } else {
+                                console.warn('Cannot show popup for altISA: invalid value', ekfAltitudeISA)
+                            }
+                        }" :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     </div>
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
@@ -70,11 +75,52 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal Popup -->
+            <ion-modal ref="modal" :is-open="isModalOpen" @will-dismiss="closeModal">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>{{ modalData?.name || 'Sensor Data' }}</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button @click="closeModal">
+                                <ion-icon :icon="closeOutline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content class="ion-padding">
+                    <div v-if="modalData" class="text-center space-y-6">
+                        <!-- Current Value Display -->
+                        <div class="bg-gray-100 rounded-lg p-6">
+                            <h2 class="text-lg font-semibold text-gray-700 mb-2">Current {{ modalData.name }}</h2>
+                            <div class="text-4xl font-bold text-blue-600">
+                                {{ modalData.value }} {{ modalData.unit }}
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-4">
+                            <ion-button expand="block" color="success" size="large" @click="setOnGround">
+                                <ion-icon :icon="checkmarkOutline" slot="start"></ion-icon>
+                                Set as Ground Level
+                            </ion-button>
+
+                            <ion-button expand="block" color="medium" fill="outline" @click="closeModal">
+                                Cancel
+                            </ion-button>
+                        </div>
+
+                        <!-- Info Text -->
+                        <div class="text-sm text-gray-600 mt-4">
+                            <p>This will set the current {{ modalData.name }} value ({{ modalData.value }} {{
+                                modalData.unit }}) as the ground reference level.</p>
+                        </div>
+                    </div>
+                </ion-content>
+            </ion-modal>
         </ion-content>
     </ion-page>
 </template>
-
-
 
 <script setup lang="ts">
 import {
@@ -83,54 +129,57 @@ import {
     IonToolbar,
     IonTitle,
     IonContent,
-    IonCol, IonGrid, IonRow, IonText
-
+    IonModal,
+    IonButton,
+    IonButtons,
+    IonIcon
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import { ticker } from '../utils/state';
 import { ref } from 'vue';
+import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
 
 const confidenceColor = ref('#0de732');
-// const confidenceColor = ref('blue');
 
+// Modal state
+const isModalOpen = ref(false);
+const modalData = ref<{ name: string, value: number, unit: string } | null>(null);
+const modal = ref();
 
+// Scale configuration
 const vsiMajorTicks = ref([-10, -5, -1, 0, 1, 5, 10]);
 const vsiMinorTicks = ref([-0.9, -0.8, -0.7, -0.6, -0.4, -0.3, -0.2, -0.1,
     0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9
 ]);
 const vsiIntermediateTicks = ref([-9, -8, -7, -6, -4, -3, -2, -0.5, 0.5, 2, 3, 4, 6, 7, 8, 9]);
-const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]); // Must sum to ~1.0 and match segments
+const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
 const vsiMajorTickTextOffset = ref(5)
 
-
 const vaccMajorTicks = ref([-1.0, -0.5, -0.1, 0, 0.1, 0.5, 1.0]);
-const vaccMinorTicks = ref([-0.09, -0.08, -0.07, -0.06, -0.04, -0.03, -0.02, -0.01, 0.01, 0.02, 0.03, 0.04, 0.06, 0.07, 0.08, 0.09
-]);
+const vaccMinorTicks = ref([-0.09, -0.08, -0.07, -0.06, -0.04, -0.03, -0.02, -0.01, 0.01, 0.02, 0.03, 0.04, 0.06, 0.07, 0.08, 0.09]);
 const vaccIntermediateTicks = ref([-0.9, -0.8, -0.7, -0.6, -0.4, -0.3, -0.2, -0.1, -0.05, 0.05, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9]);
-const vaccWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]); // Must sum to ~1.0 and match segments
+const vaccWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
 const vaccMajorTickTextOffset = ref(5)
 
+// Component imports
 import EnvelopeUnit from '@/components/units/EnvelopeUnit.vue';
 import OATUnit from '@/components/units/OATUnit.vue';
 import TankUnit from '@/components/units/TankUnit.vue';
 import BoxUnit from '@/components/units/BoxUnit.vue';
+
+// State imports
 import {
-    locationAvailable,
     location,
     elevation,
-    // locationError,
-    // barometerAvailable,
     ekfAltitudeISA,
     ekfAltitudeQNH,
     ekfVelocity,
     ekfAcceleration,
-    ekfIsDecelerating,
     ekfTimeToZeroSpeed,
     ekfZeroSpeedAltitude,
-    ekfZeroSpeedValid,
     vspeedCI95,
     vaccelCI95,
 } from '../utils/state';
@@ -158,21 +207,50 @@ function formatSpeed(speed: number | null | undefined) {
     return Math.round(speed * 3.6)
 }
 
-const handlePressureLongPress = (data: any) => {
-    console.log('Long pressed on:', data.name, data.value, data.unit)
-    // Show detailed view, edit mode, etc.
+// Modal functions
+const showPopup = (data: { name: string, value: number, unit: string }) => {
+    console.log('showPopup:', data)
+    // Round value to one decimal place
+    const roundedData = {
+        ...data,
+        value: Math.round(data.value * 10) / 10
+    };
+    // Only proceed if value is not null
+    modalData.value = roundedData;
+    isModalOpen.value = true;
 }
 
-const showPopup = (data: any, event: any) => {
-    console.log('showPopup:', data, event)
-    // Quick action, toggle unit, etc.
+const closeModal = () => {
+    isModalOpen.value = false;
+    modalData.value = null;
+}
+
+const setOnGround = () => {
+    if (modalData.value) {
+        console.log(`Setting ${modalData.value.name} as ground level:`, modalData.value.value, modalData.value.unit);
+
+        // Here you would implement the actual ground level setting logic
+        // For example, if it's elevation, you might want to:
+        // - Set a ground reference value
+        // - Update altitude calculations
+        // - Store the reference in persistent storage
+
+        // Example implementation:
+        if (modalData.value.name === 'elevation') {
+            // Set ground reference logic here
+            console.log('Ground elevation set to:', modalData.value.value);
+            // You might want to emit an event or update a global state
+        }
+
+        // Close the modal after action
+        closeModal();
+    }
 }
 
 const handleLongPress = (data: any) => {
-    console.log('handleLongPressDirective on:', data.name, data.value, data.unit)
-    // Quick action, toggle unit, etc.
+    console.log('handleLongPress on:', data.name, data.value, data.unit)
+    showPopup(data);
 }
-
 </script>
 
 <style scoped>
