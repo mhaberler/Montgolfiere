@@ -22,10 +22,14 @@
                         <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s\u00B2'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfZeroSpeedAltitude" :name="'Level'" :decimals="0" :unit="'m'" />
+                        <ValueCard :value="ekfZeroSpeedAltitude" :name="'Level'" :decimals="0" :unit="'m'"
+                            :frameClass="!willImpactGround ? 'bg-red-200' : 'bg-white'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'" />
+                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'"
+                            :frameClass="!willImpactGround ? 'bg-red-200' : 'bg-white'" />
+
+                        />
                     </div>
 
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
@@ -59,7 +63,8 @@
                         <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'m over ground'" :decimals="0" :unit="'m'" />
+                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'m over ground'" :decimals="0"
+                            :unit="'m'" />
                     </div>
 
 
@@ -152,6 +157,16 @@ const modal = ref();
 
 const groundReference = ref<number | null>(null);
 
+const willImpactGround = computed(() => {
+    if (groundReference.value == null || !ekfZeroSpeedValid.value)
+        return false;
+    if (elevation.value == null)
+        return false;
+    if (ekfZeroSpeedValid.value && ekfZeroSpeedAltitude.value < elevation.value) {
+        return true;
+    }
+});
+
 // Computed property for height over ground
 const heightOverGround = computed(() => {
     if (groundReference.value !== null && 
@@ -195,6 +210,7 @@ import {
     ekfAcceleration,
     ekfTimeToZeroSpeed,
     ekfZeroSpeedAltitude,
+    ekfZeroSpeedValid,
     vspeedCI95,
     vaccelCI95,
 } from '../utils/state';
