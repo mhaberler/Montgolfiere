@@ -2,14 +2,14 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
-                <ion-title>Dashboard</ion-title>
+                <ion-title>Flight status</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
             <div class="bg-white shadow-1xl rounded-1xl">
                 <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
                     <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
-                    <ValueCard :value="ekfAltitudeQNH" :name="'altQNH'" :decimals="0" :unit="'m'" />
+                    <ValueCard :value="ekfAltitudeQNH" :name="'MSL'" :decimals="0" :unit="'m'" />
 
                     <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
                     <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
@@ -57,13 +57,13 @@
                                 console.warn('Cannot show popup for elevation: invalid value', elevation)
                             }
                         }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
-                            :frameClass="!groundReference ? 'bg-yellow-200' : ''" />
+                            :frameClass="elevation && !groundReference ? 'bg-yellow-200' : ''" />
                     </div>
+                    <!-- <div>
+                        <ValueCard :value="ekfAltitudeISA" :name="'PA'" :decimals="0" :unit="'m'" />
+                    </div> -->
                     <div>
-                        <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
-                    </div>
-                    <div>
-                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'m over ground'" :decimals="0"
+                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'AGL'" :decimals="0"
                             :unit="'m'" />
                     </div>
 
@@ -144,6 +144,7 @@ import { useRouter } from 'vue-router';
 import { ticker } from '../utils/state';
 import { ref, computed } from 'vue';
 import { closeOutline, checkmarkOutline } from 'ionicons/icons';
+import { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters } from '../utils/meteo-utils'
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
@@ -167,12 +168,22 @@ const willImpactGround = computed(() => {
     }
 });
 
+const ekfAltitudeISAfeet = computed(() => {
+    if (ekfAltitudeISA.value) {
+        return metersToFeet(ekfAltitudeISA.value);
+    }
+});
+
+const useFlightLevel = computed(() => {
+    if (ekfAltitudeISA.value == null)
+        return false;
+    return 
+});
+
 // Computed property for height over ground
 const heightOverGround = computed(() => {
-    if (groundReference.value !== null && 
-        ekfAltitudeISA.value !== null && 
-        ekfAltitudeISA.value !== undefined && 
-        !isNaN(ekfAltitudeISA.value)) {
+    if (groundReference.value !== null &&
+        ekfAltitudeISA.value) {
         return ekfAltitudeISA.value - groundReference.value;
     }
     return null;
@@ -213,6 +224,7 @@ import {
     ekfZeroSpeedValid,
     vspeedCI95,
     vaccelCI95,
+    transitionAltitude
 } from '../utils/state';
 
 
@@ -266,7 +278,7 @@ const setOnGround = () => {
         // - Set a ground reference value
         // - Update altitude calculations
         // - Store the reference in persistent storage
-        
+
         // Example implementation:
         if (modalData.value.name === 'elevation') {
             // Set ground reference logic here
@@ -280,10 +292,6 @@ const setOnGround = () => {
     }
 }
 
-const handleLongPress = (data: any) => {
-    console.log('handleLongPress on:', data.name, data.value, data.unit)
-    showPopup(data);
-}
 </script>
 
 <style scoped>

@@ -16,4 +16,13 @@ function isaToQnhAltitude(isaAltitude: number, qnh: number): number {
   return isaAltitude + (isaQnh - qnh) * lapseRate;
 }
 
-export { altitudeByPressure, isaToQnhAltitude };
+function metersToFeet(meters: number): number {
+    const feet = meters * 3.28084;
+    return feet;
+}
+
+function feetToMeters(feet: number): number {
+    const meters = feet * 0.3048;
+    return meters;
+}
+export { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters };
