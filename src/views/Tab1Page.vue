@@ -24,14 +24,21 @@
                     <div>
                         <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s\u00B2'" />
                     </div>
+
                     <div>
-                        <ValueCard :value="apexLevelRelative" :name="'ApexRel'" :decimals="0" :unit="'m'"
-                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
+                        <ValueCard :value="heightOverGround" :name="'AGL'" :decimals="0" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'TTA'" :decimals="0" :unit="'s'"
-                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
+                        <ValueCard v-on-long-press="() => {
+                            if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
+                                showPopup({ name: 'elevation', value: elevation, unit: 'm' })
+                            } else {
+                                console.warn('Cannot show popup for elevation: invalid value', elevation)
+                            }
+                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
+                            :frameClass="elevation && !elevationAtTakeoff ? 'bg-yellow-200' : ''" />
                     </div>
+
 
                     <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
                         <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
@@ -50,20 +57,16 @@
                             :confidenceLower="vaccelCI95.lower" :confidenceUpper="vaccelCI95.upper"
                             :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
+
                     <div>
-                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'AGL'" :decimals="0"
-                            :unit="'m'" />
+                        <ValueCard :value="apexLevelRelative" :name="'ApexRel'" :decimals="0" :unit="'m'"
+                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
                     <div>
-                        <ValueCard v-on-long-press="() => {
-                            if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
-                                showPopup({ name: 'elevation', value: elevation, unit: 'm' })
-                            } else {
-                                console.warn('Cannot show popup for elevation: invalid value', elevation)
-                            }
-                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
-                            :frameClass="elevation && !groundReference ? 'bg-yellow-200' : ''" />
+                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'TTA'" :decimals="0" :unit="'s'"
+                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
+
 
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
@@ -152,7 +155,8 @@ const isModalOpen = ref(false);
 const modalData = ref<{ name: string, value: number, unit: string } | null>(null);
 const modal = ref();
 
-const groundReference = ref<number | null>(null);
+const elevationAtTakeoff = ref<number | null>(null);
+const altitudeAtTakeoff = ref<number>(0);
 const heightOverGround = ref<number | null>(null);
 const apexLevelRelative = ref<number | null>(null); // to current altitude
 
@@ -172,8 +176,10 @@ watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     } else {
         apexLevelRelative.value = null;
     }
-    if (groundReference.value !== null && elevation.value !== null) {
-        heightOverGround.value = newekfAltitudeISA - (elevation.value - groundReference.value);
+    if (elevationAtTakeoff.value !== null && elevation.value !== null) {
+        const heightAboveTakeoff = newekfAltitudeISA - altitudeAtTakeoff.value;
+        const elevationABoveTakeoff = elevation.value - elevationAtTakeoff.value;
+        heightOverGround.value = heightAboveTakeoff - elevationABoveTakeoff;
         if (apexLevelRelative.value != null) {
             willImpactGround.value = (heightOverGround.value - apexLevelRelative.value) < 0;
         } else {
@@ -279,7 +285,8 @@ const setOnGround = () => {
             // Set ground reference logic here
             console.log('Ground elevation set to:', modalData.value.value);
             // You might want to emit an event or update a global state
-            groundReference.value = ekfAltitudeISA.value;
+            elevationAtTakeoff.value = elevation.value;
+            altitudeAtTakeoff.value = ekfAltitudeISA.value;
         }
 
         // Close the modal after action

@@ -14,6 +14,7 @@ const config: CapacitorConfig = {
   // ios: {
   //   loggingBehavior: 'none' // Override for iOS if needed
   // }
+
   server: {
     allowNavigation: [
       "ws://10.*.*.*:*",    // Allow your local subnets
@@ -41,6 +42,9 @@ const config: CapacitorConfig = {
         process.env.ANDROID_KEYSTORE_ALIAS_PASSWORD || "android", // Fallback for debug
     },
     webContentsDebuggingEnabled: true,
+  },
+  ios: {
+    minVersion: '15.5'
   },
   plugins: {
     extConfig: {},
