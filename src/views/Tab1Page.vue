@@ -173,7 +173,7 @@ watch(ekfAltitudeISA, (newekfAltitudeISA) => {
         apexLevelRelative.value = null;
     }
     if (groundReference.value !== null && elevation.value !== null) {
-        heightOverGround.value = newekfAltitudeISA - groundReference.value;
+        heightOverGround.value = newekfAltitudeISA - (elevation.value - groundReference.value);
         if (apexLevelRelative.value != null) {
             willImpactGround.value = (heightOverGround.value - apexLevelRelative.value) < 0;
         } else {
