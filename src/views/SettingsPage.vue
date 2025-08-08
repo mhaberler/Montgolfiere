@@ -110,6 +110,32 @@
 
       <DebugEkf></DebugEkf>
 
+        <!-- Airport QNH Data Section -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Nearby Airport QNH</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div v-if="airportQnhData.length > 0" class="space-y-2">
+              <div v-for="airport in airportQnhData" :key="airport.icao" class="flex justify-between items-center">
+                <div>
+                  <span class="font-semibold">{{ airport.site }}</span>
+                  <span class="ml-2 text-xs text-gray-500">({{ airport.icao }})</span>
+                  <span class="ml-2 text-xs text-gray-500">{{ airport.distance }} km</span>
+                </div>
+                <div>
+                  <span class="font-mono">QNH: {{ airport.qnh }} hPa</span>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-gray-500">No airport QNH data available.</div>
+            <ion-button class="mt-4" expand="block" @click="handleUpdateQnh" :disabled="loadingQnh">
+              {{ loadingQnh ? 'Updating...' : 'Update QNH from Location' }}
+            </ion-button>
+            <div v-if="qnhError" class="text-red-500 mt-2">{{ qnhError }}</div>
+          </ion-card-content>
+        </ion-card>
+
       <ion-card v-if="false">
         <ion-card-header>
           <ion-card-title>MQTT Broker Settings</ion-card-title>
@@ -158,6 +184,7 @@ import {
 } from '@ionic/vue';
 import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';
+import { airportQnhData, updateQnhFromLocation } from '@/process/qnh';
 // import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, checkMqttConnection } from '@/utils/mqtt';
 import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, } from '@/utils/mqtt';
 import { initializeMqtt } from '@/utils/mqttService';
@@ -235,6 +262,41 @@ const sensorSourceOptions = computed(() => {
   }
 
   return options;
+});
+
+
+// QNH update state
+const loadingQnh = ref(false);
+const qnhError = ref('');
+
+const handleUpdateQnh = async () => {
+  loadingQnh.value = true;
+  qnhError.value = '';
+  try {
+    await updateQnhFromLocation();
+  } catch (err) {
+    let msg = 'Failed to update QNH.';
+    if (err && typeof err === 'object') {
+      if ('message' in err && typeof (err as any).message === 'string') {
+        msg = (err as any).message;
+      } else {
+        msg = JSON.stringify(err);
+      }
+    } else if (typeof err === 'string') {
+      msg = err;
+    }
+    qnhError.value = msg;
+  } finally {
+    loadingQnh.value = false;
+  }
+};
+
+import { onMounted } from 'vue';
+onMounted(() => {
+  // Optionally trigger initial QNH update on mount
+  if (airportQnhData.value.length === 0) {
+    handleUpdateQnh();
+  }
 });
 
 

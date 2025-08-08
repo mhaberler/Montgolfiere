@@ -13,7 +13,14 @@ import { point } from '@turf/helpers';
 
 const degrees = 1;
 const numNeighbours = 5;
-const dynamicQNH = ref<number | null>(null);
+
+// Add ref to store airport QNH data
+const airportQnhData = ref<Array<{
+    icao: string;
+    site: string;
+    distance: number;
+    qnh: number;
+}>>([]);
 
 // Define interface for aerodrome data
 interface Aerodrome {
@@ -293,27 +300,46 @@ const locationToQnh = async (location: Position | null) => {
     }
 };
 
+// New exported function that handles the retrieval and state updates
+const updateQnhFromLocation = async (currentLocation?: Position | null): Promise<void> => {
+    const targetLocation = currentLocation || location.value;
+    
+    console.log(`Updating QNH from location`);
+    try {
+        const closestWithMetars = await locationToQnh(targetLocation);
+        
+        // Check if we have valid data before accessing it
+        if (closestWithMetars && closestWithMetars.length > 0 && closestWithMetars[0].metar) {
+            
+            // Extract airport QNH data
+            airportQnhData.value = closestWithMetars.map(airport => ({
+                icao: airport.icaoId,
+                site: airport.site,
+                distance: airport.distance || 0,
+                qnh: airport.metar?.altim || 0
+            }));
+            
+            console.log('Airport QNH data:', airportQnhData.value);
+        } else {
+            console.warn('No airports with METAR data found, keeping previous QNH value');
+            airportQnhData.value = []; // Clear the array when no data
+        }
+    } catch (error) {
+        console.error('Failed to process location for QNH:', error);
+        airportQnhData.value = []; // Clear on error
+        throw error; // Re-throw so caller can handle if needed
+    }
+};
+
 watch(
     locationAvailable,
     async (newLocationAvailable) => {
         console.log(`newLocationAvailable: ${newLocationAvailable}`);
-        try {
-            const closestWithMetars = await locationToQnh(location.value);
-            
-            // Check if we have valid data before accessing it
-            if (closestWithMetars && closestWithMetars.length > 0 && closestWithMetars[0].metar) {
-                dynamicQNH.value = closestWithMetars[0].metar.altim;
-                console.log(`Set dynamicQNH to ${dynamicQNH.value} from ${closestWithMetars[0].icaoId}`);
-            } else {
-                console.warn('No airports with METAR data found, keeping previous QNH value');
-                // Optionally set to null if no data is available:
-                dynamicQNH.value = null;
-            }
-        } catch (error) {
-            console.error('Failed to process location for QNH:', error);
-        }
+        await updateQnhFromLocation();
     }
 );
+
 export {
-    dynamicQNH
+    airportQnhData,
+    updateQnhFromLocation
 };

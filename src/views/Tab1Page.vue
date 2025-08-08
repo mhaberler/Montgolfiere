@@ -67,9 +67,9 @@
                             :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
 
-                    <div>
+                    <!-- <div>
                         <ValueCard :value="dynamicQNH" :name="'dnyQNH'" :decimals="0" :unit="'hPa'" />
-                    </div>
+                    </div> -->
 
 
                 </div>
@@ -144,12 +144,15 @@ import {
     IonIcon
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
-import { ticker } from '../utils/state';
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { closeOutline, checkmarkOutline } from 'ionicons/icons';
-import { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters } from '../utils/meteo-utils'
+import { metersToFeet } from '../utils/meteo-utils'
 
-import { dynamicQNH } from '../process/qnh'
+import {
+    airportQnhData,
+    updateQnhFromLocation
+} from '../process/qnh';
+import { pressureQNH } from '../process/pressure';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
