@@ -13,7 +13,7 @@
                     <ValueCard :value="useFlightLevel ? `FL${flightLevel.toString().padStart(3, '0')}` : ekfAltitudeQNH"
                         :name="useFlightLevel ? 'Flightlevel' : 'MSL'" :decimals="useFlightLevel ? 0 : 0"
                         :unit="useFlightLevel ? '' : 'm'" />
-                        
+
                     <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
                     <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
                         :decimals="0" unit="°" />
@@ -25,11 +25,11 @@
                         <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s\u00B2'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfZeroSpeedAltitude" :name="'Level'" :decimals="0" :unit="'m'"
+                        <ValueCard :value="apexLevelRelative" :name="'ApexRel'" :decimals="0" :unit="'m'"
                             :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'in'" :decimals="0" :unit="'s'"
+                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'TTA'" :decimals="0" :unit="'s'"
                             :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
 
@@ -51,6 +51,10 @@
                             :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
                     <div>
+                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'AGL'" :decimals="0"
+                            :unit="'m'" />
+                    </div>
+                    <div>
                         <ValueCard v-on-long-press="() => {
                             if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
                                 showPopup({ name: 'elevation', value: elevation, unit: 'm' })
@@ -60,10 +64,7 @@
                         }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
                             :frameClass="elevation && !groundReference ? 'bg-yellow-200' : ''" />
                     </div>
-                    <div>
-                        <ValueCard v-if=groundReference :value="heightOverGround" :name="'AGL'" :decimals="0"
-                            :unit="'m'" />
-                    </div>
+
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
@@ -153,6 +154,7 @@ const modal = ref();
 
 const groundReference = ref<number | null>(null);
 const heightOverGround = ref<number | null>(null);
+const apexLevelRelative = ref<number | null>(null); // to current altitude
 
 const ekfAltitudeISAfeet = ref<number>(0);
 const flightLevel = ref<number>(0);
@@ -162,13 +164,24 @@ const willImpactGround = ref<boolean>(false);
 
 watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     // console.log(`ekfAltitudeISA is ${newekfAltitudeISA}`)
-    ekfAltitudeISAfeet.value = metersToFeet(ekfAltitudeISA.value);
+    ekfAltitudeISAfeet.value = metersToFeet(newekfAltitudeISA);
     useFlightLevel.value = ekfAltitudeISAfeet.value > transitionAltitude.value;
     flightLevel.value = Math.round(ekfAltitudeISAfeet.value / 100.0);
-    if (groundReference.value !== null) {
-        heightOverGround.value = ekfAltitudeISA.value - groundReference.value;
-        willImpactGround.value = (elevation.value !== null && ekfZeroSpeedValid.value && ekfZeroSpeedAltitude.value < elevation.value)
-        // willImpactGround.value = true;
+    if (ekfZeroSpeedValid.value) {
+        apexLevelRelative.value = newekfAltitudeISA - ekfZeroSpeedAltitude.value;
+    } else {
+        apexLevelRelative.value = null;
+    }
+    if (groundReference.value !== null && elevation.value !== null) {
+        heightOverGround.value = newekfAltitudeISA - groundReference.value;
+        if (apexLevelRelative.value != null) {
+            willImpactGround.value = (heightOverGround.value - apexLevelRelative.value) < 0;
+        } else {
+            willImpactGround.value = false;
+        }
+    } else {
+        heightOverGround.value = null;
+        willImpactGround.value = false;
     }
 })
 
