@@ -53,8 +53,6 @@ PODS:
   - CapacitorMlkitBarcodeScanning (7.3.0):
     - Capacitor
     - GoogleMLKit/BarcodeScanning (= 7.0.0)
-  - CapacitorMobiHttp (7.0.0):
-    - Capacitor
   - CapacitorNetwork (7.0.2):
     - Capacitor
   - CapacitorPreferences (7.0.2):
@@ -118,6 +116,8 @@ PODS:
   - GTMSessionFetcher/Core (3.5.0)
   - IONFilesystemLib (1.0.1)
   - IONGeolocationLib (1.0.0)
+  - LeadscoutHttp (7.0.0):
+    - Capacitor
   - MhaberlerCapacitorBarometer (1.1.4):
     - Capacitor
   - MhaberlerCapacitorZeroconfNsd (5.0.3):
@@ -175,7 +175,6 @@ DEPENDENCIES:
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
-  - "CapacitorMobiHttp (from `../../node_modules/@capacitor-mobi/http`)"
   - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - "CapacitorScreenReader (from `../../node_modules/@capacitor/screen-reader`)"
@@ -193,6 +192,7 @@ DEPENDENCIES:
   - "CapgoCapacitorUploader (from `../../node_modules/@capgo/capacitor-uploader`)"
   - "CapgoNativeAudio (from `../../node_modules/@capgo/native-audio`)"
   - "CapgoNativegeocoder (from `../../node_modules/@capgo/nativegeocoder`)"
+  - "LeadscoutHttp (from `../../node_modules/@leadscout/http`)"
   - "MhaberlerCapacitorBarometer (from `../../node_modules/@mhaberler/capacitor-barometer`)"
   - "MhaberlerCapacitorZeroconfNsd (from `../../node_modules/@mhaberler/capacitor-zeroconf-nsd`)"
 
@@ -267,8 +267,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/local-notifications"
   CapacitorMlkitBarcodeScanning:
     :path: "../../node_modules/@capacitor-mlkit/barcode-scanning"
-  CapacitorMobiHttp:
-    :path: "../../node_modules/@capacitor-mobi/http"
   CapacitorNetwork:
     :path: "../../node_modules/@capacitor/network"
   CapacitorPreferences:
@@ -303,6 +301,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capgo/native-audio"
   CapgoNativegeocoder:
     :path: "../../node_modules/@capgo/nativegeocoder"
+  LeadscoutHttp:
+    :path: "../../node_modules/@leadscout/http"
   MhaberlerCapacitorBarometer:
     :path: "../../node_modules/@mhaberler/capacitor-barometer"
   MhaberlerCapacitorZeroconfNsd:
@@ -335,7 +335,6 @@ SPEC CHECKSUMS:
   CapacitorKeyboard: a86aa9e4741b6444a802df26440a92ae041b34a6
   CapacitorLocalNotifications: 665188ae8accd40806129073896fb2b39322d858
   CapacitorMlkitBarcodeScanning: 05b2dfc7a70099f6d4594365c521534d79a17b1d
-  CapacitorMobiHttp: 71406d364c12534ade544d0b1aa69496cee2e1a6
   CapacitorNetwork: 695069886b3c5ed514db69aa3d026b8dc3c03a6b
   CapacitorPreferences: 65107ed7437d96ee72583df5763985e3c0ff2bc2
   CapacitorScreenReader: 218f3bd7ed11e6bf24ec15f5636acb404d5c840d
@@ -360,6 +359,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
+  LeadscoutHttp: 3b639e66d5e816630edb9fdf2acb7faff0ee7cb6
   MhaberlerCapacitorBarometer: b93a10ce692cd2d90d97b9bb0ddca89b1362c915
   MhaberlerCapacitorZeroconfNsd: 88705b7013c1f8da0cdc45b48323da4c54b91e78
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
@@ -373,6 +373,6 @@ SPEC CHECKSUMS:
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: af2bac9c9d8334d34db952af29da8b168030cd2e
+PODFILE CHECKSUM: aa33d8e310309506f6532cf4b1ec212b1695e5cb
 
 COCOAPODS: 1.16.2

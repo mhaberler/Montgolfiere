@@ -6,8 +6,8 @@ import {
     Position,
 } from "@capacitor/geolocation";
 
-import { Http, HttpResponse } from '@capacitor-mobi/http';
-import { ref, computed, watch } from 'vue';
+import { Http, HttpResponse } from '@leadscout/http';
+import { ref,  watch } from 'vue';
 import { distance } from '@turf/distance';
 import { point } from '@turf/helpers';
 
@@ -73,7 +73,35 @@ interface Metar {
         base: number | null;
     }>;
 }
-
+// airodrome example:
+// [
+//     {
+//         "icaoId": "LJMB",
+//         "iataId": "MBX",
+//         "faaId": "-",
+//         "wmoId": "14026",
+//         "lat": 46.48,
+//         "lon": 15.682,
+//         "elev": 263,
+//         "site": "Maribor/Rusjan Arpt",
+//         "state": "MA",
+//         "country": "SI",
+//         "priority": 5
+//     },
+//     {
+//         "icaoId": "LOWG",
+//         "iataId": "GRZ",
+//         "faaId": "-",
+//         "wmoId": "11240",
+//         "lat": 46.997,
+//         "lon": 15.447,
+//         "elev": 337,
+//         "site": "Graz Arpt",
+//         "state": "ST",
+//         "country": "AT",
+//         "priority": 3
+//     }
+// ]
 async function fetchAirodromeLocations(lat: number, lon: number, deg: number): Promise<Aerodrome[]> {
     const bbox = `${lat - deg},${lon - deg},${lat + deg},${lon + deg}`;
     const options = {
@@ -228,7 +256,7 @@ const locationToQnh = async (location: Position | null) => {
         }
         
         // Extract ICAO IDs from the nearest aerodromes
-        const nearestAerodromes = sortedAerodromes.slice(0, numNeighbours);
+        const nearestAerodromes = sortedAerodromes.slice(0, numNeighbours*2);
         const icaoIds = nearestAerodromes.map(aerodrome => aerodrome.icaoId);
         console.log(`Extracting METARs for nearest ${numNeighbours} aerodromes:`, icaoIds);
         
@@ -272,11 +300,20 @@ watch(
         try {
             const closestWithMetars = await locationToQnh(location.value);
             
-            dynamicQNH.value = 42; // Set after completion
+            // Check if we have valid data before accessing it
+            if (closestWithMetars && closestWithMetars.length > 0 && closestWithMetars[0].metar) {
+                dynamicQNH.value = closestWithMetars[0].metar.altim;
+                console.log(`Set dynamicQNH to ${dynamicQNH.value} from ${closestWithMetars[0].icaoId}`);
+            } else {
+                console.warn('No airports with METAR data found, keeping previous QNH value');
+                // Optionally set to null if no data is available:
+                dynamicQNH.value = null;
+            }
         } catch (error) {
             console.error('Failed to process location for QNH:', error);
         }
     }
-);export {
+);
+export {
     dynamicQNH
 };

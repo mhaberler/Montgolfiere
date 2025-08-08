@@ -11,7 +11,6 @@
         "@capacitor-community/keep-awake": "^7.1.0",
         "@capacitor-community/safe-area": "^7.0.0-alpha.1",
         "@capacitor-mlkit/barcode-scanning": "^7.3.0",
-        "@capacitor-mobi/http": "^7.0.0",
         "@capacitor/action-sheet": "^7.0.2",
         "@capacitor/android": "7.4.2",
         "@capacitor/app": "^7.0.2",
@@ -52,6 +51,7 @@
         "@ionic/remote-log": "^0.0.2",
         "@ionic/vue": "^8.7.2",
         "@ionic/vue-router": "^8.7.2",
+        "@leadscout/http": "^7.0.0",
         "@mhaberler/capacitor-barometer": "^1.1.4",
         "@mhaberler/capacitor-zeroconf-nsd": "^5.0.3",
         "@tailwindcss/postcss": "^4.1.11",
@@ -194,8 +194,6 @@
     "@capacitor-community/safe-area": ["@capacitor-community/safe-area@7.0.0-alpha.1", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-N6ktkRiofqrt+N/vQzh4jcWY8IzJ4TVw1tKAPssvbddWFTyZzXzSdBeX/l/nracJF0PZqmLdA7JYTBfnOxXQYw=="],
 
     "@capacitor-mlkit/barcode-scanning": ["@capacitor-mlkit/barcode-scanning@7.3.0", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-pgSbNw0illjIpOXJKC/A/1a3xn4cgCNubhymOhz/Qdu2ZoplhYvpnOlEYpfRcdeXAM9M+682pS8qFyrez6a84A=="],
-
-    "@capacitor-mobi/http": ["@capacitor-mobi/http@7.0.0", "", { "dependencies": { "@capacitor/android": "^7.0.0", "@capacitor/core": "^7.0.0", "@capacitor/filesystem": "^7.0.0", "@capacitor/ios": "^7.0.0" } }, "sha512-W5EMrD2OxJIfkS2/19EaSzhYWT8q4qzfxlaHQN5rbQHNhGz7mArOoHG9EyMZm0zOxEX+41j0zzD68fY3561EqA=="],
 
     "@capacitor/action-sheet": ["@capacitor/action-sheet@7.0.2", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-x134ZNaik6YhT6qt8U2SHT8d1KzobidOfVWrFIxAc9QgIWzU7lAtIuS+j6WI9Pn2Dc9PjxCIVpW8Pk1r9PjvnA=="],
 
@@ -452,6 +450,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.4", "", {}, "sha512-VT2+G1VQs/9oz078bLrYbecdZKs912zQlkelYpuf+SXF+QvZDYJlbx/LSx+meSAwdDFnF8FVXW92AVjjkVmgFw=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.29", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ=="],
+
+    "@leadscout/http": ["@leadscout/http@7.0.0", "", { "dependencies": { "@capacitor/android": "^7.0.0", "@capacitor/filesystem": "^7.0.0", "@capacitor/ios": "^7.0.0" }, "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-lXtLFZJB17rKefH6O/OCIf3qp6BubsRNmeCeyOj5zRILRsJNoNGR7+bF+fMRfATGhSSXU+JBD5w/tWFhmt4z3w=="],
 
     "@mapbox/jsonlint-lines-primitives": ["@mapbox/jsonlint-lines-primitives@2.0.2", "", {}, "sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ=="],
 
