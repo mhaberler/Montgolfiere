@@ -46,10 +46,12 @@
                             :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
                     </div>
                     <div>
-                        <ValueCard :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'" />
+                        <ValueCard v-on-long-press="handleLongPress" :value="elevation" :name="'elevation'"
+                            :decimals="1" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
+                        <ValueCard v-on-long-press="handleLongPress" :value="ekfAltitudeISA" :name="'altISA'"
+                            :decimals="0" :unit="'m'" />
                     </div>
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
@@ -150,6 +152,22 @@ function formatSpeed(speed: number | null | undefined) {
     }    // Convert from m/s to km/h if needed, or just round
     return Math.round(speed * 3.6)
 }
+
+const handlePressureLongPress = (data: any) => {
+    console.log('Long pressed on:', data.name, data.value, data.unit)
+    // Show detailed view, edit mode, etc.
+}
+
+const handlePressureDoubleClick = (data: any) => {
+    console.log('Double clicked on:', data.name, data.value, data.unit)
+    // Quick action, toggle unit, etc.
+}
+
+const handleLongPress = (data: any) => {
+    console.log('handleLongPressDirective on:', data.name, data.value, data.unit)
+    // Quick action, toggle unit, etc.
+}
+
 </script>
 
 <style scoped>

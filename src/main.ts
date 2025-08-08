@@ -42,6 +42,7 @@ import { SafeArea } from '@capacitor-community/safe-area';
 
 import { initializeApp } from './utils/startup';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { vOnLongPress } from '@vueuse/components';
 
 
 SafeArea.enable({
@@ -82,6 +83,10 @@ initializeApp();
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
+
+// Register the directive globally
+app.directive('on-long-press', vOnLongPress);
+
 
 // Add Vue error handler
 app.config.errorHandler = (err, instance, info) => {
