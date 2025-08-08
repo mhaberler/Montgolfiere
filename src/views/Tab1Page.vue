@@ -9,8 +9,11 @@
             <div class="bg-white shadow-1xl rounded-1xl">
                 <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
                     <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
-                    <ValueCard :value="ekfAltitudeQNH" :name="'MSL'" :decimals="0" :unit="'m'" />
 
+                    <ValueCard :value="useFlightLevel ? `FL${flightLevel.toString().padStart(3, '0')}` : ekfAltitudeQNH"
+                        :name="useFlightLevel ? 'Flightlevel' : 'MSL'" :decimals="useFlightLevel ? 0 : 0"
+                        :unit="useFlightLevel ? '' : 'm'" />
+                        
                     <ValueCard name="speed" :value="formatSpeed(location?.coords?.speed)" :decimals="0" unit="km/h" />
                     <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
                         :decimals="0" unit="°" />
@@ -57,16 +60,10 @@
                         }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
                             :frameClass="elevation && !groundReference ? 'bg-yellow-200' : ''" />
                     </div>
-                    <!-- <div>
-                        <ValueCard :value="ekfAltitudeISA" :name="'PA'" :decimals="0" :unit="'m'" />
-                    </div> -->
                     <div>
                         <ValueCard v-if=groundReference :value="heightOverGround" :name="'AGL'" :decimals="0"
                             :unit="'m'" />
                     </div>
-
-
-
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
@@ -162,11 +159,6 @@ const flightLevel = ref<number>(0);
 const useFlightLevel = ref<boolean>(false);
 const willImpactGround = ref<boolean>(false);
 
-
-
-// watch(ticker, (newTicker) => {
-//     console.log(`ticker is ${newTicker}`)
-// })
 
 watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     // console.log(`ekfAltitudeISA is ${newekfAltitudeISA}`)
