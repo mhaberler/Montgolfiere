@@ -55,13 +55,7 @@
                         }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard v-on-long-press="() => {
-                            if (ekfAltitudeISA !== null && ekfAltitudeISA !== undefined && !isNaN(ekfAltitudeISA)) {
-                                showPopup({ name: 'altISA', value: ekfAltitudeISA, unit: 'm' })
-                            } else {
-                                console.warn('Cannot show popup for altISA: invalid value', ekfAltitudeISA)
-                            }
-                        }" :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
+                        <ValueCard  :value="ekfAltitudeISA" :name="'altISA'" :decimals="0" :unit="'m'" />
                     </div>
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
