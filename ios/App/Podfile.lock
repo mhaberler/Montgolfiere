@@ -50,11 +50,12 @@ PODS:
     - Capacitor
   - CapacitorLocalNotifications (7.0.2):
     - Capacitor
+  - CapacitorMlkitBarcodeScanning (7.3.0):
+    - Capacitor
+    - GoogleMLKit/BarcodeScanning (= 7.0.0)
   - CapacitorNetwork (7.0.2):
     - Capacitor
   - CapacitorPreferences (7.0.2):
-    - Capacitor
-  - CapacitorScreenOrientation (7.0.2):
     - Capacitor
   - CapacitorScreenReader (7.0.2):
     - Capacitor
@@ -90,14 +91,60 @@ PODS:
     - Capacitor
   - CapgoNativegeocoder (7.1.8):
     - Capacitor
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - GoogleMLKit/BarcodeScanning (7.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitBarcodeScanning (~> 6.0.0)
+  - GoogleMLKit/MLKitCore (7.0.0):
+    - MLKitCommon (~> 12.0.0)
+  - GoogleToolboxForMac/Defines (4.2.1)
+  - GoogleToolboxForMac/Logger (4.2.1):
+    - GoogleToolboxForMac/Defines (= 4.2.1)
+  - "GoogleToolboxForMac/NSData+zlib (4.2.1)":
+    - GoogleToolboxForMac/Defines (= 4.2.1)
+  - GoogleUtilities/Environment (8.1.0):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.1.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.1.0)
+  - GoogleUtilities/UserDefaults (8.1.0):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GTMSessionFetcher/Core (3.5.0)
   - IONFilesystemLib (1.0.1)
   - IONGeolocationLib (1.0.0)
   - MhaberlerCapacitorBarometer (1.1.4):
     - Capacitor
   - MhaberlerCapacitorZeroconfNsd (5.0.3):
     - Capacitor
+  - MLImage (1.0.0-beta6)
+  - MLKitBarcodeScanning (6.0.0):
+    - MLKitCommon (~> 12.0)
+    - MLKitVision (~> 8.0)
+  - MLKitCommon (12.0.0):
+    - GoogleDataTransport (~> 10.0)
+    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
+    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
+    - GoogleUtilities/Logger (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+  - MLKitVision (8.0.0):
+    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
+    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+    - MLImage (= 1.0.0-beta6)
+    - MLKitCommon (~> 12.0)
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
   - OSBarcodeLib (1.1.3)
   - OSInAppBrowserLib (2.1.0)
+  - PromisesObjC (2.4.0)
   - SSZipArchive (2.4.3)
   - Version (0.8.0)
 
@@ -125,9 +172,9 @@ DEPENDENCIES:
   - "CapacitorInappbrowser (from `../../node_modules/@capacitor/inappbrowser`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
+  - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
   - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
-  - "CapacitorScreenOrientation (from `../../node_modules/@capacitor/screen-orientation`)"
   - "CapacitorScreenReader (from `../../node_modules/@capacitor/screen-reader`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
@@ -150,10 +197,21 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - BigInt
+    - GoogleDataTransport
+    - GoogleMLKit
+    - GoogleToolboxForMac
+    - GoogleUtilities
+    - GTMSessionFetcher
     - IONFilesystemLib
     - IONGeolocationLib
+    - MLImage
+    - MLKitBarcodeScanning
+    - MLKitCommon
+    - MLKitVision
+    - nanopb
     - OSBarcodeLib
     - OSInAppBrowserLib
+    - PromisesObjC
     - SSZipArchive
     - Version
 
@@ -204,12 +262,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorLocalNotifications:
     :path: "../../node_modules/@capacitor/local-notifications"
+  CapacitorMlkitBarcodeScanning:
+    :path: "../../node_modules/@capacitor-mlkit/barcode-scanning"
   CapacitorNetwork:
     :path: "../../node_modules/@capacitor/network"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
-  CapacitorScreenOrientation:
-    :path: "../../node_modules/@capacitor/screen-orientation"
   CapacitorScreenReader:
     :path: "../../node_modules/@capacitor/screen-reader"
   CapacitorShare:
@@ -271,9 +329,9 @@ SPEC CHECKSUMS:
   CapacitorInappbrowser: 6d5630c9194cf108ba71a745ef44e45a68a73109
   CapacitorKeyboard: a86aa9e4741b6444a802df26440a92ae041b34a6
   CapacitorLocalNotifications: 665188ae8accd40806129073896fb2b39322d858
+  CapacitorMlkitBarcodeScanning: 05b2dfc7a70099f6d4594365c521534d79a17b1d
   CapacitorNetwork: 695069886b3c5ed514db69aa3d026b8dc3c03a6b
   CapacitorPreferences: 65107ed7437d96ee72583df5763985e3c0ff2bc2
-  CapacitorScreenOrientation: e0d5b9ef293b269b8f93373355d5b276f50fabea
   CapacitorScreenReader: 218f3bd7ed11e6bf24ec15f5636acb404d5c840d
   CapacitorShare: be166411fa995ead2d39b104aa0aae56d8615c66
   CapacitorSplashScreen: 157947576b59d913792063a8d442a79e6d283ee5
@@ -289,15 +347,26 @@ SPEC CHECKSUMS:
   CapgoCapacitorUploader: 4b9e1e152f3827b0e6993d1cba03784608a26d3e
   CapgoNativeAudio: 8dd0e69f79eff7a4cfa2be68b4dfd8749288f775
   CapgoNativegeocoder: f23baa66000c8522794bb78f0d3c318600e0b946
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
+  GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
+  GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
+  GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   MhaberlerCapacitorBarometer: b93a10ce692cd2d90d97b9bb0ddca89b1362c915
   MhaberlerCapacitorZeroconfNsd: 88705b7013c1f8da0cdc45b48323da4c54b91e78
+  MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
+  MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
+  MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
+  MLKitVision: 45e79d68845a2de77e2dd4d7f07947f0ed157b0e
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   OSBarcodeLib: f2e981270a64faf476cb790864262b29ab8cd68a
   OSInAppBrowserLib: 02111d866ad1bf19c663cd9b268bb22c7d41df4f
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: 0fc43c9d4dde08d6dbf257e1abbeeff1e68421b0
+PODFILE CHECKSUM: bf2f3f0b40b278575ad62d2e4c833c4646467cc1
 
 COCOAPODS: 1.16.2
