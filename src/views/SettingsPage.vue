@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content :fullscreen="true">
 
-      <ion-accordion-group>
+      <ion-accordion-group v-model="openAccordion">
         <ion-accordion value="config">
           <ion-item slot="header">
             <ion-label>Configuration</ion-label>
@@ -36,35 +36,42 @@
                   if (historySamples > 500) historySamples = 500;
                 }"></ion-input>
               </div>
-              <div>
-                <ion-label>Show Debug Info</ion-label>
+
+
+              <div class="mt-4 space-y-2 p-4">
+                <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
+                <select v-model="selectedUrl" class="w-full p-2 border border-gray-300 rounded-md"
+                  @change="updateDemUrl">
+                  <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">Europe 30m</option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">Austria 10m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">Slovenia 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">Germany 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">
+                    Switzerland
+                    10m</option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">Sweden 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">Croatia 10m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">Hungary 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles">Slovakia 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">Czechia 20m
+                  </option>
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles">Poland 20m
+                  </option>
+                  <option value="custom">Custom URL...</option>
+                </select>
+                <input v-if="selectedUrl === 'custom'" v-model="customUrl"
+                  class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter custom PMTiles URL"
+                  @input="updateDemUrl" />
               </div>
-              <div>
-                <ion-button fill="outline" size="small" @click="toggleDebugInfo">
-                  {{ showDebugInfo ? 'Hide' : 'Show' }}
-                </ion-button>
-              </div>
-            </div>
-            <div class="mt-4 space-y-2 p-4">
-              <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
-              <select v-model="selectedUrl" class="w-full p-2 border border-gray-300 rounded-md" @change="updateDemUrl">
-                <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">Europe 30m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">Austria 10m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">Slovenia 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">Germany 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">Italy 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">Switzerland 10m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">Sweden 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">Croatia 10m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">Hungary 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles">Slovakia 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">Czechia 20m</option>
-                <option value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles">Poland 20m</option>
-                <option value="custom">Custom URL...</option>
-              </select>
-              <input v-if="selectedUrl === 'custom'" v-model="customUrl"
-                class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter custom PMTiles URL"
-                @input="updateDemUrl" />
             </div>
           </div>
         </ion-accordion>
@@ -74,6 +81,38 @@
           </ion-item>
           <div slot="content">
             <ion-card>
+              <ion-card v-if="false">
+                <ion-card-header>
+                  <ion-card-title>MQTT Broker Settings</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <div class="config-grid">
+                    <div class="config-item">
+                      <ion-label>Broker URL</ion-label>
+                      <ion-input v-model="mqttBrokerUrl"></ion-input>
+                    </div>
+                    <div class="config-item">
+                      <ion-label>User</ion-label>
+                      <ion-input v-model="mqttUser"></ion-input>
+                    </div>
+                    <div class="config-item">
+                      <ion-label>Password</ion-label>
+                      <ion-input type="password" v-model="mqttPassword"></ion-input>
+                    </div>
+                    <div class="config-item">
+                      <ion-label>Connection Status</ion-label>
+                      <!-- [color]="mqttStatusColor" -->
+                      <ion-text>{{ mqttStatusMsg }}</ion-text>
+                    </div>
+                    <div class="config-item">
+                      <ion-button expand="full" @click="checkMqttConnection">
+                        Check Connection
+                      </ion-button>
+                    </div>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+
               <ion-card-content>
                 <div v-if="airportQnhData.length > 0" class="space-y-2">
                   <div v-for="airport in airportQnhData" :key="airport.icao" class="flex justify-between items-center">
@@ -87,7 +126,6 @@
                     </div>
                   </div>
                 </div>
-                <div v-else class="text-gray-500">No airport QNH data available.</div>
                 <ion-button class="mt-4" expand="block" @click="handleUpdateQnh" :disabled="loadingQnh">
                   {{ loadingQnh ? 'Updating...' : 'Update QNH from Location' }}
                 </ion-button>
@@ -96,52 +134,15 @@
             </ion-card>
           </div>
         </ion-accordion>
-      </ion-accordion-group>
-
-      <!-- <ion-card>
-        <ion-card-header>
-          <ion-card-title>Sensor source</ion-card-title>
-        </ion-card-header>
-
-        <ion-card-content>
-          <div class="select-container">
-            <ion-select v-model="sensorSource" placeholder="Select sensor source" interface="popover"
-              class="sensor-select">
-              <ion-select-option v-for="option in sensorSourceOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </ion-select-option>
-            </ion-select>
+        <ion-accordion value="debug">
+          <ion-item slot="header">
+            <ion-label>Debug</ion-label>
+          </ion-item>
+          <div slot="content">
+            <DebugEkf />
           </div>
-        </ion-card-content>
-      </ion-card> -->
-
-      <DebugEkf></DebugEkf>
-
-        <!-- Airport QNH Data Section -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Nearby Airport QNH</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <div v-if="airportQnhData.length > 0" class="space-y-2">
-              <div v-for="airport in airportQnhData" :key="airport.icao" class="flex justify-between items-center">
-                <div>
-                  <span class="font-semibold">{{ airport.site }}</span>
-                  <span class="ml-2 text-xs text-gray-500">({{ airport.icao }})</span>
-                  <span class="ml-2 text-xs text-gray-500">{{ airport.distance }} km</span>
-                </div>
-                <div>
-                  <span class="font-mono">QNH: {{ airport.qnh }} hPa</span>
-                </div>
-              </div>
-            </div>
-            <div v-else class="text-gray-500">No airport QNH data available.</div>
-            <ion-button class="mt-4" expand="block" @click="handleUpdateQnh" :disabled="loadingQnh">
-              {{ loadingQnh ? 'Updating...' : 'Update QNH from Location' }}
-            </ion-button>
-            <div v-if="qnhError" class="text-red-500 mt-2">{{ qnhError }}</div>
-          </ion-card-content>
-        </ion-card>
+        </ion-accordion>
+      </ion-accordion-group>
 
       <ion-card v-if="false">
         <ion-card-header>
@@ -183,11 +184,17 @@
 </template>
 
 <script setup lang="ts">
+// Track which accordion is open
+import { watch } from 'vue';
+const openAccordion = ref('');
+watch(openAccordion, (val) => {
+  showDebugInfo.value = val === 'debug';
+});
 
 import {
   IonPage, IonContent, IonLabel, IonToggle, IonInput, IonCard,
   IonCardHeader, IonCardTitle, IonCardContent, IonButton,
-  IonSelect, IonSelectOption, IonText, IonHeader, IonTitle, IonToolbar
+  IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonText, IonHeader, IonTitle, IonToolbar
 } from '@ionic/vue';
 import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';

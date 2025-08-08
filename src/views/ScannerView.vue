@@ -12,54 +12,34 @@
         </ion-card-header>
         <ion-card-content>
           <div class="controls-grid">
-            <ion-input 
-              v-model="manualHost" 
-              placeholder="Enter MQTT broker IP" 
-              fill="outline"
-              label="Host"
-              label-placement="stacked"
-            ></ion-input>
-            
-            <ion-input 
-              v-model="manualPort" 
-              placeholder="Port (1883)" 
-              type="number"
-              fill="outline"
-              label="Port"
-              label-placement="stacked"
-            ></ion-input>
-            
-            <ion-select 
-              v-model="selectedType"
-              fill="outline"
-              label="Type"
-              label-placement="stacked"
-              interface="popover"
-            >
+            <ion-input v-model="manualHost" placeholder="Enter MQTT broker IP" fill="outline" label="Host"
+              label-placement="stacked"></ion-input>
+
+            <ion-input v-model="manualPort" placeholder="Port (1883)" type="number" fill="outline" label="Port"
+              label-placement="stacked"></ion-input>
+
+            <ion-select v-model="selectedType" fill="outline" label="Type" label-placement="stacked"
+              interface="popover">
               <ion-select-option value="_mqtt-ws._tcp.">MQTT WebSocket</ion-select-option>
               <ion-select-option value="_mqtt-wss._tcp.">MQTT WSS</ion-select-option>
             </ion-select>
-            
+
             <div class="button-group">
               <ion-button @click="addManualService" expand="block" color="success">
                 Add Manual
               </ion-button>
-              
-              <ion-button 
-                @click="toggleScan" 
-                expand="block"
-                :color="isScanning ? 'danger' : 'primary'"
-                :disabled="!isCapacitorApp"
-              >
+
+              <ion-button @click="toggleScan" expand="block" :color="isScanning ? 'danger' : 'primary'"
+                :disabled="!isCapacitorApp">
                 {{ isScanning ? 'Stop Scan' : 'Start Scan' }}
               </ion-button>
             </div>
           </div>
-          
+
           <ion-text v-if="!isCapacitorApp" color="warning" class="warning-text">
             <p>mDNS scanning is only available in the Capacitor app</p>
           </ion-text>
-          
+
           <ion-text v-if="scanError" color="danger" class="error-text">
             <p>{{ scanError }}</p>
           </ion-text>
@@ -70,7 +50,8 @@
         <ion-text v-if="Object.keys(services).length === 0" color="medium" class="empty-state">
           <div class="empty-content">
             <p v-if="isCapacitorApp && !isScanning">
-              No services found. Click "Start Scan" to discover MQTT brokers on your network, or add a manual broker above.
+              No services found. Click "Start Scan" to discover MQTT brokers on your network, or add a manual broker
+              above.
             </p>
             <p v-else-if="isCapacitorApp && isScanning">
               <ion-spinner name="circles"></ion-spinner>
@@ -84,46 +65,30 @@
         </ion-text>
 
         <ion-list v-if="Object.keys(services).length > 0">
-          <ion-item 
-            v-for="(service, key) in services" 
-            :key="key" 
-            button
-            @click="handleServicePress(service)"
-            :class="{ 
+          <ion-item v-for="(service, key) in services" :key="key" button @click="handleServicePress(service)" :class="{ 
               'discovered': service.discovered,
               'resolved': service.resolved
-            }"
-          >
+            }">
             <ion-label>
               <h2>{{ service.name }}</h2>
               <p>Type: {{ service.type }}</p>
               <p>Host: {{ service.host }}</p>
               <p>Port: {{ service.port }}</p>
-              
-              <ion-chip 
-                v-if="service.discovered" 
-                :color="service.resolved ? 'primary' : 'medium'"
-                size="small"
-              >
+
+              <ion-chip v-if="service.discovered" :color="service.resolved ? 'primary' : 'medium'" size="small">
                 {{ service.resolved ? 'Resolved via mDNS' : 'Resolving...' }}
               </ion-chip>
-              
+
               <p v-if="service.txtRecord && Object.keys(service.txtRecord).length > 0" class="txt-record">
                 TXT: {{ JSON.stringify(service.txtRecord) }}
               </p>
-              
+
               <p class="tap-hint">Tap to connect</p>
             </ion-label>
 
-            <ion-button 
-              slot="end"
-              fill="clear" 
-              color="danger"
-              size="small"
-              @click.stop="removeService(key)"
-              :title="service.discovered ? 'Remove discovered service' : 'Remove manual service'"
-            >
-              <ion-icon name="close-outline"></ion-icon>
+            <ion-button slot="end" fill="clear" color="danger" size="small" @click.stop="removeService(key)"
+              :title="service.discovered ? 'Remove discovered service' : 'Remove manual service'">
+              <ion-icon :icon="closeOutline"></ion-icon>
             </ion-button>
           </ion-item>
         </ion-list>

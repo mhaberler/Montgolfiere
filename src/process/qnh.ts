@@ -246,7 +246,7 @@ const locationToQnh = async (location: Position | null) => {
     if (!lat || !lon)
         return;
     
-    console.log(JSON.stringify(location, null, 2));
+    // console.log(JSON.stringify(location, null, 2));
     
     try {
         const aerodromes = await fetchAirodromeLocations(lat, lon, degrees);

@@ -67,9 +67,14 @@
                             :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
 
-                    <!-- <div>
-                        <ValueCard :value="dynamicQNH" :name="'dnyQNH'" :decimals="0" :unit="'hPa'" />
-                    </div> -->
+                                        <div>
+                                                <ValueCard
+                                                    :value="airportQnhData?.[0]?.qnh ?? '--'"
+                                                    :name="'QNH'"
+                                                    :decimals="0"
+                                                    :unit="airportQnhData?.[0]?.icao ?? ''"
+                                                />
+                                        </div>
 
 
                 </div>
@@ -149,8 +154,7 @@ import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { metersToFeet } from '../utils/meteo-utils'
 
 import {
-    airportQnhData,
-    updateQnhFromLocation
+    airportQnhData
 } from '../process/qnh';
 import { pressureQNH } from '../process/pressure';
 
