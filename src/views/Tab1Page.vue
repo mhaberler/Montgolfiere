@@ -160,15 +160,19 @@ import { manualQNH } from '../process/qnh';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
-
+import { usePersistedRefWithTimestamp } from '../composables/usePersistedRefWithTimestamp'
 const confidenceColor = ref('#0de732');
+const maxElevationAtTakeoffAge = 86400; // 1 day
 
 // Modal state
 const isModalOpen = ref(false);
 const modalData = ref<{ name: string, value: number, unit: string } | null>(null);
 const modal = ref();
 
-const elevationAtTakeoff = ref<number | null>(null);
+// const elevationAtTakeoff = ref<number | null>(null);
+const { value: elevationAtTakeoff, timestamp: elevationAtTakeoffTimestamp } =
+    usePersistedRefWithTimestamp<number | null>('elevationAtTakeoff', null);
+
 const altitudeAtTakeoff = ref<number>(0);
 const heightOverGround = ref<number | null>(null);
 const apexLevelRelative = ref<number | null>(null); // to current altitude
