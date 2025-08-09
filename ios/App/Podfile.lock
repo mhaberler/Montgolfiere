@@ -118,7 +118,7 @@ PODS:
   - IONGeolocationLib (1.0.0)
   - LeadscoutHttp (7.0.0):
     - Capacitor
-  - MhaberlerCapacitorBarometer (1.1.4):
+  - MhaberlerCapacitorBarometer (2.0.1):
     - Capacitor
   - MhaberlerCapacitorZeroconfNsd (5.0.3):
     - Capacitor
@@ -360,7 +360,7 @@ SPEC CHECKSUMS:
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   LeadscoutHttp: 3b639e66d5e816630edb9fdf2acb7faff0ee7cb6
-  MhaberlerCapacitorBarometer: b93a10ce692cd2d90d97b9bb0ddca89b1362c915
+  MhaberlerCapacitorBarometer: 1b71b4c71d6c6683a3438899007927acc2559a58
   MhaberlerCapacitorZeroconfNsd: 88705b7013c1f8da0cdc45b48323da4c54b91e78
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2

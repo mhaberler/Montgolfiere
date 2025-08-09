@@ -52,7 +52,7 @@
         "@ionic/vue": "^8.7.2",
         "@ionic/vue-router": "^8.7.2",
         "@leadscout/http": "^7.0.0",
-        "@mhaberler/capacitor-barometer": "^1.1.4",
+        "@mhaberler/capacitor-barometer": "2.0.1",
         "@mhaberler/capacitor-zeroconf-nsd": "^5.0.3",
         "@tailwindcss/postcss": "^4.1.11",
         "@tailwindcss/vite": "^4.1.11",
@@ -93,7 +93,7 @@
         "@vue/eslint-config-typescript": "^14.6.0",
         "@vue/test-utils": "^2.4.6",
         "cypress": "^14.5.4",
-        "eslint": "^9.32.0",
+        "eslint": "^9.33.0",
         "eslint-plugin-vue": "^10.4.0",
         "jsdom": "^26.1.0",
         "terser": "5.43.1",
@@ -461,7 +461,7 @@
 
     "@mapbox/unitbezier": ["@mapbox/unitbezier@0.0.0", "", {}, "sha512-HPnRdYO0WjFjRTSwO3frz1wKaU649OBFPX3Zo/2WZvuRi6zMiRGui8SnPQiQABgqCf8YikDe5t3HViTVw1WUzA=="],
 
-    "@mhaberler/capacitor-barometer": ["@mhaberler/capacitor-barometer@1.1.4", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-2234BVy4zpSjALQ5//TSuAs6Cqh5uUFLNsRt687rANLml+rMI5lkUyzG5hysaB0KufaXnHbZopfl+h1oH7Czqg=="],
+    "@mhaberler/capacitor-barometer": ["@mhaberler/capacitor-barometer@2.0.1", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-LPk4YQMp7y2jBgZ4ks3aRbxRXlPycAfjm3foEJpkrcJQ7xMbl+tniiKJFFgHr4hIYLnyxjS5nRio+nLfNpE5Lw=="],
 
     "@mhaberler/capacitor-zeroconf-nsd": ["@mhaberler/capacitor-zeroconf-nsd@5.0.3", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0", "bonjour": "^3.5.0" } }, "sha512-0QR/xwvacuqlsscIiYFsg2pgL5oGTGKcLOac0J8PGYbCdqfdQluwGXi9csEVcoAcXAPq77SDDhL9me/YRgcmUg=="],
 

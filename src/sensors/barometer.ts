@@ -43,7 +43,7 @@ async function startBarometer() {
           processPressureSample(data.pressure, data.timestamp);
         }
       );
-      await barometer.start();
+      await barometer.start({interval:500});
       baroActive.value = true;
       console.log('Barometer started successfully');
       rateStats.clear();

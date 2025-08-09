@@ -131,7 +131,7 @@
     "@ionic/vue": "^8.7.2",
     "@ionic/vue-router": "^8.7.2",
     "@leadscout/http": "^7.0.0",
-    "@mhaberler/capacitor-barometer": "^1.1.4",
+    "@mhaberler/capacitor-barometer": "2.0.1",
     "@mhaberler/capacitor-zeroconf-nsd": "^5.0.3",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
