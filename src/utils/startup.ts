@@ -177,12 +177,12 @@ const initializeApp = async () => {
       wentToBackground();
     }
   });
-  await startLocation();
-  await startBarometer();
+  startLocation();
+  startBarometer();
   if (!isWeb) {
     // Initialize BLE scanning
     try {
-      await initializeAndStartBLEScan();
+      initializeAndStartBLEScan();
     } catch (e) {
       console.error('Failed to initialize BLE scanning:', e);
     }
