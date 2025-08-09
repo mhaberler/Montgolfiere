@@ -29,14 +29,20 @@
                         <ValueCard :value="heightOverGround" :name="'AGL'" :decimals="0" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard v-on-long-press="() => {
-                            if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
-                                showPopup({ name: 'elevation', value: elevation, unit: 'm' })
-                            } else {
-                                console.warn('Cannot show popup for elevation: invalid value', elevation)
-                            }
-                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
-                            :frameClass="elevation && !elevationAtTakeoff ? 'bg-yellow-200' : ''" />
+                        <ValueCard
+                            v-on-long-press="() => {
+                                if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
+                                    showPopup({ name: 'elevation', value: elevation, unit: 'm' })
+                                } else {
+                                    console.warn('Cannot show popup for elevation: invalid value', elevation)
+                                }
+                            }"
+                            :value="elevation"
+                            :name="'elevation'"
+                            :decimals="1"
+                            :unit="'m'"
+                            :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? 'bg-yellow-200' : ''"
+                        />
                     </div>
 
 
