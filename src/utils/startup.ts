@@ -17,9 +17,9 @@ const isWeb = Capacitor.getPlatform() === "web";
 
 const wakeLockAvailable = ref(false);
 
-Network.addListener('networkStatusChange', status => {
-  console.log('Network status changed', status);
-});
+//Network.addListener('networkStatusChange', status => {
+//  console.log('Network status changed', status);
+//});
 
 const logCurrentNetworkStatus = async () => {
   const status = await Network.getStatus();

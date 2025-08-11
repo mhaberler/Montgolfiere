@@ -14,12 +14,7 @@
           </ion-item>
           <div slot="content">
             <div class="grid grid-cols-2 gap-1 p-4">
-              <div>
-                <ion-label>QNH (hPa)</ion-label>
-              </div>
-              <div>
-                <ion-input type="number" min="800" max="1100" step="1" v-model.number="manualQNH"></ion-input>
-              </div>
+
               <div>
                 <ion-label>Transition alt (ft)</ion-label>
               </div>
@@ -77,41 +72,34 @@
         </ion-accordion>
         <ion-accordion value="airport-qnh">
           <ion-item slot="header">
-            <ion-label>Nearby Airport QNH</ion-label>
+            <ion-label>QNH setting</ion-label>
           </ion-item>
           <div slot="content">
+            <div class="grid grid-cols-2 gap-1 p-4">
+              <div>
+                <ion-label>Auto</ion-label>
+              </div>
+              <div>
+                <ion-checkbox v-model="autoQNHflag"></ion-checkbox>
+              </div>
+              
+              <div>
+                <ion-label :class="{ 'opacity-50': autoQNHflag }">manual QNH (hPa)</ion-label>
+              </div>
+              <div>
+                <ion-input 
+                  type="number" 
+                  min="800" 
+                  max="1100" 
+                  step="1" 
+                  v-model.number="manualQNHvalue"
+                  :disabled="autoQNHflag"
+                  :class="{ 'opacity-50': autoQNHflag }"
+                ></ion-input>
+              </div>
+            </div>
+
             <ion-card>
-              <ion-card v-if="false">
-                <ion-card-header>
-                  <ion-card-title>MQTT Broker Settings</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                  <div class="config-grid">
-                    <div class="config-item">
-                      <ion-label>Broker URL</ion-label>
-                      <ion-input v-model="mqttBrokerUrl"></ion-input>
-                    </div>
-                    <div class="config-item">
-                      <ion-label>User</ion-label>
-                      <ion-input v-model="mqttUser"></ion-input>
-                    </div>
-                    <div class="config-item">
-                      <ion-label>Password</ion-label>
-                      <ion-input type="password" v-model="mqttPassword"></ion-input>
-                    </div>
-                    <div class="config-item">
-                      <ion-label>Connection Status</ion-label>
-                      <!-- [color]="mqttStatusColor" -->
-                      <ion-text>{{ mqttStatusMsg }}</ion-text>
-                    </div>
-                    <div class="config-item">
-                      <ion-button expand="full" @click="checkMqttConnection">
-                        Check Connection
-                      </ion-button>
-                    </div>
-                  </div>
-                </ion-card-content>
-              </ion-card>
 
               <ion-card-content>
                 <div v-if="airportQnhData.length > 0" class="space-y-2">
@@ -122,7 +110,7 @@
                       <span class="ml-2 text-xs text-gray-500">{{ airport.distance }} km</span>
                     </div>
                     <div>
-                      <span class="font-mono">QNH: {{ airport.qnh }} hPa</span>
+                      <span class="font-mono">QNH: {{ airport.qnh }}</span>
                     </div>
                   </div>
                 </div>
@@ -194,7 +182,7 @@ watch(openAccordion, (val) => {
 import {
   IonPage, IonContent, IonLabel, IonToggle, IonInput, IonCard,
   IonCardHeader, IonCardTitle, IonCardContent, IonButton,
-  IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonText, IonHeader, IonTitle, IonToolbar
+  IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonText, IonHeader, IonTitle, IonToolbar, IonCheckbox
 } from '@ionic/vue';
 import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';
@@ -212,10 +200,11 @@ import {
   historySamples,
 } from '@/utils/state';
 
-import { manualQNH } from '../process/qnh';
+import { manualQNHvalue, autoQNHflag } from '../process/qnh';
 import {
   showDebugInfo
 } from '@/utils/startup';
+
 
 
 interface MqttInitOptions {
@@ -243,9 +232,9 @@ const checkMqttConnection = async (): Promise<void> => {
   } as MqttInitOptions);
 };
 
-const toggleDebugInfo = () => {
-  showDebugInfo.value = !showDebugInfo.value;
-};
+// const toggleDebugInfo = () => {
+//   showDebugInfo.value = !showDebugInfo.value;
+// };
 
 // PMTiles URL management
 const selectedUrl = selectedDemUrl;
@@ -262,21 +251,21 @@ const updateDemUrl = () => {
 };
 
 
-// Get sensor source options based on platform
-const sensorSourceOptions = computed(() => {
-  const options = [
-    { value: 'simulated', label: 'Simulated' },
-    // { value: 'mqtt', label: 'MQTT' },
-    // { value: 'logfile', label: 'Log file' }
-  ];
+// // Get sensor source options based on platform
+// const sensorSourceOptions = computed(() => {
+//   const options = [
+//     { value: 'simulated', label: 'Simulated' },
+//     // { value: 'mqtt', label: 'MQTT' },
+//     // { value: 'logfile', label: 'Log file' }
+//   ];
 
-  // Only add hardware option on native platforms
-  if (isNativePlatform.value) {
-    options.unshift({ value: 'native', label: 'Hardware' });
-  }
+//   // Only add hardware option on native platforms
+//   if (isNativePlatform.value) {
+//     options.unshift({ value: 'native', label: 'Hardware' });
+//   }
 
-  return options;
-});
+//   return options;
+// });
 
 
 // QNH update state

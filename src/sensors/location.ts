@@ -56,7 +56,7 @@ watch(
 
 // lookup elevation on location change
 watch(location, async (newlocation) => {
-  // console.log(`location is ${JSON.stringify(newlocation)}`);
+ // console.log(`location is ${JSON.stringify(newlocation)}`);
   if (newlocation && demLookup.value) {
     try {
       const result = await demLookup.value.getElevation(newlocation.coords.latitude, newlocation.coords.longitude);

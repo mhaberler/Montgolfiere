@@ -29,20 +29,14 @@
                         <ValueCard :value="heightOverGround" :name="'AGL'" :decimals="0" :unit="'m'" />
                     </div>
                     <div>
-                        <ValueCard
-                            v-on-long-press="() => {
-                                if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
-                                    showPopup({ name: 'elevation', value: elevation, unit: 'm' })
-                                } else {
-                                    console.warn('Cannot show popup for elevation: invalid value', elevation)
-                                }
-                            }"
-                            :value="elevation"
-                            :name="'elevation'"
-                            :decimals="1"
-                            :unit="'m'"
-                            :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? 'bg-yellow-200' : ''"
-                        />
+                        <ValueCard v-on-long-press="() => {
+                            if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
+                                showPopup({ name: 'elevation', value: elevation, unit: 'm' })
+                            } else {
+                                console.warn('Cannot show popup for elevation: invalid value', elevation)
+                            }
+                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
+                            :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? 'bg-yellow-200' : ''" />
                     </div>
 
 
@@ -73,16 +67,15 @@
                             :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
                     </div>
 
-                                        <div>
-                                                <ValueCard
-                                                    :value="airportQnhData?.[0]?.qnh ?? '--'"
-                                                    :name="'QNH'"
-                                                    :decimals="0"
-                                                    :unit="airportQnhData?.[0]?.icao ?? ''"
-                                                />
-                                        </div>
+                    <!-- <div>
+                        <ValueCard :value="airportQnhData?.[0]?.qnh ?? '--'" :name="'QNH'" :decimals="0"
+                            :unit="airportQnhData?.[0]?.icao ?? ''" />
+                    </div> -->
 
-
+                    <div>
+                        <ValueCard :value="currentQNH" :name="'QNH'" :decimals="0"
+                            :unit="currentQNHsource" />
+                    </div>
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
@@ -160,9 +153,11 @@ import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { metersToFeet } from '../utils/meteo-utils'
 
 import {
-    airportQnhData
+    airportQnhData,
+    currentQNH,
+    currentQNHsource
 } from '../process/qnh';
-import { manualQNH } from '../process/qnh';
+import { manualQNHvalue } from '../process/qnh';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';

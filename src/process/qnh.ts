@@ -8,14 +8,17 @@ import {
 import { usePersistedRef } from "@/composables/usePersistedRef";
 
 import { Http, HttpResponse } from '@leadscout/http';
-import { ref, watch } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import { distance } from '@turf/distance';
 import { point } from '@turf/helpers';
 
 const degrees = 1;
 const numNeighbours = 5;
 
-const manualQNH = usePersistedRef<number>("manualQNH", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
+const manualQNHvalue = usePersistedRef<number>("manualQNHvalue", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
+
+// QNH auto setting
+const autoQNHflag = usePersistedRef<boolean>("autoQNHflag", true);
 
 const currentQNH = ref<number>(0);
 const currentQNHsource = ref<string>('man');
@@ -86,62 +89,6 @@ interface Metar {
         base: number | null;
     }>;
 }
-// airodrome example:
-// [
-//     {
-//         "icaoId": "LJMB",
-//         "iataId": "MBX",
-//         "faaId": "-",
-//         "wmoId": "14026",
-//         "lat": 46.48,
-//         "lon": 15.682,
-//         "elev": 263,
-//         "site": "Maribor/Rusjan Arpt",
-//         "state": "MA",
-//         "country": "SI",
-//         "priority": 5
-//     },
-//     {
-//         "icaoId": "LOWG",
-//         "iataId": "GRZ",
-//         "faaId": "-",
-//         "wmoId": "11240",
-//         "lat": 46.997,
-//         "lon": 15.447,
-//         "elev": 337,
-//         "site": "Graz Arpt",
-//         "state": "ST",
-//         "country": "AT",
-//         "priority": 3
-//     }
-// ]
-async function fetchAirodromeLocations(lat: number, lon: number, deg: number): Promise<Aerodrome[]> {
-    const bbox = `${lat - deg},${lon - deg},${lat + deg},${lon + deg}`;
-    const options = {
-        url: `https://aviationweather.gov/api/data/stationinfo`,
-        headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'Montgolfiere/1.0'
-        },
-        params: { bbox: bbox, format: 'json' },
-        method: 'GET'
-    };
-    try {
-        const response: HttpResponse = await Http.get(options);
-        if (response.status !== 200) {
-            throw new Error(`Network response was not ok: ${response.status}`);
-        }
-        return response.data as Aerodrome[];
-    } catch (error: any) {
-        console.error('Error details:', {
-            message: error.message,
-            code: error.code,
-            stack: error.stack,
-            fullError: error
-        });
-        throw error;
-    }
-}
 
 // metar example:
 // [
@@ -187,15 +134,15 @@ async function fetchAirodromeLocations(lat: number, lon: number, deg: number): P
 //             }
 //         ]
 //     }
-async function fetchMetars(icaoIds: string[]): Promise<Metar[]> {
-    const idsParam = icaoIds.join(',');
+async function fetchMetars(lat: number, lon: number, deg: number): Promise<Metar[]> {
+    const bbox = `${lat - deg},${lon - deg},${lat + deg},${lon + deg}`;
     const options = {
         url: `https://aviationweather.gov/api/data/metar`,
         headers: {
             'Accept': 'application/json',
             'User-Agent': 'Montgolfiere/1.0'
         },
-        params: { ids: idsParam, format: 'json', taf: 'false' },
+        params: { bbox: bbox, format: 'json', taf: 'false' },
         method: 'GET'
     };
     try {
@@ -217,86 +164,51 @@ async function fetchMetars(icaoIds: string[]): Promise<Metar[]> {
 }
 
 
-// Function to sort aerodromes by distance
-function sortAerodromesByDistance(aerodromes: Aerodrome[], userLat: number, userLon: number): Aerodrome[] {
-    // Create a point for the user's location
-    const userLocation = point([userLon, userLat]);
-
-    // Calculate distance for each aerodrome and add it to the object
-    const aerodromes_with_distance = aerodromes.map(aerodrome => {
-        const aerodromeLocation = point([aerodrome.lon, aerodrome.lat]);
-        const distanceKm = distance(userLocation, aerodromeLocation, { units: 'kilometers' });
-
-        return {
-            ...aerodrome,
-            distance: Math.round(distanceKm)
-        };
-    });
-
-    // Sort by distance (closest first)
-    return aerodromes_with_distance.sort((a, b) => a.distance! - b.distance!);
-}
-
-// Function to extract the closest airports that have METAR data
-function extractClosestAirportsWithMetars(aerodromes: Aerodrome[], count: number): Aerodrome[] {
-    // Filter aerodromes that have METAR data
-    const aerodromes_with_metars = aerodromes.filter(aerodrome => aerodrome.metar !== undefined);
-
-    // Return the closest ones up to the requested count
-    return aerodromes_with_metars.slice(0, count);
-}
-
 const locationToQnh = async (location: Position | null) => {
     const lat = location?.coords?.latitude;
     const lon = location?.coords?.longitude;
     if (!lat || !lon)
         return;
 
-    // console.log(JSON.stringify(location, null, 2));
+    console.log(JSON.stringify(location, null, 2));
 
     try {
-        const aerodromes = await fetchAirodromeLocations(lat, lon, degrees);
-        // console.log('Raw aerodromes:', JSON.stringify(aerodromes, null, 2));
 
-        // Sort by distance from current location
-        const sortedAerodromes = sortAerodromesByDistance(aerodromes, lat, lon);
-        // console.log('Sorted aerodromes by distance:', JSON.stringify(sortedAerodromes, null, 2));
-
-        // Log the closest aerodrome
-        if (sortedAerodromes.length > 0) {
-            const closest = sortedAerodromes[0];
-            console.log(`Closest aerodrome: ${closest.site} (${closest.icaoId}) - ${closest.distance} km away`);
-        }
-
-        // Extract ICAO IDs from the nearest aerodromes
-        const nearestAerodromes = sortedAerodromes.slice(0, numNeighbours * 2);
-        const icaoIds = nearestAerodromes.map(aerodrome => aerodrome.icaoId);
-        console.log(`Extracting METARs for nearest ${numNeighbours} aerodromes:`, icaoIds);
+        console.log(`Extracting METARs in bbox`);
 
         // Fetch METARs for the nearest aerodromes
-        const metars = await fetchMetars(icaoIds);
-        // console.log('Retrieved METARs:', JSON.stringify(metars, null, 2));
+        const metars = await fetchMetars(lat, lon, degrees);
+        //console.log('Retrieved METARs:', JSON.stringify(metars, null, 2));
 
-        // Create a map of METAR data by ICAO ID for quick lookup
-        const metarMap = new Map<string, Metar>();
-        metars.forEach(metar => {
-            metarMap.set(metar.icaoId, metar);
+        // Filter METARs that have valid altim readings
+        const validMetars = metars.filter(metar =>
+            metar.altim !== null &&
+            metar.altim !== undefined &&
+            typeof metar.altim === 'number' &&
+            !isNaN(metar.altim)
+        );
+
+        // Create a point for the user's location
+        const userLocation = point([lon, lat]);
+
+        // Calculate distances and sort by distance
+        const metarsWithDistance = validMetars.map(metar => {
+            const metarLocation = point([metar.lon, metar.lat]);
+            const distanceKm = distance(userLocation, metarLocation, { units: 'kilometers' });
+
+            return {
+                ...metar,
+                distance: Math.round(distanceKm)
+            };
         });
 
-        // Merge METAR data into aerodrome objects and filter out those without METARs
-        const aerodromeWithMetars = nearestAerodromes
-            .map(aerodrome => ({
-                ...aerodrome,
-                metar: metarMap.get(aerodrome.icaoId) || undefined
-            }))
-            .filter(aerodrome => aerodrome.metar !== undefined);
+        // Sort by distance (closest first)
+        const closestWithMetars = metarsWithDistance
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, numNeighbours);
 
-        // console.log('Aerodromes with merged METAR data:', JSON.stringify(aerodromeWithMetars, null, 2));
-
-        // Extract the closest airports that actually have METAR data
-        const closestWithMetars = extractClosestAirportsWithMetars(aerodromeWithMetars, numNeighbours);
-        console.log(`Found ${closestWithMetars.length} closest airports with METAR data:`,
-            closestWithMetars.map(a => `${a.icaoId} (${a.distance}km, QNH: ${a.metar?.altim})`));
+        console.log(`Found ${closestWithMetars.length} closest METARs with valid QNH data:`,
+            closestWithMetars.map(m => `${m.icaoId} (${m.distance}km, QNH: ${m.altim})`));
 
         return closestWithMetars;
 
@@ -315,14 +227,14 @@ const updateQnhFromLocation = async (currentLocation?: Position | null): Promise
         const closestWithMetars = await locationToQnh(targetLocation);
 
         // Check if we have valid data before accessing it
-        if (closestWithMetars && closestWithMetars.length > 0 && closestWithMetars[0].metar) {
+        if (closestWithMetars && closestWithMetars.length > 0) {
 
             // Extract airport QNH data
-            airportQnhData.value = closestWithMetars.map(airport => ({
-                icao: airport.icaoId,
-                site: airport.site,
-                distance: airport.distance || 0,
-                qnh: airport.metar?.altim || 0
+            airportQnhData.value = closestWithMetars.map(metar => ({
+                icao: metar.icaoId,
+                site: metar.name || metar.icaoId, // Use name as site, fallback to ICAO ID
+                distance: metar.distance || 0,
+                qnh: metar.altim || 0
             }));
 
             console.log('Airport QNH data:', airportQnhData.value);
@@ -345,20 +257,21 @@ watch(
     }
 );
 
-watch(airportQnhData, (newairportQnhData) => {
+watchEffect(() => {
+    if (airportQnhData.value.length > 0 && autoQNHflag.value) {
+        currentQNH.value = airportQnhData.value[0].qnh;
+        currentQNHsource.value = airportQnhData.value[0].icao;
 
-    console.log(`airportQnhData changed.`);
-    if (newairportQnhData.length > 0) {
-        currentQNH.value = newairportQnhData[0].qnh;
-        currentQNHsource.value = newairportQnhData[0].icao;
     } else {
-        currentQNH.value = manualQNH.value;
+        currentQNH.value = manualQNHvalue.value;
         currentQNHsource.value = 'man';
     }
+    console.log(`currentQNH = ${currentQNH.value} currentQNHsource = ${currentQNHsource.value}.`);
 });
 
 export {
-    manualQNH,
+    manualQNHvalue,
+    autoQNHflag,
     currentQNH,
     currentQNHsource,
     airportQnhData,
