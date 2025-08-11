@@ -11,15 +11,14 @@ import { Http, HttpResponse } from '@leadscout/http';
 import { ref, watch, watchEffect } from 'vue';
 import { distance } from '@turf/distance';
 import { point } from '@turf/helpers';
+import { re } from 'mathjs';
 
 const degrees = 2;
 const numNeighbours = 5;
 
 const manualQNHvalue = usePersistedRef<number>("manualQNHvalue", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
-
 // QNH auto setting
 const autoQNHflag = usePersistedRef<boolean>("autoQNHflag", true);
-
 const currentQNH = ref<number>(0);
 const currentQNHsource = ref<string>('man');
 
@@ -163,6 +162,15 @@ async function fetchMetars(lat: number, lon: number, deg: number): Promise<Metar
     }
 }
 
+// 931.3 to 1066.7 hPa
+const isValidQNH = (qnh: number | null | undefined): boolean => {
+
+    if (qnh == null || qnh == undefined || typeof qnh != 'number')
+        return false;
+    if (qnh < 931.3 || qnh > 1066.7)
+        return false;
+    return true;
+};
 
 const locationToQnh = async (location: Position | null) => {
     const lat = location?.coords?.latitude;
@@ -181,12 +189,7 @@ const locationToQnh = async (location: Position | null) => {
         //console.log('Retrieved METARs:', JSON.stringify(metars, null, 2));
 
         // Filter METARs that have valid altim readings
-        const validMetars = metars.filter(metar =>
-            metar.altim !== null &&
-            metar.altim !== undefined &&
-            typeof metar.altim === 'number' &&
-            !isNaN(metar.altim)
-        );
+        const validMetars = metars.filter(metar => isValidQNH(metar.altim));
 
         // Create a point for the user's location
         const userLocation = point([lon, lat]);
@@ -214,7 +217,7 @@ const locationToQnh = async (location: Position | null) => {
 
     } catch (error) {
         console.error('Error in locationToQnh:', error);
-        throw error;
+        return [];
     }
 };
 

@@ -194,7 +194,7 @@ watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     } else {
         apexLevelRelative.value = null;
     }
-    if (elevationAtTakeoff.value !== null && elevation.value !== null) {
+    if (elevationAtTakeoff.value !== null && altitudeAtTakeoff.value != null && elevation.value !== null) {
         const heightAboveTakeoff = newekfAltitudeISA - altitudeAtTakeoff.value;
         const elevationABoveTakeoff = elevation.value - elevationAtTakeoff.value;
         heightOverGround.value = heightAboveTakeoff - elevationABoveTakeoff;
