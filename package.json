@@ -5,7 +5,6 @@
   "type": "module",
   "description": "An Ionic project",
   "config": {
-    "host": "172.16.0.212",
     "port": "8100"
   },
   "scripts": {
@@ -23,11 +22,11 @@
     "ios-beta": "fastlane ios beta",
     "android-beta": "fastlane android beta",
     "deploy-mah.priv.at": "vite build --mode development --outDir ./dist.webtest --base=/apps/montgolfiere/  && rsync -avz --delete ./dist.webtest/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/ && echo  https://static.mah.priv.at/apps/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
-    "debug-android-s24": "bunx cap run android  --live-reload --host $npm_package_config_host --port $npm_package_config_port  --target R3CX90A30EW",
-    "debug-android-s10": "bunx cap run android  --live-reload --host $npm_package_config_host --port $npm_package_config_port  --target RF8MC11LGDW",
-    "debug-android-a15": "bunx cap run android  --live-reload --host $npm_package_config_host --port $npm_package_config_port  --target RF8Y109W1JB",
-    "debug-galaxy-pro-tab10": "bunx cap run android  --live-reload --host $npm_package_config_host --port $npm_package_config_port  --target R52T40AW12D",
-    "debug-ios": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --host  $npm_package_config_host --port $npm_package_config_port  --target 00008140-0002692C1E79801C",
+    "debug-android-s24": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target R3CX90A30EW",
+    "debug-android-s10": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target RF8MC11LGDW",
+    "debug-android-a15": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target RF8Y109W1JB",
+    "debug-galaxy-pro-tab10": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target R52T40AW12D",
+    "debug-ios": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --port $npm_package_config_port  --target 00008140-0002692C1E79801C",
     "run-on-galaxy-s24": "bunx cap run android --target R3CX90A30EW",
     "run-on-galaxy-s10": "bunx cap run android --target RF8MC11LGDW",
     "run-on-galaxy-a15": "bunx cap run android --target RF8Y109W1JB",
@@ -57,8 +56,7 @@
     "app-bump-minor": "bunx npm version minor --no-git-tag-version && fastlane bump",
     "app-bump-major": "bunx npm version major --no-git-tag-version && fastlane bump",
     "android-cpu-usage": "adb shell top",
-    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync",
-    "env": "echo  $npm_package_config_host  $npm_package_config_port"
+    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync"
   },
   "scripts-disabled": {
     "test": "cross-var echo bundle version $npm_package_bundle $npm_package_name v${npm_package_version}",
@@ -72,15 +70,15 @@
     "test:unit": "bunx vitest",
     "lint": "bunx eslint .",
     "capgo-production-upload": "vue-tsc && vite build --mode production --outDir  ./dist.capgo.production   && bunx @capgo/cli@latest bundle upload --path ./dist.capgo.production --channel=production",
-    "production": "vite --mode production --host $npm_package_config_host --port=$npm_package_config_port --host",
-    "debug-android-no-mirror": "npx cap run android  --live-reload --host $npm_package_config_host --port $npm_package_config_port  --target R3CX90A30EW",
-    "dev-external": "vite --host $npm_package_config_host --port=$npm_package_config_port",
-    "preview": "vite --host $npm_package_config_host  preview",
+    "production": "vite --mode production  --port=$npm_package_config_port --host",
+    "debug-android-no-mirror": "npx cap run android  --live-reload  --port $npm_package_config_port  --target R3CX90A30EW",
+    "dev-external": "vite  --port=$npm_package_config_port",
+    "preview": "vite   preview",
     "predeploy": "npm run build",
     "cmdline-ios-build": "npx cap build ios",
     "cmdline-android-build": "npx cap build android",
     "build-production": "vue-tsc && vite build --mode production",
-    "preview-host": "vite --host $npm_package_config_host --port 4712 preview"
+    "preview-host": "vite  --port 4712 preview"
   },
   "dependencies": {
     "@capacitor-community/apple-sign-in": "7.0.1",
