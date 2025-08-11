@@ -67,6 +67,14 @@
                   class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter custom PMTiles URL"
                   @input="updateDemUrl" />
               </div>
+
+              <div class="mt-4 p-4">
+                <ion-button expand="block" color="warning" @click="clearAllPreferences">
+                  Reset preferences to defaults
+                </ion-button>
+              </div>
+
+              
             </div>
           </div>
         </ion-accordion>
@@ -184,6 +192,8 @@ import {
   IonCardHeader, IonCardTitle, IonCardContent, IonButton,
   IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonText, IonHeader, IonTitle, IonToolbar, IonCheckbox
 } from '@ionic/vue';
+import { Preferences } from '@capacitor/preferences';
+
 import DebugEkf from '@/components/DebugEkf.vue';
 import { computed, ref } from 'vue';
 import { airportQnhData, updateQnhFromLocation } from '@/process/qnh';
@@ -206,6 +216,10 @@ import {
 } from '@/utils/startup';
 
 
+const clearAllPreferences = async () => {
+  await Preferences.clear();
+  console.log('All preferences cleared.');
+};
 
 interface MqttInitOptions {
   brokerUrl: string;
