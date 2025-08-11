@@ -141,14 +141,28 @@
                 <div class="font-medium">App Version:</div>
                 <div class="font-mono">{{ appVersion }}</div>
                 
+                <template v-if="gitTag">
+                  <div class="font-medium">Git Tag:</div>
+                  <div class="font-mono">{{ gitTag }}</div>
+                </template>
+                
                 <div class="font-medium">Git SHA:</div>
-                <div class="font-mono text-xs">{{ gitSha }}</div>
+                <div class="font-mono text-xs">
+                  <a 
+                    :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`" 
+                    target="_blank" 
+                    class="text-blue-600 hover:text-blue-800 underline"
+                  >
+                    {{ gitSha }}
+                  </a>
+                </div>
                 
                 <div class="font-medium">Git Branch:</div>
                 <div class="font-mono">{{ gitBranch }}</div>
                 
                 <div class="font-medium">Build Date:</div>
                 <div class="font-mono text-xs">{{ buildDate }}</div>
+
               </div>
             </div>
           </div>
@@ -234,6 +248,7 @@ import {
 // Build information constants
 const gitSha = __GIT_COMMIT_HASH__ || 'N/A';
 const gitBranch = __GIT_BRANCH_NAME__ || 'N/A';
+const gitTag = __GIT_TAG__ || '';
 const buildDate = __VITE_BUILD_DATE__ || 'N/A';
 const appVersion = __APP_VERSION__ || 'N/A';
 

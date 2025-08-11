@@ -14,6 +14,15 @@ const commitMessage = execSync("git log -1  '--pretty=%B'").toString().trim();
 const branchName = execSync("git rev-parse --abbrev-ref HEAD")
   .toString()
   .trim();
+
+// Get current git tag if available
+let gitTag = "";
+try {
+  gitTag = execSync("git describe --tags --exact-match HEAD 2>/dev/null || echo ''").toString().trim();
+} catch (error) {
+  gitTag = "";
+}
+
 const buildDate = execSync("date -u +%Y-%m-%dT%H:%M:%SZ").toString().trim();
 
 
@@ -66,6 +75,7 @@ export default defineConfig(({ mode }) => {
       __GIT_COMMIT_HASH__: JSON.stringify(commitHash),
       __GIT_COMMIT_MESSAGE__: JSON.stringify(commitMessage),
       __GIT_BRANCH_NAME__: JSON.stringify(branchName),
+      __GIT_TAG__: JSON.stringify(gitTag),
       __VITE_BUILD_DATE__: JSON.stringify(buildDate),
       __APP_VERSION__: JSON.stringify(packageJson.version),
     },
