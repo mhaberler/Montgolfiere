@@ -18,7 +18,7 @@ const baroActive = ref(false);
 const baroRate = ref<number>(0.0);
 
 let baroListener: PluginListenerHandle;
-const barometer  = Barometer;
+const barometer = Barometer;
 
 
 const rateStats = new RateStats();
@@ -43,7 +43,7 @@ async function startBarometer() {
           processPressureSample(data.pressure, data.timestamp);
         }
       );
-      await barometer.start({interval:500});
+      await barometer.start({ interval: 500 });
       baroActive.value = true;
       console.log('Barometer started successfully');
       rateStats.clear();

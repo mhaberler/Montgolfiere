@@ -20,7 +20,7 @@
                 <p>Pressure (hPa): {{ pressure.toFixed(2) }}</p>
                 <p>Baro rate samples/sec: {{ baroRate.toFixed(1) }}</p>
                 <div class="restart-counter">
-                    <span>BLE scan restarts: {{ bleScanTimeouts }}</span>
+                    <span>BLE scan timeouts: {{ bleScanTimeouts }}</span>
                     <ion-button v-if="bleScanTimeouts > 0" fill="outline" size="small" color="warning"
                         @click="resetbleScanTimeouts" class="reset-button">
                         Reset

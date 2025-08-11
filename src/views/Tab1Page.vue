@@ -153,17 +153,15 @@ import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { metersToFeet } from '../utils/meteo-utils'
 
 import {
-    airportQnhData,
     currentQNH,
     currentQNHsource
 } from '../process/qnh';
-import { manualQNHvalue } from '../process/qnh';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
 import { usePersistedRefWithTimestamp } from '../composables/usePersistedRefWithTimestamp'
 const confidenceColor = ref('#0de732');
-const maxElevationAtTakeoffAge = 86400; // 1 day
+const maxElevationAtTakeoffAge = 3600 * 4; // 4 hours
 
 // Modal state
 const isModalOpen = ref(false);
