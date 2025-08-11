@@ -172,7 +172,9 @@ const modal = ref();
 const { value: elevationAtTakeoff, timestamp: elevationAtTakeoffTimestamp } =
     usePersistedRefWithTimestamp<number | null>('elevationAtTakeoff', null);
 
-const altitudeAtTakeoff = ref<number>(0);
+const { value: altitudeAtTakeoff, timestamp: altitudeAtTakeoffTimestamp } =
+    usePersistedRefWithTimestamp<number | null>('altitudeAtTakeoff', null);
+
 const heightOverGround = ref<number | null>(null);
 const apexLevelRelative = ref<number | null>(null); // to current altitude
 
