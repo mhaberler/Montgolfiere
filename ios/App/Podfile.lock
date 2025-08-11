@@ -79,13 +79,13 @@ PODS:
     - Capacitor
   - CapgoCapacitorShake (7.1.16):
     - Capacitor
-  - CapgoCapacitorUpdater (7.8.7):
+  - CapgoCapacitorUpdater (7.8.9):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
     - SSZipArchive (= 2.4.3)
     - Version (= 0.8.0)
-  - CapgoCapacitorUploader (7.1.8):
+  - CapgoCapacitorUploader (7.1.9):
     - Capacitor
   - CapgoNativeAudio (7.3.36):
     - Capacitor
@@ -348,8 +348,8 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorScreenOrientation: c6cc24949bb2aede006277f0fa0c7832073c9ca1
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
   CapgoCapacitorShake: 7ec49a445d45ad275e11f695f3df40bbf493c280
-  CapgoCapacitorUpdater: 90b09b7c3c23c02f1b0dfe42db51d0abaf1910f3
-  CapgoCapacitorUploader: 4b9e1e152f3827b0e6993d1cba03784608a26d3e
+  CapgoCapacitorUpdater: c4593e1b21fa0de1d764772d16cd2ad97ee12cde
+  CapgoCapacitorUploader: 4e6d016c43cf62c8d693f6501971359d82a28daf
   CapgoNativeAudio: 8dd0e69f79eff7a4cfa2be68b4dfd8749288f775
   CapgoNativegeocoder: f23baa66000c8522794bb78f0d3c318600e0b946
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
