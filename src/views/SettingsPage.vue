@@ -74,7 +74,7 @@
                 </ion-button>
               </div>
 
-              
+
             </div>
           </div>
         </ion-accordion>
@@ -90,20 +90,13 @@
               <div>
                 <ion-checkbox v-model="autoQNHflag"></ion-checkbox>
               </div>
-              
+
               <div>
                 <ion-label :class="{ 'opacity-50': autoQNHflag }">manual QNH (hPa)</ion-label>
               </div>
               <div>
-                <ion-input 
-                  type="number" 
-                  min="800" 
-                  max="1100" 
-                  step="1" 
-                  v-model.number="manualQNHvalue"
-                  :disabled="autoQNHflag"
-                  :class="{ 'opacity-50': autoQNHflag }"
-                ></ion-input>
+                <ion-input type="number" min="800" max="1100" step="1" v-model.number="manualQNHvalue"
+                  :disabled="autoQNHflag" :class="{ 'opacity-50': autoQNHflag }"></ion-input>
               </div>
             </div>
 
@@ -138,6 +131,29 @@
             <DebugEkf />
           </div>
         </ion-accordion>
+        <ion-accordion value="build-info">
+          <ion-item slot="header">
+            <ion-label>Build Information</ion-label>
+          </ion-item>
+          <div slot="content">
+            <div class="p-4 space-y-2">
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="font-medium">App Version:</div>
+                <div class="font-mono">{{ appVersion }}</div>
+                
+                <div class="font-medium">Git SHA:</div>
+                <div class="font-mono text-xs">{{ gitSha }}</div>
+                
+                <div class="font-medium">Git Branch:</div>
+                <div class="font-mono">{{ gitBranch }}</div>
+                
+                <div class="font-medium">Build Date:</div>
+                <div class="font-mono text-xs">{{ buildDate }}</div>
+              </div>
+            </div>
+          </div>
+        </ion-accordion>
+
       </ion-accordion-group>
 
       <ion-card v-if="false">
@@ -214,6 +230,12 @@ import { manualQNHvalue, autoQNHflag } from '../process/qnh';
 import {
   showDebugInfo
 } from '@/utils/startup';
+
+// Build information constants
+const gitSha = __GIT_COMMIT_HASH__ || 'N/A';
+const gitBranch = __GIT_BRANCH_NAME__ || 'N/A';
+const buildDate = __VITE_BUILD_DATE__ || 'N/A';
+const appVersion = __APP_VERSION__ || 'N/A';
 
 
 const clearAllPreferences = async () => {
