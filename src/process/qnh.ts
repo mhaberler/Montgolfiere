@@ -12,7 +12,7 @@ import { ref, watch, watchEffect } from 'vue';
 import { distance } from '@turf/distance';
 import { point } from '@turf/helpers';
 
-const degrees = 1;
+const degrees = 2;
 const numNeighbours = 5;
 
 const manualQNHvalue = usePersistedRef<number>("manualQNHvalue", 1013.25); // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
@@ -170,7 +170,7 @@ const locationToQnh = async (location: Position | null) => {
     if (!lat || !lon)
         return;
 
-    console.log(JSON.stringify(location, null, 2));
+    // console.log(JSON.stringify(location, null, 2));
 
     try {
 
@@ -207,7 +207,7 @@ const locationToQnh = async (location: Position | null) => {
             .sort((a, b) => a.distance - b.distance)
             .slice(0, numNeighbours);
 
-        console.log(`Found ${closestWithMetars.length} closest METARs with valid QNH data:`,
+        console.log(`Found ${closestWithMetars.length} closest METARs (out of ${metars.length}) with valid QNH data:`,
             closestWithMetars.map(m => `${m.icaoId} (${m.distance}km, QNH: ${m.altim})`));
 
         return closestWithMetars;
