@@ -6,6 +6,7 @@ import {
 import { Capacitor } from "@capacitor/core";
 import { DEMLookup, DEMInfo } from "@/dem/DEMLookup";
 import { selectedDemUrl } from "@/composables/useDemUrl";
+import { e } from "mathjs";
 
 
 const options: PositionOptions = {
@@ -32,6 +33,7 @@ let watchId: string | null = null;
 const demLookup = ref<DEMLookup | null>(null);
 const demInfo = ref<DEMInfo | null>(null);
 const elevation = ref<number | null>(null);
+const elevationAvailable = ref(false);
 
 
 watch(
@@ -56,18 +58,27 @@ watch(
 
 // lookup elevation on location change
 watch(location, async (newlocation) => {
- // console.log(`location is ${JSON.stringify(newlocation)}`);
+  // console.log(`location is ${JSON.stringify(newlocation)}`);
   if (newlocation && demLookup.value) {
     try {
       const result = await demLookup.value.getElevation(newlocation.coords.latitude, newlocation.coords.longitude);
       elevation.value = result?.elevation ?? null;
+      if (elevation.value != null && !elevationAvailable.value) {
+        elevationAvailable.value = true;
+        console.log(`Elevation: ${elevation.value}m`);
+      }
       //  console.log(`Elevation: ${elevation.value}m`);
     } catch (error) {
       console.error('Error getting elevation:', error);
       elevation.value = null;
+      if (elevationAvailable.value) {
+        elevationAvailable.value = false;
+      }
     }
   } else {
     elevation.value = null;
+    elevationAvailable.value = false;
+
   }
 })
 
@@ -181,6 +192,7 @@ export {
   startLocation,
   stopLocation,
   elevation,
+  elevationAvailable,
   demLookup,
   selectedDemUrl as demUrl,
   demInfo

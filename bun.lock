@@ -43,8 +43,8 @@
         "@capawesome/capacitor-screen-orientation": "^7.0.1",
         "@capawesome/capacitor-screenshot": "^7.0.1",
         "@capgo/capacitor-shake": "^7.1.16",
-        "@capgo/capacitor-updater": "^7.8.7",
-        "@capgo/capacitor-uploader": "^7.1.8",
+        "@capgo/capacitor-updater": "^7.8.9",
+        "@capgo/capacitor-uploader": "^7.1.9",
         "@capgo/native-audio": "^7.3.36",
         "@capgo/nativegeocoder": "^7.1.8",
         "@ionic/prettier-config": "^4.0.0",
@@ -59,6 +59,7 @@
         "@turf/distance": "^7.2.0",
         "@turf/helpers": "^7.2.0",
         "@types/qrcode": "^1.5.5",
+        "@types/suncalc": "^1.9.2",
         "@types/yup": "^0.32.0",
         "@vueuse/components": "^13.6.0",
         "@vueuse/core": "^13.6.0",
@@ -81,6 +82,7 @@
         "sass": "^1.90.0",
         "sass-loader": "^16.0.5",
         "semver": "^7.7.2",
+        "suncalc": "https://github.com/mourner/suncalc#7ccde2118968e21e47db573e34757258275943ae",
         "tailwindcss": "^4.1.11",
         "update-browserslist-db": "^1.1.3",
         "vue": "^3.5.18",
@@ -652,6 +654,8 @@
     "@types/sizzle": ["@types/sizzle@2.3.9", "", {}, "sha512-xzLEyKB50yqCUPUJkIsrVvoWNfFUbIZI+RspLWt8u+tIW/BetMBZtgV2LY/2o+tYH8dRvQ+eoPf3NdhQCcLE2w=="],
 
     "@types/slice-ansi": ["@types/slice-ansi@4.0.0", "", {}, "sha512-+OpjSaq85gvlZAYINyzKpLeiFkSC4EsC6IIiT6v6TLSU5k5U83fHGj9Lel8oKEXM0HqgrMVCjXPDPVICtxF7EQ=="],
+
+    "@types/suncalc": ["@types/suncalc@1.9.2", "", {}, "sha512-ATAGBHHfA1TlE2tjfidLyTcysjoT2JHHEAmWRULh73SU9UTn++j5fqHEW16X6Y/2Li87jEQXzgu4R/OOdlDqzw=="],
 
     "@types/web-bluetooth": ["@types/web-bluetooth@0.0.20", "", {}, "sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow=="],
 
@@ -1792,6 +1796,8 @@
     "strip-json-comments": ["strip-json-comments@3.1.1", "", {}, "sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig=="],
 
     "strip-literal": ["strip-literal@3.0.0", "", { "dependencies": { "js-tokens": "^9.0.1" } }, "sha512-TcccoMhJOM3OebGhSBEmp3UZ2SfDMZUEBdRA/9ynfLi8yYajyWX3JiXArcJt4Umh4vISpspkQIY8ZZoCqjbviA=="],
+
+    "suncalc": ["suncalc@github:mourner/suncalc#7ccde21", {}, "mourner-suncalc-7ccde21"],
 
     "superjson": ["superjson@2.2.2", "", { "dependencies": { "copy-anything": "^3.0.2" } }, "sha512-5JRxVqC8I8NuOUjzBbvVJAKNM8qoVuH0O77h4WInc/qC2q5IreqKxYwgkga3PfA22OayK2ikceb/B26dztPl+Q=="],
 

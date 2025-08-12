@@ -73,9 +73,16 @@
                     </div> -->
 
                     <div>
-                        <ValueCard :value="currentQNH" :name="'QNH'" :decimals="0"
-                            :unit="currentQNHsource" />
+                        <ValueCard :value="BCMT" :name="'BCMT'" :unit="'UTC'" />
                     </div>
+                    <div>
+                        <ValueCard :value="ECET" :name="'ECET'" :unit="'UTC'" />
+                    </div>
+
+                    <div>
+                        <ValueCard :value="currentQNH" :name="'QNH'" :decimals="0" :unit="currentQNHsource" />
+                    </div>
+
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
@@ -156,6 +163,11 @@ import {
     currentQNH,
     currentQNHsource
 } from '../process/qnh';
+
+import {
+    BCMT,
+    ECET
+} from '../process/sun';
 
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
