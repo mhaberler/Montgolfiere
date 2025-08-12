@@ -32,6 +32,17 @@
                 }"></ion-input>
               </div>
 
+              <div v-if="isAndroid">
+                <ion-label>Decimate pressure samples</ion-label>
+              </div>
+              <div v-if="isAndroid">
+                <ion-select v-model="decimatePressureSamples" interface="popover">
+                  <ion-select-option value="1">1</ion-select-option>
+                  <ion-select-option value="2">2</ion-select-option>
+                  <ion-select-option value="5">5</ion-select-option>
+                  <ion-select-option value="10">10</ion-select-option>
+                </ion-select>
+              </div>
 
               <div class="mt-4 space-y-2 p-4">
                 <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
@@ -140,26 +151,23 @@
               <div class="grid grid-cols-2 gap-2 text-sm">
                 <div class="font-medium">App Version:</div>
                 <div class="font-mono">{{ appVersion }}</div>
-                
+
                 <template v-if="gitTag">
                   <div class="font-medium">Git Tag:</div>
                   <div class="font-mono">{{ gitTag }}</div>
                 </template>
-                
+
                 <div class="font-medium">Git SHA:</div>
                 <div class="font-mono text-xs">
-                  <a 
-                    :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`" 
-                    target="_blank" 
-                    class="text-blue-600 hover:text-blue-800 underline"
-                  >
+                  <a :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`" target="_blank"
+                    class="text-blue-600 hover:text-blue-800 underline">
                     {{ gitSha }}
                   </a>
                 </div>
-                
+
                 <div class="font-medium">Git Branch:</div>
                 <div class="font-mono">{{ gitBranch }}</div>
-                
+
                 <div class="font-medium">Build Date:</div>
                 <div class="font-mono text-xs">{{ buildDate }}</div>
 
@@ -230,10 +238,9 @@ import { airportQnhData, updateQnhFromLocation } from '@/process/qnh';
 // import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, checkMqttConnection } from '@/utils/mqtt';
 import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, } from '@/utils/mqtt';
 import { initializeMqtt } from '@/utils/mqttService';
-
+import {decimatePressureSamples} from '@/sensors/barometer';
 import { selectedDemUrl } from '@/composables/useDemUrl';
 
-import { isNativePlatform } from '@/utils/platform';
 
 import {
   transitionAltitude,
@@ -244,6 +251,13 @@ import { manualQNHvalue, autoQNHflag } from '../process/qnh';
 import {
   showDebugInfo
 } from '@/utils/startup';
+// Add these imports
+import { Capacitor } from '@capacitor/core';
+
+// Add platform detection
+const isAndroid = computed(() => Capacitor.getPlatform() === 'android');
+
+
 
 // Build information constants
 const gitSha = __GIT_COMMIT_HASH__ || 'N/A';

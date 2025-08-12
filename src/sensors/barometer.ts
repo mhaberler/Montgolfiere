@@ -16,6 +16,8 @@ interface BarometerData {
 const barometerAvailable = ref<boolean>(false);
 const baroActive = ref(false);
 const baroRate = ref<number>(0.0);
+// Add the decimate pressure samples variable (Android only, default 1)
+const decimatePressureSamples = ref<number>(1);
 
 let baroListener: PluginListenerHandle;
 const barometer = Barometer;
@@ -80,6 +82,7 @@ export {
   barometerAvailable,
   baroActive,
   baroRate,
+  decimatePressureSamples,
   startBarometer,
   stopBarometer,
 };
