@@ -3,6 +3,8 @@ import { Barometer } from "@mhaberler/capacitor-barometer";
 import type { PluginListenerHandle } from "@capacitor/core";
 import { RateStats } from "../stats/RateStats";
 import { processPressureSample } from '@/utils/state';
+import { usePersistedRef } from '../composables/usePersistedRef';
+import { Capacitor } from '@capacitor/core';
 
 interface BarometerAvailable {
   available: boolean;
@@ -16,14 +18,22 @@ interface BarometerData {
 const barometerAvailable = ref<boolean>(false);
 const baroActive = ref(false);
 const baroRate = ref<number>(0.0);
-// Add the decimate pressure samples variable (Android only, default 1)
-const decimatePressureSamples = ref<number>(1);
+
+// Platform-specific default: iOS/web = 1, Android = 5
+const getDefaultDecimation = (): number => {
+  return Capacitor.getPlatform() === 'android' ? 5 : 1;
+};
+
+// Make decimate pressure samples persistent with platform-specific default
+const decimatePressureSamples = usePersistedRef<number>('decimatePressureSamples', getDefaultDecimation());
 
 let baroListener: PluginListenerHandle;
 const barometer = Barometer;
 
-
 const rateStats = new RateStats();
+
+// Add a sample counter
+let sampleCounter = 0;
 
 async function startBarometer() {
   if (baroActive.value) return;
@@ -40,15 +50,22 @@ async function startBarometer() {
       baroListener = await barometer.addListener(
         "onPressureChange",
         (data: BarometerData) => {
-          rateStats.push();
-          baroRate.value = rateStats.averageRate();
-          processPressureSample(data.pressure, data.timestamp);
+          sampleCounter++;
+          
+          // Only process every decimatePressureSamples samples
+          if (sampleCounter >= decimatePressureSamples.value) {
+            rateStats.push();
+            baroRate.value = rateStats.averageRate();
+            processPressureSample(data.pressure, data.timestamp);
+            sampleCounter = 0; // Reset counter
+          }
         }
       );
       await barometer.start({ interval: 500 });
       baroActive.value = true;
       console.log('Barometer started successfully');
       rateStats.clear();
+      sampleCounter = 0; // Initialize counter
     }
   } catch (error) {
     console.error('Failed to start barometer:', error);
@@ -56,12 +73,14 @@ async function startBarometer() {
     baroRate.value = 0.0;
     barometerAvailable.value = false;
     baroActive.value = false;
+    sampleCounter = 0; // Reset on error
   }
 }
 
 async function stopBarometer() {
   rateStats.clear();
   baroRate.value = 0.0;
+  sampleCounter = 0; // Reset counter on stop
   if (!baroActive.value) return;
   try {
     await barometer.stop();

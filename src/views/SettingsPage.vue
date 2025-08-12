@@ -39,6 +39,8 @@
                 <ion-select v-model="decimatePressureSamples" interface="popover">
                   <ion-select-option value="1">1</ion-select-option>
                   <ion-select-option value="2">2</ion-select-option>
+                  <ion-select-option value="3">3</ion-select-option>
+                  <ion-select-option value="4">4</ion-select-option>
                   <ion-select-option value="5">5</ion-select-option>
                   <ion-select-option value="10">10</ion-select-option>
                 </ion-select>
