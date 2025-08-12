@@ -12,8 +12,8 @@ const ECET = ref<string | null>(null);
 
 // Format times as HH:mm with leading zeros
 const formatTime = (date: Date): string => {
-    const hours = date.getHours().toString();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const hours = date.getUTCHours().toString();
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
 };
 
