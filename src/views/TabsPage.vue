@@ -44,7 +44,7 @@ import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouter
 import { airplaneOutline, bluetoothOutline, cloudDownloadOutline, settingsOutline, flashOutline, flashlightOutline } from 'ionicons/icons';
 import { showDebugInfo } from '@/utils/state';
 import { onMounted, onUnmounted } from 'vue';
-import { StatusBar, Style } from '@capacitor/status-bar';
+// import { StatusBar, Style } from '@capacitor/status-bar';
 
 const INACTIVITY_TIME = 5 * 1000; // seconds
 let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -90,3 +90,4 @@ onUnmounted(() => {
   removeActivityListeners();
 });
 </script>
+
