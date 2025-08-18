@@ -3,7 +3,6 @@ import { Geolocation, Position } from '@capacitor/geolocation'
 import { Capacitor } from '@capacitor/core'
 import { DEMLookup, DEMInfo } from '@/dem/DEMLookup'
 import { selectedDemUrl } from '@/composables/useDemUrl'
-import { e } from 'mathjs'
 
 const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode

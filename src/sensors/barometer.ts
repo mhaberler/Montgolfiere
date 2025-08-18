@@ -3,7 +3,6 @@ import { Barometer } from '@mhaberler/capacitor-barometer'
 import type { PluginListenerHandle } from '@capacitor/core'
 import { RateStats } from '../stats/RateStats'
 import { processPressureSample } from '@/utils/state'
-import { usePersistedRef } from '../composables/usePersistedRef'
 
 interface BarometerAvailable {
   available: boolean

@@ -266,7 +266,7 @@ const goToDeviceAssignment = () => {
 };
 
 function formatHeading(speed: number | null | undefined, heading: number | null | undefined) {
-    if (speed === null || speed === undefined || isNaN(speed) || speed < 1) {
+    if (speed === null || speed === undefined || isNaN(speed) || speed < 0.1) {
         return '--'
     }
     if (heading === null || heading === undefined || isNaN(heading)) {
@@ -276,7 +276,7 @@ function formatHeading(speed: number | null | undefined, heading: number | null 
 }
 
 function formatSpeed(speed: number | null | undefined) {
-    if (speed === null || speed === undefined || isNaN(speed) || speed < 1) {
+    if (speed === null || speed === undefined || isNaN(speed) || speed < 0.1) {
         return '--'
     }    // Convert from m/s to km/h if needed, or just round
     return Math.round(speed * 3.6)

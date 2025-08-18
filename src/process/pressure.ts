@@ -12,7 +12,7 @@ const platformEnv = import.meta.env.VITE_CAPACITOR_PLATFORM
 const transitionAltitude = usePersistedRef<number>('transitionAltitude', 7000) // altitude in ft where we transition from QNH to ISA model
 const historySamples = usePersistedRef<number>(
   'historySamples',
-  platformEnv == 'ios' || platformEnv == 'web' ? 5 : 35,
+  platformEnv == 'ios' || platformEnv == 'web' ? 5 : 50,
 )
 
 // Platform-specific default: iOS/web = 1, Android = 5
