@@ -38,12 +38,12 @@ PODS:
   - CapacitorFilesystem (7.1.4):
     - Capacitor
     - IONFilesystemLib (~> 1.0.1)
-  - CapacitorGeolocation (7.1.4):
+  - CapacitorGeolocation (7.1.5):
     - Capacitor
-    - IONGeolocationLib (~> 1.0)
+    - IONGeolocationLib (= 1.0.1)
   - CapacitorHaptics (7.0.2):
     - Capacitor
-  - CapacitorInappbrowser (2.2.0):
+  - CapacitorInappbrowser (2.2.1):
     - Capacitor
     - OSInAppBrowserLib (~> 2.1.0)
   - CapacitorKeyboard (7.0.2):
@@ -79,7 +79,7 @@ PODS:
     - Capacitor
   - CapgoCapacitorShake (7.1.16):
     - Capacitor
-  - CapgoCapacitorUpdater (7.8.9):
+  - CapgoCapacitorUpdater (7.9.0):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -115,7 +115,7 @@ PODS:
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
   - IONFilesystemLib (1.0.1)
-  - IONGeolocationLib (1.0.0)
+  - IONGeolocationLib (1.0.1)
   - LeadscoutHttp (7.0.0):
     - Capacitor
   - MhaberlerCapacitorBarometer (2.0.1):
@@ -329,9 +329,9 @@ SPEC CHECKSUMS:
   CapacitorDevice: 81ae78d5d1942707caad79276badd458bf6ec603
   CapacitorDialog: 5bf72a94b747fb339df6f64ef60812e5e4630ad2
   CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
-  CapacitorGeolocation: 32a1f849c38c72b5071de36a28ebc548ef3bb611
+  CapacitorGeolocation: 84f868bea4c2499aebc3bb3a88fd0a508f87ab87
   CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
-  CapacitorInappbrowser: 6d5630c9194cf108ba71a745ef44e45a68a73109
+  CapacitorInappbrowser: f28c1914e6de2aef9693747d558d4678d27c42d8
   CapacitorKeyboard: a86aa9e4741b6444a802df26440a92ae041b34a6
   CapacitorLocalNotifications: 665188ae8accd40806129073896fb2b39322d858
   CapacitorMlkitBarcodeScanning: 05b2dfc7a70099f6d4594365c521534d79a17b1d
@@ -348,7 +348,7 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorScreenOrientation: c6cc24949bb2aede006277f0fa0c7832073c9ca1
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
   CapgoCapacitorShake: 7ec49a445d45ad275e11f695f3df40bbf493c280
-  CapgoCapacitorUpdater: c4593e1b21fa0de1d764772d16cd2ad97ee12cde
+  CapgoCapacitorUpdater: fe4defb4d2cfbbf9ff8a10237b454eaca916ca27
   CapgoCapacitorUploader: 4e6d016c43cf62c8d693f6501971359d82a28daf
   CapgoNativeAudio: 8dd0e69f79eff7a4cfa2be68b4dfd8749288f775
   CapgoNativegeocoder: f23baa66000c8522794bb78f0d3c318600e0b946
@@ -358,7 +358,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
-  IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
+  IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
   LeadscoutHttp: 3b639e66d5e816630edb9fdf2acb7faff0ee7cb6
   MhaberlerCapacitorBarometer: 1b71b4c71d6c6683a3438899007927acc2559a58
   MhaberlerCapacitorZeroconfNsd: 88705b7013c1f8da0cdc45b48323da4c54b91e78
