@@ -79,7 +79,7 @@ PODS:
     - Capacitor
   - CapgoCapacitorShake (7.1.16):
     - Capacitor
-  - CapgoCapacitorUpdater (7.9.0):
+  - CapgoCapacitorUpdater (7.9.2):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -348,7 +348,7 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorScreenOrientation: c6cc24949bb2aede006277f0fa0c7832073c9ca1
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
   CapgoCapacitorShake: 7ec49a445d45ad275e11f695f3df40bbf493c280
-  CapgoCapacitorUpdater: fe4defb4d2cfbbf9ff8a10237b454eaca916ca27
+  CapgoCapacitorUpdater: 7a7e233ad8e666a78dd1e9b96ed076a9798cdf99
   CapgoCapacitorUploader: 4e6d016c43cf62c8d693f6501971359d82a28daf
   CapgoNativeAudio: 8dd0e69f79eff7a4cfa2be68b4dfd8749288f775
   CapgoNativegeocoder: f23baa66000c8522794bb78f0d3c318600e0b946
