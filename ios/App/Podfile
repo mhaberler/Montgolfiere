@@ -13,7 +13,6 @@ def capacitor_pods
   pod 'CapacitorCommunityBluetoothLe', :path => '../../node_modules/@capacitor-community/bluetooth-le'
   pod 'CapacitorCommunityCameraPreview', :path => '../../node_modules/@capacitor-community/camera-preview'
   pod 'CapacitorCommunityKeepAwake', :path => '../../node_modules/@capacitor-community/keep-awake'
-  pod 'CapacitorCommunitySafeArea', :path => '../../node_modules/@capacitor-community/safe-area'
   pod 'CapacitorMlkitBarcodeScanning', :path => '../../node_modules/@capacitor-mlkit/barcode-scanning'
   pod 'CapacitorActionSheet', :path => '../../node_modules/@capacitor/action-sheet'
   pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
@@ -60,10 +59,10 @@ end
 post_install do |installer|
   assertDeploymentTarget(installer)
   
-  # Force iOS 15.5 deployment target for all pods
+  # Force iOS 16.0 deployment target for all pods
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
     end
   end
 end

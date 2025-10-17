@@ -5,30 +5,28 @@ PODS:
     - CapacitorCordova
   - CapacitorActionSheet (7.0.2):
     - Capacitor
-  - CapacitorApp (7.0.2):
+  - CapacitorApp (7.1.0):
     - Capacitor
   - CapacitorAppLauncher (7.0.2):
     - Capacitor
-  - CapacitorBarcodeScanner (2.0.4):
+  - CapacitorBarcodeScanner (2.2.0):
     - Capacitor
-    - OSBarcodeLib (~> 1.1.3)
+    - OSBarcodeLib (= 2.0.1)
   - CapacitorBrowser (7.0.2):
     - Capacitor
   - CapacitorCamera (7.0.2):
     - Capacitor
   - CapacitorClipboard (7.0.2):
     - Capacitor
-  - CapacitorCommunityAppleSignIn (7.0.1):
+  - CapacitorCommunityAppleSignIn (7.1.0):
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
-  - CapacitorCommunityBluetoothLe (7.1.1):
+  - CapacitorCommunityBluetoothLe (7.2.0):
     - Capacitor
   - CapacitorCommunityCameraPreview (7.0.2):
     - Capacitor
   - CapacitorCommunityKeepAwake (7.1.0):
-    - Capacitor
-  - CapacitorCommunitySafeArea (7.0.0-alpha.1):
     - Capacitor
   - CapacitorCordova (7.4.3)
   - CapacitorDevice (7.0.2):
@@ -43,9 +41,9 @@ PODS:
     - IONGeolocationLib (= 1.0.1)
   - CapacitorHaptics (7.0.2):
     - Capacitor
-  - CapacitorInappbrowser (2.2.1):
+  - CapacitorInappbrowser (2.5.1):
     - Capacitor
-    - OSInAppBrowserLib (~> 2.1.0)
+    - OSInAppBrowserLib (~> 2.3.1)
   - CapacitorKeyboard (7.0.3):
     - Capacitor
   - CapacitorLocalNotifications (7.0.3):
@@ -79,7 +77,7 @@ PODS:
     - Capacitor
   - CapgoCapacitorShake (7.1.27):
     - Capacitor
-  - CapgoCapacitorUpdater (7.9.2):
+  - CapgoCapacitorUpdater (7.20.1):
     - Alamofire (= 5.10.2)
     - BigInt (= 5.2.0)
     - Capacitor
@@ -89,7 +87,7 @@ PODS:
     - Capacitor
   - CapgoNativeAudio (7.5.14):
     - Capacitor
-  - CapgoNativegeocoder (7.1.8):
+  - CapgoNativegeocoder (7.2.11):
     - Capacitor
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
@@ -144,8 +142,8 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - OSBarcodeLib (1.1.3)
-  - OSInAppBrowserLib (2.1.0)
+  - OSBarcodeLib (2.0.1)
+  - OSInAppBrowserLib (2.3.1)
   - PromisesObjC (2.4.0)
   - SSZipArchive (2.4.3)
   - Version (0.8.0)
@@ -164,7 +162,6 @@ DEPENDENCIES:
   - "CapacitorCommunityBluetoothLe (from `../../node_modules/@capacitor-community/bluetooth-le`)"
   - "CapacitorCommunityCameraPreview (from `../../node_modules/@capacitor-community/camera-preview`)"
   - "CapacitorCommunityKeepAwake (from `../../node_modules/@capacitor-community/keep-awake`)"
-  - "CapacitorCommunitySafeArea (from `../../node_modules/@capacitor-community/safe-area`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorDialog (from `../../node_modules/@capacitor/dialog`)"
@@ -245,8 +242,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/camera-preview"
   CapacitorCommunityKeepAwake:
     :path: "../../node_modules/@capacitor-community/keep-awake"
-  CapacitorCommunitySafeArea:
-    :path: "../../node_modules/@capacitor-community/safe-area"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
@@ -313,25 +308,24 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   Capacitor: 28d6c01026a9a3f7156529498ec1f389a2a28dbc
   CapacitorActionSheet: 12eb20a892c04c345573415d5d248a64ccd26ba4
-  CapacitorApp: 1f6922c9c5c8b1c538d7fbe92ebe44a81b34bed3
+  CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
   CapacitorAppLauncher: b70f649f609bab6412eccdd413bd7f0dd42df4a9
-  CapacitorBarcodeScanner: c541bca80c20d209cd4333215a5c35c73dcb41e0
+  CapacitorBarcodeScanner: 4b6d4ecfff4133af982d09acd423610c14ac0c3f
   CapacitorBrowser: 22541e48442de44dc629c214388290d6eecc6ae9
   CapacitorCamera: f9e54db0a18bb218a8dc360907d63aaefe9209ff
   CapacitorClipboard: 7e227702976d4435a5a40df54f65e154d0dfc1f3
-  CapacitorCommunityAppleSignIn: 9a69d5f1d9c0a071da3a35a42f90da85c7ea054e
+  CapacitorCommunityAppleSignIn: 271cb2860576fd2961508bbfa7a82117d93eadca
   CapacitorCommunityBarcodeScanner: 100051f49caad62966f331cbdf6844a3e51db8e9
-  CapacitorCommunityBluetoothLe: 3a65ed12464f16189772c1a8c247cb0b91186114
+  CapacitorCommunityBluetoothLe: a8a3b904ef86aee80d4e22b8aa3a4b07e9fe5067
   CapacitorCommunityCameraPreview: a45e3974b2f96fbc118d9cde1c8e5990fadf364f
   CapacitorCommunityKeepAwake: 05c75aab989f60e621870cf03b24a144a5544c30
-  CapacitorCommunitySafeArea: 3f049619072ab5d0da2529bcb05b358ff6c13dc1
   CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
   CapacitorDevice: 81ae78d5d1942707caad79276badd458bf6ec603
   CapacitorDialog: 5bf72a94b747fb339df6f64ef60812e5e4630ad2
   CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
   CapacitorGeolocation: 84f868bea4c2499aebc3bb3a88fd0a508f87ab87
   CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
-  CapacitorInappbrowser: f28c1914e6de2aef9693747d558d4678d27c42d8
+  CapacitorInappbrowser: e3bd7457f6ed4b9780d38f3deb7c953a4790e3ad
   CapacitorKeyboard: 62f36104f26d53d8b3a2a43f2a69fe714f1777d5
   CapacitorLocalNotifications: 0811aef56ab2e5f7f9ae72f47d3473ab50c29038
   CapacitorMlkitBarcodeScanning: 05b2dfc7a70099f6d4594365c521534d79a17b1d
@@ -348,10 +342,10 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorScreenOrientation: 1c6874ef6768c35c6eb9e9c31e98c08816b993f8
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
   CapgoCapacitorShake: 2468af9b32b8a3a8851bb74639b9fde8708d8331
-  CapgoCapacitorUpdater: 7a7e233ad8e666a78dd1e9b96ed076a9798cdf99
+  CapgoCapacitorUpdater: aab3a60d8a230416225cfa3f43dbb819943ba6df
   CapgoCapacitorUploader: 8e7d7a322027d1787a9405945e0e2c5684313834
   CapgoNativeAudio: de0bb1cf244735598c80c39a9641e3b1c49350c3
-  CapgoNativegeocoder: f23baa66000c8522794bb78f0d3c318600e0b946
+  CapgoNativegeocoder: fa85963e8a623caf564d6467933e377cdea5d0b0
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
@@ -367,12 +361,12 @@ SPEC CHECKSUMS:
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
   MLKitVision: 45e79d68845a2de77e2dd4d7f07947f0ed157b0e
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  OSBarcodeLib: f2e981270a64faf476cb790864262b29ab8cd68a
-  OSInAppBrowserLib: 02111d866ad1bf19c663cd9b268bb22c7d41df4f
+  OSBarcodeLib: 57987d2eb1f916f701f4554e20e349b3cb83f023
+  OSInAppBrowserLib: bf7cdcc072394ae827f8cfe3f5f9c807691834c0
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: 1e2c482b5caebc2b976ab9a54349924e9fd71223
+PODFILE CHECKSUM: bf8d8cfa5003669ac1e0f77974eea91fff1fbcd9
 
 COCOAPODS: 1.16.2

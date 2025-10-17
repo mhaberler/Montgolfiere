@@ -38,22 +38,11 @@ import './theme/variables.css';
 /* Tailwind import */
 // import "./assets/main.css";
 
-import { SafeArea } from '@capacitor-community/safe-area';
-
 import { initializeApp } from './utils/startup';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { vOnLongPress } from '@vueuse/components';
 
 
-SafeArea.enable({
-    config: {
-        // customColorsForSystemBars: true,
-        // statusBarColor: '#00000000', // transparent
-        // statusBarContent: 'light',
-        // navigationBarColor: '#00000000', // transparent
-        // navigationBarContent: 'light',
-    },
-});
 // Add global error handling for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);

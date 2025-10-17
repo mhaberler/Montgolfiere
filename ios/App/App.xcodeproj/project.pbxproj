@@ -208,7 +208,6 @@
 				"${BUILT_PRODUCTS_DIR}/CapacitorCommunityBluetoothLe/CapacitorCommunityBluetoothLe.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorCommunityCameraPreview/CapacitorCommunityCameraPreview.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorCommunityKeepAwake/CapacitorCommunityKeepAwake.framework",
-				"${BUILT_PRODUCTS_DIR}/CapacitorCommunitySafeArea/CapacitorCommunitySafeArea.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorCordova/Cordova.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorDevice/CapacitorDevice.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorDialog/CapacitorDialog.framework",
@@ -268,7 +267,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorCommunityBluetoothLe.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorCommunityCameraPreview.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorCommunityKeepAwake.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorCommunitySafeArea.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Cordova.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorDevice.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorDialog.framework",
@@ -464,12 +462,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 69;
+				CURRENT_PROJECT_VERSION = 70;
 				DEVELOPMENT_TEAM = HLX9TTSLFS;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Montgolfiere;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -490,12 +488,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 69;
+				CURRENT_PROJECT_VERSION = 70;
 				DEVELOPMENT_TEAM = HLX9TTSLFS;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Montgolfiere;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
