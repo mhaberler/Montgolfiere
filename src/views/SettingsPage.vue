@@ -17,30 +17,19 @@
                 <ion-label>Transition alt (ft)</ion-label>
               </div>
               <div>
-                <ion-input
-                  type="number"
-                  min="0"
-                  max="12000"
-                  step="1000"
-                  v-model.number="transitionAltitude"
-                ></ion-input>
+                <ion-input type="number" min="0" max="12000" step="1000"
+                  v-model.number="transitionAltitude"></ion-input>
               </div>
               <div>
                 <ion-label>Variance samples</ion-label>
               </div>
               <div>
-                <ion-input
-                  type="number"
-                  min="5"
-                  max="100"
-                  v-model.number="historySamples"
-                  @ionBlur="
+                <ion-input type="number" min="5" max="100" v-model.number="historySamples" @ionBlur="
                     () => {
                       if (historySamples < 5) historySamples = 5
                       if (historySamples > 500) historySamples = 500
                     }
-                  "
-                ></ion-input>
+                  "></ion-input>
               </div>
 
               <div v-if="isAndroid">
@@ -58,81 +47,50 @@
               </div>
 
               <div class="mt-4 space-y-2 p-4">
-                <label for="pmtiles-url" class="block text-sm font-medium"
-                  >Digital Elevation Model:</label
-                >
-                <select
-                  v-model="selectedUrl"
-                  class="w-full rounded-md border border-gray-300 p-2"
-                  @change="updateDemUrl"
-                >
+                <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
+                <select v-model="selectedUrl" class="w-full rounded-md border border-gray-300 p-2"
+                  @change="updateDemUrl">
                   <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">
                     Europe 30m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">
                     Austria 10m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">
                     Slovenia 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">
                     Germany 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">
                     Italy 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">
                     Switzerland 10m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">
                     Sweden 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">
                     Croatia 10m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">
                     Hungary 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles">
                     Slovakia 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">
                     Czechia 20m
                   </option>
-                  <option
-                    value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles"
-                  >
+                  <option value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles">
                     Poland 20m
                   </option>
                   <option value="custom">Custom URL...</option>
                 </select>
-                <input
-                  v-if="selectedUrl === 'custom'"
-                  v-model="customUrl"
-                  class="w-full rounded-md border border-gray-300 p-2"
-                  placeholder="Enter custom PMTiles URL"
-                  @input="updateDemUrl"
-                />
+                <input v-if="selectedUrl === 'custom'" v-model="customUrl"
+                  class="w-full rounded-md border border-gray-300 p-2" placeholder="Enter custom PMTiles URL"
+                  @input="updateDemUrl" />
               </div>
 
               <div class="mt-4 p-4">
@@ -160,26 +118,15 @@
                 <ion-label :class="{ 'opacity-50': autoQNHflag }">manual QNH (hPa)</ion-label>
               </div>
               <div>
-                <ion-input
-                  type="number"
-                  min="800"
-                  max="1100"
-                  step="1"
-                  v-model.number="manualQNHvalue"
-                  :disabled="autoQNHflag"
-                  :class="{ 'opacity-50': autoQNHflag }"
-                ></ion-input>
+                <ion-input type="number" min="800" max="1100" step="1" v-model.number="manualQNHvalue"
+                  :disabled="autoQNHflag" :class="{ 'opacity-50': autoQNHflag }"></ion-input>
               </div>
             </div>
 
             <ion-card>
               <ion-card-content>
                 <div v-if="airportQnhData.length > 0" class="space-y-2">
-                  <div
-                    v-for="airport in airportQnhData"
-                    :key="airport.icao"
-                    class="flex items-center justify-between"
-                  >
+                  <div v-for="airport in airportQnhData" :key="airport.icao" class="flex items-center justify-between">
                     <div>
                       <span class="font-semibold">{{ airport.site }}</span>
                       <span class="ml-2 text-xs text-gray-500">({{ airport.icao }})</span>
@@ -190,12 +137,7 @@
                     </div>
                   </div>
                 </div>
-                <ion-button
-                  class="mt-4"
-                  expand="block"
-                  @click="handleUpdateQnh"
-                  :disabled="loadingQnh"
-                >
+                <ion-button class="mt-4" expand="block" @click="handleUpdateQnh" :disabled="loadingQnh">
                   {{ loadingQnh ? 'Updating...' : 'Update QNH from Location' }}
                 </ion-button>
                 <div v-if="qnhError" class="mt-2 text-red-500">{{ qnhError }}</div>
@@ -211,6 +153,20 @@
             <DebugEkf />
           </div>
         </ion-accordion>
+
+        <ion-accordion value="browser">
+          <ion-item slot="header">
+            <ion-label>Start browser</ion-label>
+          </ion-item>
+          <div slot="content">
+            <div class="mt-4 p-4">
+              <ion-button expand="block" color="warning" @click="openCapacitorSite">
+                Start Browser
+              </ion-button>
+            </div>
+          </div>
+        </ion-accordion>
+
         <ion-accordion value="build-info">
           <ion-item slot="header">
             <ion-label>Build Information</ion-label>
@@ -228,11 +184,8 @@
 
                 <div class="font-medium">Git SHA:</div>
                 <div class="font-mono text-xs">
-                  <a
-                    :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`"
-                    target="_blank"
-                    class="text-blue-600 underline hover:text-blue-800"
-                  >
+                  <a :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`" target="_blank"
+                    class="text-blue-600 underline hover:text-blue-800">
                     {{ gitSha }}
                   </a>
                 </div>
@@ -329,6 +282,8 @@ import { showDebugInfo } from '@/utils/startup'
 // Add these imports
 import { Capacitor } from '@capacitor/core'
 
+import { Browser } from '@capacitor/browser';
+
 // Add platform detection
 const isAndroid = computed(() => Capacitor.getPlatform() === 'android')
 
@@ -343,6 +298,11 @@ const clearAllPreferences = async () => {
   await Preferences.clear()
   console.log('All preferences cleared.')
 }
+
+const openCapacitorSite = async () => {
+  await Browser.open({ url: 'http://capacitorjs.com/' });
+};
+
 
 interface MqttInitOptions {
   brokerUrl: string
