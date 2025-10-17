@@ -104,9 +104,6 @@ project(':capawesome-capacitor-screenshot').projectDir = new File('../node_modul
 include ':capgo-capacitor-shake'
 project(':capgo-capacitor-shake').projectDir = new File('../node_modules/@capgo/capacitor-shake/android')
 
-include ':capgo-capacitor-updater'
-project(':capgo-capacitor-updater').projectDir = new File('../node_modules/@capgo/capacitor-updater/android')
-
 include ':capgo-capacitor-uploader'
 project(':capgo-capacitor-uploader').projectDir = new File('../node_modules/@capgo/capacitor-uploader/android')
 

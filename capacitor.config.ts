@@ -48,17 +48,6 @@ const config: CapacitorConfig = {
   },
   plugins: {
     extConfig: {},
-    CapacitorUpdater: {
-      version: pkg.version,
-      appId: "com.haberler.montgolfiere",
-      defaultChannel: "development",
-      autoUpdate: false,
-      autoDeleteFailed: true,
-      resetWhenUpdate: true, // new appstore version -> native
-      // publicKey: process.env.MONTGOLFIERE_PUBLIC_KEY,
-      publicKey:
-        "-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEA7Q3ei2rTD/qRDwfYGcaccuuSR2E+2IyeZcX34VWTNgtX//hzlYLt\nEVyVN7oAP6wFqQBIxfkp06Mzu3T/kW0cMcvVW8g6A1nQKVUES5NLAMZm50ZhrTWS\nImFJUKftebdmL4tjD0uWtm/0DCh7AJXGSrlD5bC82VOt0nM8/oY3n9T/72TljKoc\n494bURriGNGc0eEImAklIyaLVoT8kuWdIWGrD3jvRZpHJQFON/cRsVSmSCk9Fi3c\nRlGrhFPllqIvBaZEnPoO+ypvt6arTlA7uxlAUa/5LSD6wd0UXbXFAtAcj8lOHgRS\n3xsDPHLcChq4Rp+jMQY3H0Gw1ua9edKIowIDAQAB\n-----END RSA PUBLIC KEY-----\n",
-    },
     StatusBar: {
       overlaysWebView: false,
       // style: "DARK",

@@ -1,6 +1,4 @@
 PODS:
-  - Alamofire (5.10.2)
-  - BigInt (5.2.0)
   - Capacitor (7.4.3):
     - CapacitorCordova
   - CapacitorActionSheet (7.0.2):
@@ -77,12 +75,6 @@ PODS:
     - Capacitor
   - CapgoCapacitorShake (7.1.27):
     - Capacitor
-  - CapgoCapacitorUpdater (7.20.1):
-    - Alamofire (= 5.10.2)
-    - BigInt (= 5.2.0)
-    - Capacitor
-    - SSZipArchive (= 2.4.3)
-    - Version (= 0.8.0)
   - CapgoCapacitorUploader (7.1.23):
     - Capacitor
   - CapgoNativeAudio (7.5.14):
@@ -145,8 +137,6 @@ PODS:
   - OSBarcodeLib (2.0.1)
   - OSInAppBrowserLib (2.3.1)
   - PromisesObjC (2.4.0)
-  - SSZipArchive (2.4.3)
-  - Version (0.8.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -185,7 +175,6 @@ DEPENDENCIES:
   - "CapawesomeCapacitorScreenOrientation (from `../../node_modules/@capawesome/capacitor-screen-orientation`)"
   - "CapawesomeCapacitorScreenshot (from `../../node_modules/@capawesome/capacitor-screenshot`)"
   - "CapgoCapacitorShake (from `../../node_modules/@capgo/capacitor-shake`)"
-  - "CapgoCapacitorUpdater (from `../../node_modules/@capgo/capacitor-updater`)"
   - "CapgoCapacitorUploader (from `../../node_modules/@capgo/capacitor-uploader`)"
   - "CapgoNativeAudio (from `../../node_modules/@capgo/native-audio`)"
   - "CapgoNativegeocoder (from `../../node_modules/@capgo/nativegeocoder`)"
@@ -195,8 +184,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Alamofire
-    - BigInt
     - GoogleDataTransport
     - GoogleMLKit
     - GoogleToolboxForMac
@@ -212,8 +199,6 @@ SPEC REPOS:
     - OSBarcodeLib
     - OSInAppBrowserLib
     - PromisesObjC
-    - SSZipArchive
-    - Version
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -288,8 +273,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capawesome/capacitor-screenshot"
   CapgoCapacitorShake:
     :path: "../../node_modules/@capgo/capacitor-shake"
-  CapgoCapacitorUpdater:
-    :path: "../../node_modules/@capgo/capacitor-updater"
   CapgoCapacitorUploader:
     :path: "../../node_modules/@capgo/capacitor-uploader"
   CapgoNativeAudio:
@@ -304,8 +287,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@mhaberler/capacitor-zeroconf-nsd"
 
 SPEC CHECKSUMS:
-  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
-  BigInt: f668a80089607f521586bbe29513d708491ef2f7
   Capacitor: 28d6c01026a9a3f7156529498ec1f389a2a28dbc
   CapacitorActionSheet: 12eb20a892c04c345573415d5d248a64ccd26ba4
   CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
@@ -342,7 +323,6 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorScreenOrientation: 1c6874ef6768c35c6eb9e9c31e98c08816b993f8
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
   CapgoCapacitorShake: 2468af9b32b8a3a8851bb74639b9fde8708d8331
-  CapgoCapacitorUpdater: aab3a60d8a230416225cfa3f43dbb819943ba6df
   CapgoCapacitorUploader: 8e7d7a322027d1787a9405945e0e2c5684313834
   CapgoNativeAudio: de0bb1cf244735598c80c39a9641e3b1c49350c3
   CapgoNativegeocoder: fa85963e8a623caf564d6467933e377cdea5d0b0
@@ -364,9 +344,7 @@ SPEC CHECKSUMS:
   OSBarcodeLib: 57987d2eb1f916f701f4554e20e349b3cb83f023
   OSInAppBrowserLib: bf7cdcc072394ae827f8cfe3f5f9c807691834c0
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
-  Version: de5907f2c5d0f3cf21708db7801d1d5401139486
 
-PODFILE CHECKSUM: bf8d8cfa5003669ac1e0f77974eea91fff1fbcd9
+PODFILE CHECKSUM: c2d71a983c126006f6aeda4bd817669f94207be8
 
 COCOAPODS: 1.16.2

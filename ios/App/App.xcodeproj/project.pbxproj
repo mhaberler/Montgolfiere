@@ -193,8 +193,6 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
-				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorActionSheet/CapacitorActionSheet.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework",
@@ -230,7 +228,6 @@
 				"${BUILT_PRODUCTS_DIR}/CapawesomeCapacitorScreenOrientation/CapawesomeCapacitorScreenOrientation.framework",
 				"${BUILT_PRODUCTS_DIR}/CapawesomeCapacitorScreenshot/CapawesomeCapacitorScreenshot.framework",
 				"${BUILT_PRODUCTS_DIR}/CapgoCapacitorShake/CapgoCapacitorShake.framework",
-				"${BUILT_PRODUCTS_DIR}/CapgoCapacitorUpdater/CapgoCapacitorUpdater.framework",
 				"${BUILT_PRODUCTS_DIR}/CapgoCapacitorUploader/CapgoCapacitorUploader.framework",
 				"${BUILT_PRODUCTS_DIR}/CapgoNativeAudio/CapgoNativeAudio.framework",
 				"${BUILT_PRODUCTS_DIR}/CapgoNativegeocoder/CapgoNativegeocoder.framework",
@@ -242,8 +239,6 @@
 				"${BUILT_PRODUCTS_DIR}/MhaberlerCapacitorBarometer/MhaberlerCapacitorBarometer.framework",
 				"${BUILT_PRODUCTS_DIR}/MhaberlerCapacitorZeroconfNsd/MhaberlerCapacitorZeroconfNsd.framework",
 				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
-				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
-				"${BUILT_PRODUCTS_DIR}/Version/Version.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/IONFilesystemLib/IONFilesystemLib.framework/IONFilesystemLib",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/IONGeolocationLib/IONGeolocationLib.framework/IONGeolocationLib",
@@ -252,8 +247,6 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Capacitor.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorActionSheet.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorApp.framework",
@@ -289,7 +282,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapawesomeCapacitorScreenOrientation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapawesomeCapacitorScreenshot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapgoCapacitorShake.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapgoCapacitorUpdater.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapgoCapacitorUploader.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapgoNativeAudio.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapgoNativegeocoder.framework",
@@ -301,8 +293,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MhaberlerCapacitorBarometer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MhaberlerCapacitorZeroconfNsd.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Version.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IONFilesystemLib.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IONGeolocationLib.framework",

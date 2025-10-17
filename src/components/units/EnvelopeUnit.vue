@@ -417,7 +417,6 @@ export default defineConfig({
   optimizeDeps: {
     exclude: [
       '@capacitor-community/safe-area',
-      '@capgo/capacitor-updater',
       'capacitor-barometer'
     ],
     include: [

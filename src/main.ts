@@ -39,7 +39,6 @@ import './theme/variables.css';
 // import "./assets/main.css";
 
 import { initializeApp } from './utils/startup';
-import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { vOnLongPress } from '@vueuse/components';
 
 
@@ -64,7 +63,6 @@ window.addEventListener('error', (event) => {
     }
 });
 
-CapacitorUpdater.notifyAppReady();
 
 
 initializeApp();
