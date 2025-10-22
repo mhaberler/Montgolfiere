@@ -11,7 +11,7 @@ const options: PositionOptions = {
 }
 
 const androidOptions: PositionOptions = {
-  enableHighAccuracy: false, // Battery saving mode
+  enableHighAccuracy: true, // Use high accuracy mode
   timeout: 20000,
   maximumAge: 0,
 }
