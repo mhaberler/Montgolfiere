@@ -154,7 +154,7 @@
           </div>
         </ion-accordion>
 
-        <ion-accordion value="browser">
+        <!-- <ion-accordion value="browser">
           <ion-item slot="header">
             <ion-label>Start browser</ion-label>
           </ion-item>
@@ -165,7 +165,7 @@
               </ion-button>
             </div>
           </div>
-        </ion-accordion>
+        </ion-accordion> -->
 
         <ion-accordion value="build-info">
           <ion-item slot="header">
