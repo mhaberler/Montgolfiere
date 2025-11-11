@@ -73,13 +73,13 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorScreenshot (7.0.1):
     - Capacitor
-  - CapgoCapacitorShake (7.1.29):
+  - CapgoCapacitorShake (7.2.14):
     - Capacitor
-  - CapgoCapacitorUploader (7.1.23):
+  - CapgoCapacitorUploader (7.3.3):
     - Capacitor
-  - CapgoNativeAudio (7.5.16):
+  - CapgoNativeAudio (7.9.3):
     - Capacitor
-  - CapgoNativegeocoder (7.2.11):
+  - CapgoNativegeocoder (7.3.11):
     - Capacitor
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
@@ -322,10 +322,10 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorFilePicker: 0f4a913a00e39dd77213449f0d917e92f35a5ca9
   CapawesomeCapacitorScreenOrientation: 1c6874ef6768c35c6eb9e9c31e98c08816b993f8
   CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
-  CapgoCapacitorShake: b989c99533ec93faf01890f16d878286b84be26f
-  CapgoCapacitorUploader: 8e7d7a322027d1787a9405945e0e2c5684313834
-  CapgoNativeAudio: 242cc2ac9b0be07e2dc53293597acde1665b68b0
-  CapgoNativegeocoder: fa85963e8a623caf564d6467933e377cdea5d0b0
+  CapgoCapacitorShake: 7d66a74747905ddf2b80cfe48689258c3401243a
+  CapgoCapacitorUploader: 67fa0cc4712a78b6135dafb62d1be996c9915fc8
+  CapgoNativeAudio: 82f575f18a1144156e118695c49496b20a6be51a
+  CapgoNativegeocoder: be32353492f1e930afed604190fc2687be16d4bf
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
