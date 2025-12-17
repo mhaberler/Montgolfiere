@@ -251,8 +251,8 @@ const multilevelSensorsArray = [
     id: 0x63,
     label: "acceleration",
     signed: true,
-    size: 2,
-    factor: 0.001,
+    size: 4,
+    factor: 0.000001,
     unit: "m/s²",
   },
   {
@@ -455,8 +455,8 @@ const multilevelSensorsArray = [
     id: 0x62,
     label: "speed",
     signed: true,
-    size: 2,
-    factor: 0.01,
+    size: 4,
+    factor: 0.000001,
     unit: "m/s",
   },
   {
