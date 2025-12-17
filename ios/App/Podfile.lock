@@ -1,94 +1,94 @@
 PODS:
-  - Capacitor (7.4.4):
+  - Capacitor (8.0.0):
     - CapacitorCordova
-  - CapacitorActionSheet (7.0.2):
+  - CapacitorActionSheet (8.0.0):
     - Capacitor
-  - CapacitorApp (7.1.0):
+  - CapacitorApp (8.0.0):
     - Capacitor
-  - CapacitorAppLauncher (7.0.2):
+  - CapacitorAppLauncher (8.0.0):
     - Capacitor
-  - CapacitorBarcodeScanner (2.2.0):
+  - CapacitorBarcodeScanner (3.0.0):
     - Capacitor
     - OSBarcodeLib (= 2.0.1)
-  - CapacitorBrowser (7.0.2):
+  - CapacitorBrowser (8.0.0):
     - Capacitor
-  - CapacitorCamera (7.0.2):
+  - CapacitorCamera (8.0.0):
     - Capacitor
-  - CapacitorClipboard (7.0.2):
+  - CapacitorClipboard (8.0.0):
     - Capacitor
   - CapacitorCommunityAppleSignIn (7.1.0):
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
-  - CapacitorCommunityBluetoothLe (7.2.0):
+  - CapacitorCommunityBluetoothLe (7.3.0):
     - Capacitor
   - CapacitorCommunityCameraPreview (7.0.2):
     - Capacitor
   - CapacitorCommunityKeepAwake (7.1.0):
     - Capacitor
-  - CapacitorCordova (7.4.4)
-  - CapacitorDevice (7.0.2):
+  - CapacitorCordova (8.0.0)
+  - CapacitorDevice (8.0.0):
     - Capacitor
-  - CapacitorDialog (7.0.2):
+  - CapacitorDialog (8.0.0):
     - Capacitor
-  - CapacitorFilesystem (7.1.4):
+  - CapacitorFilesystem (8.0.0):
     - Capacitor
     - IONFilesystemLib (~> 1.0.1)
-  - CapacitorGeolocation (7.1.5):
+  - CapacitorGeolocation (8.0.0):
     - Capacitor
-    - IONGeolocationLib (= 1.0.1)
-  - CapacitorHaptics (7.0.2):
+    - IONGeolocationLib (= 2.0.0)
+  - CapacitorHaptics (8.0.0):
     - Capacitor
-  - CapacitorInappbrowser (2.5.1):
+  - CapacitorInappbrowser (3.0.0):
     - Capacitor
     - OSInAppBrowserLib (~> 2.3.1)
-  - CapacitorKeyboard (7.0.3):
+  - CapacitorKeyboard (8.0.0):
     - Capacitor
-  - CapacitorLocalNotifications (7.0.3):
+  - CapacitorLocalNotifications (8.0.0):
     - Capacitor
-  - CapacitorMlkitBarcodeScanning (7.4.0):
+  - CapacitorMlkitBarcodeScanning (8.0.0):
     - Capacitor
-    - GoogleMLKit/BarcodeScanning (= 7.0.0)
-  - CapacitorNetwork (7.0.2):
+    - GoogleMLKit/BarcodeScanning (~> 8.0.0)
+  - CapacitorNetwork (8.0.0):
     - Capacitor
-  - CapacitorPreferences (7.0.2):
+  - CapacitorPreferences (8.0.0):
     - Capacitor
-  - CapacitorScreenReader (7.0.2):
+  - CapacitorScreenReader (8.0.0):
     - Capacitor
-  - CapacitorShare (7.0.2):
+  - CapacitorShare (8.0.0):
     - Capacitor
-  - CapacitorSplashScreen (7.0.3):
+  - CapacitorSplashScreen (8.0.0):
     - Capacitor
-  - CapacitorStatusBar (7.0.3):
+  - CapacitorStatusBar (8.0.0):
     - Capacitor
-  - CapacitorTextZoom (7.0.2):
+  - CapacitorTextZoom (8.0.0):
     - Capacitor
-  - CapacitorToast (7.0.2):
+  - CapacitorToast (8.0.0):
     - Capacitor
-  - CapawesomeCapacitorBackgroundTask (7.0.1):
+  - CapawesomeCapacitorBackgroundTask (8.0.0):
     - Capacitor
-  - CapawesomeCapacitorFilePicker (7.2.0):
+  - CapawesomeCapacitorFilePicker (8.0.0):
     - Capacitor
-  - CapawesomeCapacitorScreenOrientation (7.1.0):
+  - CapawesomeCapacitorScreenOrientation (8.0.0):
     - Capacitor
-  - CapawesomeCapacitorScreenshot (7.0.1):
+  - CapawesomeCapacitorScreenshot (8.0.0):
     - Capacitor
-  - CapgoCapacitorShake (7.2.19):
+  - CapgoCapacitorShake (8.0.2):
     - Capacitor
-  - CapgoCapacitorUploader (7.3.7):
+  - CapgoCapacitorUploader (8.0.2):
     - Capacitor
-  - CapgoNativeAudio (7.9.9):
+  - CapgoNativeAudio (8.1.1):
     - Capacitor
-  - CapgoNativegeocoder (7.3.15):
+  - CapgoNativegeocoder (8.0.2):
     - Capacitor
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - GoogleMLKit/BarcodeScanning (7.0.0):
+  - GoogleMLKit/BarcodeScanning (8.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitBarcodeScanning (~> 6.0.0)
-  - GoogleMLKit/MLKitCore (7.0.0):
-    - MLKitCommon (~> 12.0.0)
+    - MLKitBarcodeScanning (~> 7.0.0)
+  - GoogleMLKit/MLKitCore (8.0.0):
+    - MLKitCommon (~> 13.0.0)
   - GoogleToolboxForMac/Defines (4.2.1)
   - GoogleToolboxForMac/Logger (4.2.1):
     - GoogleToolboxForMac/Defines (= 4.2.1)
@@ -105,30 +105,30 @@ PODS:
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (3.5.0)
   - IONFilesystemLib (1.0.1)
-  - IONGeolocationLib (1.0.1)
+  - IONGeolocationLib (2.0.0)
   - LeadscoutHttp (7.0.0):
     - Capacitor
   - MhaberlerCapacitorBarometer (2.0.1):
     - Capacitor
   - MhaberlerCapacitorZeroconfNsd (5.0.3):
     - Capacitor
-  - MLImage (1.0.0-beta6)
-  - MLKitBarcodeScanning (6.0.0):
-    - MLKitCommon (~> 12.0)
-    - MLKitVision (~> 8.0)
-  - MLKitCommon (12.0.0):
+  - MLImage (1.0.0-beta7)
+  - MLKitBarcodeScanning (7.0.0):
+    - MLKitCommon (~> 13.0)
+    - MLKitVision (~> 9.0)
+  - MLKitCommon (13.0.0):
     - GoogleDataTransport (~> 10.0)
     - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
     - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
     - GoogleUtilities/Logger (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
-  - MLKitVision (8.0.0):
+  - MLKitVision (9.0.0):
     - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
     - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
     - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
-    - MLImage (= 1.0.0-beta6)
-    - MLKitCommon (~> 12.0)
+    - MLImage (= 1.0.0-beta7)
+    - MLKitCommon (~> 13.0)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -287,59 +287,59 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@mhaberler/capacitor-zeroconf-nsd"
 
 SPEC CHECKSUMS:
-  Capacitor: 358dd1c3fdd71d969547b17e159fd8a7736cb45f
-  CapacitorActionSheet: 12eb20a892c04c345573415d5d248a64ccd26ba4
-  CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
-  CapacitorAppLauncher: b70f649f609bab6412eccdd413bd7f0dd42df4a9
-  CapacitorBarcodeScanner: 4b6d4ecfff4133af982d09acd423610c14ac0c3f
-  CapacitorBrowser: 22541e48442de44dc629c214388290d6eecc6ae9
-  CapacitorCamera: f9e54db0a18bb218a8dc360907d63aaefe9209ff
-  CapacitorClipboard: 7e227702976d4435a5a40df54f65e154d0dfc1f3
+  Capacitor: 341ff7cf652ec695d1a8ebf604db448ac7b6d635
+  CapacitorActionSheet: 23a61973f273680dc12ef506109d9397675e3fc3
+  CapacitorApp: 3963a84197280757b84f126afd1520a85ae3b092
+  CapacitorAppLauncher: 7f2330aa2d8a72a4767ab05af9df4bf68166ebf0
+  CapacitorBarcodeScanner: b56bf5972818c8ef6f7ca27e877dbfd7d1345ef0
+  CapacitorBrowser: b7d7f05f840fe042e46f6528bb8db853e3058fb2
+  CapacitorCamera: 592acb7ab9fb748e2d8571eb03af30ec4e1ace12
+  CapacitorClipboard: 61832a3722adc61afed6e0191c8a0e11ba11674d
   CapacitorCommunityAppleSignIn: 271cb2860576fd2961508bbfa7a82117d93eadca
   CapacitorCommunityBarcodeScanner: 100051f49caad62966f331cbdf6844a3e51db8e9
-  CapacitorCommunityBluetoothLe: a8a3b904ef86aee80d4e22b8aa3a4b07e9fe5067
+  CapacitorCommunityBluetoothLe: 41f9dec8a4c16ab6b81e56402b6047fc19b4735d
   CapacitorCommunityCameraPreview: a45e3974b2f96fbc118d9cde1c8e5990fadf364f
   CapacitorCommunityKeepAwake: 05c75aab989f60e621870cf03b24a144a5544c30
-  CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
-  CapacitorDevice: 81ae78d5d1942707caad79276badd458bf6ec603
-  CapacitorDialog: 5bf72a94b747fb339df6f64ef60812e5e4630ad2
-  CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
-  CapacitorGeolocation: 84f868bea4c2499aebc3bb3a88fd0a508f87ab87
-  CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
-  CapacitorInappbrowser: e3bd7457f6ed4b9780d38f3deb7c953a4790e3ad
-  CapacitorKeyboard: 62f36104f26d53d8b3a2a43f2a69fe714f1777d5
-  CapacitorLocalNotifications: 0811aef56ab2e5f7f9ae72f47d3473ab50c29038
-  CapacitorMlkitBarcodeScanning: 2d4d1420f3989d6c3a3c21dac796ebb5cad499de
-  CapacitorNetwork: 695069886b3c5ed514db69aa3d026b8dc3c03a6b
-  CapacitorPreferences: 65107ed7437d96ee72583df5763985e3c0ff2bc2
-  CapacitorScreenReader: 218f3bd7ed11e6bf24ec15f5636acb404d5c840d
-  CapacitorShare: be166411fa995ead2d39b104aa0aae56d8615c66
-  CapacitorSplashScreen: e388b8e0ed0e982a9d3a40417f478e7a018a8763
-  CapacitorStatusBar: 0659ddc7b1713764a05831463d215b177a15d054
-  CapacitorTextZoom: 726ff9338c1e2d2c1e1ee8a9df1189047428f2f2
-  CapacitorToast: 166611aea815418fc08894b77a915773e3d059d5
-  CapawesomeCapacitorBackgroundTask: e17ea2608e9bdd14889d8eba2d793ff9c337db6c
-  CapawesomeCapacitorFilePicker: 0f4a913a00e39dd77213449f0d917e92f35a5ca9
-  CapawesomeCapacitorScreenOrientation: 3c69f06737dae8a9340d5f51891a58321987123c
-  CapawesomeCapacitorScreenshot: 7cb6adcfda60f72153d18811654638b19f019738
-  CapgoCapacitorShake: 9487c6b57bc1a0b634b0a8402063da7dcf4aa2be
-  CapgoCapacitorUploader: 8f6b87767ab94f950eff31f0a2a703fdafd3a1f5
-  CapgoNativeAudio: 26a0811a548ad4b2f8f8055dd9abbf9682be28b9
-  CapgoNativegeocoder: 5e9919af26002bff297615a790494fd9f37e4fb3
+  CapacitorCordova: 5dc3912d25ef770a3fe0f431bb65c9fbfa2e92f9
+  CapacitorDevice: 9a16fb36a19ff391bf75afbe3cf16f883b3b3aa0
+  CapacitorDialog: 3721e40dd075f590328166c29b4e982dbeedeb56
+  CapacitorFilesystem: 2cb7c29536024668f333266a2177f8c10bbd9c98
+  CapacitorGeolocation: 8a405e707de9aff6ac9eca7f408966a370f7ca33
+  CapacitorHaptics: 2079d9fa04c5a71e18663b4722323c304c58245c
+  CapacitorInappbrowser: 66fc8cc3ff414c2393fe5dcfd52815cf8b6a046f
+  CapacitorKeyboard: d7868c079a4d5277a3deca27a10a488fcbbb8b69
+  CapacitorLocalNotifications: 177cfbf8228d9bd82a147e094cb7984d7afb9e29
+  CapacitorMlkitBarcodeScanning: c990cd038eeede95212af747f0e7fcf9c91e61e7
+  CapacitorNetwork: 156f8096cbbce5337eb1769fcc0d6adc4b85d3f3
+  CapacitorPreferences: 443fabe9670226200e595658a87ef0b1566716d4
+  CapacitorScreenReader: 9b1175cf9047e66cc3262e7e358442fa74511973
+  CapacitorShare: 12f1d192170cbcf9f108fd675ac8e343761a4638
+  CapacitorSplashScreen: 422880d7117605c30699eb4b21644b62db42e86c
+  CapacitorStatusBar: 312e2e67928dfe9514c4a8916a1fd610552f5f35
+  CapacitorTextZoom: bceaf076f134e188f8fd36ff74ef18a7d2bdb160
+  CapacitorToast: aefebcd4cead9f44a04ace80c66a7eb4031751e7
+  CapawesomeCapacitorBackgroundTask: ec4304958c7711bb7fb973757be2e0806d31b6e8
+  CapawesomeCapacitorFilePicker: 43c2f2e86e9722b2ea22d69abc8c09fe158bfc86
+  CapawesomeCapacitorScreenOrientation: 0ccf8e1fe6e9a5bb48f200a4f4b5df7a0c82f68a
+  CapawesomeCapacitorScreenshot: 267ba20680879adcf4cdc39cfb4f8187c640a683
+  CapgoCapacitorShake: 4aa7e048ed47db45e6d65123953a02f004a1a71c
+  CapgoCapacitorUploader: 87091db635cc7810f9889f154d9465601fed831a
+  CapgoNativeAudio: e62245e856f5fcf603f9543c8a270eb2cd1888d6
+  CapgoNativegeocoder: 80d0793e456e59dcfe9b2bc0f9b0485abb250e33
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
-  GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
+  GoogleMLKit: ddd51d7dff36ff28defa69afedd9cdce684fd857
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
-  IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
+  IONGeolocationLib: a5e40b54edc2ee9902036eda5aaa41ddf07bb68d
   LeadscoutHttp: 3b639e66d5e816630edb9fdf2acb7faff0ee7cb6
   MhaberlerCapacitorBarometer: 1b71b4c71d6c6683a3438899007927acc2559a58
   MhaberlerCapacitorZeroconfNsd: 88705b7013c1f8da0cdc45b48323da4c54b91e78
-  MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
-  MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
-  MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
-  MLKitVision: 45e79d68845a2de77e2dd4d7f07947f0ed157b0e
+  MLImage: 2ab9c968e75f57911c16f4c9d9e8a8e9604a86a1
+  MLKitBarcodeScanning: 72c6437f13a900833b400136be53a8a5d86f42fa
+  MLKitCommon: 26b779f072a182c1603d4c88a101c350cac837b1
+  MLKitVision: fa8dea9012ac59497c79ddbe9ebf32051047ac4c
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   OSBarcodeLib: 57987d2eb1f916f701f4554e20e349b3cb83f023
   OSInAppBrowserLib: bf7cdcc072394ae827f8cfe3f5f9c807691834c0
