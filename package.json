@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.11.6",
+  "version": "1.11.20",
   "type": "module",
   "description": "An Ionic project",
   "config": {
@@ -24,8 +24,8 @@
     "debug-android-s10": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target RF8MC11LGDW",
     "debug-android-a15": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target RF8Y109W1JB",
     "debug-galaxy-pro-tab10": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target R52T40AW12D",
-    "debug-ios-i16": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --port $npm_package_config_port  --target 00008140-0002692C1E79801C",
-    "debug-ios-i10": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" &&  bunx cap run ios --live-reload --port $npm_package_config_port  --target 93942fc51046d99c6fa8a0c497ada1abe6bc463d",
+    "debug-ios-i16": "  bunx cap run ios --live-reload --port $npm_package_config_port  --target 00008140-0002692C1E79801C",
+    "debug-ios-i10": "  bunx cap run ios --live-reload --port $npm_package_config_port  --target 93942fc51046d99c6fa8a0c497ada1abe6bc463d",
     "run-on-galaxy-s24": "bunx cap run android --target R3CX90A30EW",
     "run-on-galaxy-s10": "bunx cap run android --target RF8MC11LGDW",
     "run-on-galaxy-a15": "bunx cap run android --target RF8Y109W1JB",
@@ -47,7 +47,7 @@
     "app-bump-minor": "bunx npm version minor --no-git-tag-version && fastlane   bump",
     "app-bump-major": "bunx npm version major --no-git-tag-version && fastlane   bump",
     "android-cpu-usage": "adb shell top",
-    "sync": "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\" && bunx cap sync",
+    "sync": "eval \"$(rbenv init - zsh)\" && bunx cap sync",
     "format": "prettier --write ."
   },
   "scripts-disabled": {
