@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.11.19",
+  "version": "1.11.20",
   "type": "module",
   "description": "An Ionic project",
   "config": {
@@ -47,7 +47,7 @@
     "app-bump-minor": "bunx npm version minor --no-git-tag-version && fastlane   bump",
     "app-bump-major": "bunx npm version major --no-git-tag-version && fastlane   bump",
     "android-cpu-usage": "adb shell top",
-    "sync": " bunx cap sync",
+    "sync": "eval \"$(rbenv init - zsh)\" && bunx cap sync",
     "format": "prettier --write ."
   },
   "scripts-disabled": {
