@@ -22,7 +22,7 @@
                         <ValueCard :value="ekfVelocity" :name="'vSpeed'" :decimals="1" :unit="'m/s'" />
                     </div>
                     <div>
-                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="2" :unit="'m/s\u00B2'" />
+                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="3" :unit="'m/s\u00B2'" />
                     </div>
 
                     <div>
