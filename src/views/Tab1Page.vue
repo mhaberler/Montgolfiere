@@ -83,6 +83,10 @@
                         <ValueCard :value="currentQNH" :name="'QNH'" :decimals="0" :unit="currentQNHsource" />
                     </div>
 
+                    <div>
+                        <ValueCard :value="currentTimeUTC" :name="'TIME'" :unit="'UTC'" />
+                    </div>
+
                 </div>
                 <div class="h-100 overflow-y-auto overflow-x-hidden">
                     <div class=" bg-white p-2 sm:p-6">
@@ -155,7 +159,7 @@ import {
     IonIcon
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import { closeOutline, checkmarkOutline } from 'ionicons/icons';
 import { metersToFeet } from '../utils/meteo-utils'
 
@@ -174,6 +178,28 @@ import LinearScale from '../components/LinearScale.vue';
 import { usePersistedRefWithTimestamp } from '../composables/usePersistedRefWithTimestamp'
 const confidenceColor = ref('#0de732');
 const maxElevationAtTakeoffAge = 3600 * 4; // 4 hours
+
+// Current UTC time
+const currentTimeUTC = ref<string>('--:--');
+let timeUpdateInterval: number | undefined;
+
+const updateUTCTime = () => {
+    const now = new Date();
+    const hours = now.getUTCHours().toString().padStart(2, '0');
+    const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+    currentTimeUTC.value = `${hours}:${minutes}`;
+};
+
+onMounted(() => {
+    updateUTCTime();
+    timeUpdateInterval = window.setInterval(updateUTCTime, 1000);
+});
+
+onUnmounted(() => {
+    if (timeUpdateInterval !== undefined) {
+        clearInterval(timeUpdateInterval);
+    }
+});
 
 // Modal state
 const isModalOpen = ref(false);
