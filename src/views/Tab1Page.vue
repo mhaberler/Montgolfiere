@@ -227,7 +227,9 @@ const vsiMinorTicks = ref([-0.9, -0.8, -0.7, -0.6, -0.4, -0.3, -0.2, -0.1,
     0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9
 ]);
 const vsiIntermediateTicks = ref([-9, -8, -7, -6, -4, -3, -2, -0.5, 0.5, 2, 3, 4, 6, 7, 8, 9]);
-const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
+//const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
+const vsiWeights = ref([0.1, 0.1, 0.3, 0.3, 0.1, 0.1]);
+
 const vsiMajorTickTextOffset = ref(5)
 
 const vaccMajorTicks = ref([-1.0, -0.5, -0.1, 0, 0.1, 0.5, 1.0]);
