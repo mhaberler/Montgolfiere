@@ -5,7 +5,9 @@
   "type": "module",
   "description": "An Ionic project",
   "config": {
-    "port": "8100"
+    "port": "8100",
+    "host": "192.168.0.25",
+    "hostx": "172.16.0.212"
   },
   "scripts": {
     "watch": "vue-tsc --watch",
@@ -20,7 +22,7 @@
     "ios-beta": "fastlane   ios beta",
     "android-beta": "fastlane   android beta",
     "deploy-mah.priv.at": "vite build --mode development --outDir ./dist.webtest --base=/apps/montgolfiere/  && rsync -avz --delete ./dist.webtest/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/ && echo  https://static.mah.priv.at/apps/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
-    "debug-android-s24": "bunx cap run android  --live-reload  --port $npm_package_config_port  --host 172.16.0.212 --target R3CX90A30EW",
+    "debug-android-s24": "bunx cap run android  --live-reload  --port $npm_package_config_port  --host $npm_package_config_host --target R3CX90A30EW",
     "debug-android-s10": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target RF8MC11LGDW",
     "debug-android-a15": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target RF8Y109W1JB",
     "debug-galaxy-pro-tab10": "bunx cap run android  --live-reload  --port $npm_package_config_port  --target R52T40AW12D",
