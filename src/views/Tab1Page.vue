@@ -35,7 +35,7 @@
                             } else {
                                 console.warn('Cannot show popup for elevation: invalid value', elevation)
                             }
-                        }" :value="elevation" :name="'elevation'" :decimals="1" :unit="'m'"
+                        }" :value="elevation" :name="'elevation'" :decimals="0" :unit="'m'"
                             :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? 'bg-yellow-200' : ''" />
                     </div>
 
