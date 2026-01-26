@@ -10,6 +10,10 @@ function altitudeByPressure(p: number | null, qnh: number | null): number | null
     return 44330.769 * (1 - Math.pow(p / qnh, 0.19029496));
 }
 
+function amslHeight(P: number, P0: number = 1013.25, T: number = 15): number {
+    return 18400 * (1 + T / 273) * Math.log10(P0 / P);
+}
+
 function isaToQnhAltitude(isaAltitude: number, qnh: number): number {
   const isaQnh = 1013.25; // Standard ISA QNH in hPa
   const lapseRate = 8.23; // m per hPa
@@ -25,4 +29,4 @@ function feetToMeters(feet: number): number {
     const meters = feet * 0.3048;
     return meters;
 }
-export { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters };
+export { altitudeByPressure, isaToQnhAltitude, metersToFeet, feetToMeters, amslHeight };
