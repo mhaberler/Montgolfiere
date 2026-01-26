@@ -44,7 +44,7 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: true,
   },
   ios: {
-    minVersion: '15.5'
+    minVersion: '16.0'
   },
   plugins: {
     extConfig: {},
