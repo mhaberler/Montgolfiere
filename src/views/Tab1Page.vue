@@ -228,7 +228,7 @@ watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     useFlightLevel.value = ekfAltitudeISAfeet.value > transitionAltitude.value;
     flightLevel.value = Math.round(ekfAltitudeISAfeet.value / 100.0);
     if (ekfZeroSpeedValid.value) {
-        apexLevelRelative.value = newekfAltitudeISA - ekfZeroSpeedAltitude.value;
+        apexLevelRelative.value = -(newekfAltitudeISA - ekfZeroSpeedAltitude.value);
     } else {
         apexLevelRelative.value = null;
     }
