@@ -41,6 +41,7 @@ export const unitTypes: UnitType[] = [
   "Tank2",
   "Tank3",
   "Box",
+  "Vario",
 ];
 
 const SENSOR_CLEANUP_TIMER = 2000;
@@ -151,6 +152,13 @@ const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
       "accelerationZ",
     ],
   },
+  Vario: {
+
+  primary: ["distance (m)_m", "speed_m/s", "acceleration_m/s²"],
+    secondary: [],
+    hidden: [
+    ],
+  },
 };
 
 // Persisted mapping: deviceId -> unitType (allows conflicts/multiple assignments)
@@ -167,6 +175,7 @@ const unitSensors = ref<Record<UnitType, UnitSensorData[]>>({
   Tank2: [],
   Tank3: [],
   Box: [],
+  Vario: [],
 });
 
 // Reactive timestamp for time-based calculations

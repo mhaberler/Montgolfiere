@@ -1,5 +1,5 @@
 // Unit types and configurations
-export type UnitType = "Envelope" | "OAT" | "Tank1" | "Tank2" | "Tank3" | "Box";
+export type UnitType = "Envelope" | "OAT" | "Tank1" | "Tank2" | "Tank3" | "Box" | "Vario";
 
 export interface UnitConfig {
   id: string;
@@ -51,5 +51,12 @@ export const UNIT_CONFIGS: Record<UnitType, UnitConfig> = {
     name: "Box",
     description: "Radio box",
     iconName: "battery-half-outline",
+  },
+  Vario: {
+    id: "vario",
+    type: "Vario",
+    name: "Vario",
+    description: "Vario",
+    iconName: "paper-plane",
   },
 };

@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { IonIcon } from '@ionic/vue';
-import { balloonOutline, thermometerOutline, flameOutline, batteryHalfOutline } from 'ionicons/icons';
+import { balloonOutline, thermometerOutline, flameOutline, batteryHalfOutline, paperPlaneOutline } from 'ionicons/icons';
 import { useDeviceMapping } from '@/composables/useDeviceMapping';
 import type { UnitType } from '@/types/units';
 
@@ -74,6 +74,7 @@ const unitConfigs: UnitConfig[] = [
     { type: 'Tank2', label: 'Tank2', icon: flameOutline },
     { type: 'Tank3', label: 'Tank3', icon: flameOutline },
     { type: 'Box', label: 'Box', icon: batteryHalfOutline },
+    { type: 'Vario', label: 'Vario', icon: paperPlaneOutline },
 ];
 
 // Metric formatting functions
@@ -92,6 +93,9 @@ const formatMetricName = (metric: string): string => {
         current_A: 'A',
         pressure: 'Press',
         qualityStars: 'Qual',
+        "distance (m)_m": 'm',
+        "speed_m/s": 'm/s',
+        "acceleration_m/s²": 'm/s²',
     };
     return nameMap[metric] || metric;
 };
@@ -113,6 +117,9 @@ const formatMetricValue = (metric: string, value: any): string => {
         current_A: (v) => `${v.toFixed(2)}A`,
         pressure: (v) => `${v.toFixed(0)}`,
         qualityStars: (v) => `${v}★`,
+        "distance (m)_m": (v) => `${v.toFixed(1)}`,
+        "speed_m/s": (v) => `${v.toFixed(1)}`,
+        "acceleration_m/s²": (v) => `${v.toFixed(3)}`,
     };
 
     const formatter = formatMap[metric];
