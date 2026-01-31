@@ -50,9 +50,9 @@ const SENSOR_CLEANUP_THRESHOLD = 10 * 60 * 1000;
 // Per-sensor-type status thresholds (in milliseconds)
 const SENSOR_STATUS_THRESHOLDS = {
   Ruuvi: {
-    online: 5 * 1000, // broadcasts every 1-2s
-    warning: 10 * 1000, // 10 seconds
-    offline: 15 * 1000,
+    online: 10 * 1000, // broadcasts every 1-2s
+    warning: 20 * 1000,
+    offline: 60 * 1000,
   },
   Mopeka: {
     online: 20 * 1000, // 15 seconds (broadcasts every 5-10s)
@@ -117,7 +117,7 @@ const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
     ],
   },
   Envelope: {
-    primary: ["temp", "batpct"],
+    primary: ["temp", "hum", "batpct"],
     secondary: [],
     hidden: [
       "level",
