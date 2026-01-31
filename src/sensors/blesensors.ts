@@ -124,7 +124,7 @@ const isAllowedBeacon = (result: ScanResult): boolean => {
 // Initialize BLE client
 export const initializeBLE = async (): Promise<void> => {
   try {
-    await BleClient.initialize();
+    await BleClient.initialize({ androidNeverForLocation : true});
     console.log("BLE initialized successfully");
   } catch (e) {
     bleInitErrors.value++;
