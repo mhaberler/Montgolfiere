@@ -88,14 +88,9 @@
                     </div>
 
                 </div>
-                <div class="h-100 overflow-y-auto overflow-x-hidden">
-                    <div class=" bg-white p-2 sm:p-6">
-                        <EnvelopeUnit />
-                        <OATUnit />
-                        <TankUnit unit-type="Tank1" />
-                        <TankUnit unit-type="Tank2" />
-                        <TankUnit unit-type="Tank3" />
-                        <BoxUnit unit-type="Box" />
+                <div class="overflow-y-auto overflow-x-hidden">
+                    <div class="bg-white p-2">
+                        <UnitsTable />
                     </div>
                 </div>
             </div>
@@ -265,10 +260,7 @@ const vaccWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
 const vaccMajorTickTextOffset = ref(5)
 
 // Component imports
-import EnvelopeUnit from '@/components/units/EnvelopeUnit.vue';
-import OATUnit from '@/components/units/OATUnit.vue';
-import TankUnit from '@/components/units/TankUnit.vue';
-import BoxUnit from '@/components/units/BoxUnit.vue';
+import UnitsTable from '@/components/units/UnitsTable.vue';
 
 // State imports
 import {
