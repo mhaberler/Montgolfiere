@@ -4,7 +4,6 @@
             <thead>
                 <tr>
                     <th class="unit-name-col">Unit</th>
-                    <th class="status-col">Status</th>
                     <th class="metrics-col">Metrics</th>
                 </tr>
             </thead>
@@ -15,11 +14,6 @@
                             <ion-icon :icon="unit.icon" class="unit-icon" />
                             <span>{{ unit.label }}</span>
                         </div>
-                    </td>
-                    <td class="status-cell">
-                        <ion-badge :color="unit.status.color" class="status-badge-small">
-                            {{ unit.status.status.toUpperCase() }}
-                        </ion-badge>
                     </td>
                     <td class="metrics-cell">
                         <div class="metrics-inline">
@@ -40,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { IonIcon, IonBadge } from '@ionic/vue';
+import { IonIcon } from '@ionic/vue';
 import { balloonOutline, thermometerOutline, flameOutline, batteryHalfOutline } from 'ionicons/icons';
 import { useDeviceMapping } from '@/composables/useDeviceMapping';
 import type { UnitType } from '@/types/units';
@@ -228,10 +222,6 @@ const unitsData = computed(() => {
 
 .unit-name-col {
     width: 80px;
-}
-
-.status-col {
-    width: 70px;
 }
 
 .metrics-col {
