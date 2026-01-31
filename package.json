@@ -6,7 +6,8 @@
   "description": "An Ionic project",
   "config": {
     "port": "8100",
-    "host": "192.168.0.25",
+    "hosty": "0.0.0.0",
+    "host": "192.168.0.22",
     "hostx": "172.16.0.212"
   },
   "scripts": {
