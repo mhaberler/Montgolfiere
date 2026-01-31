@@ -36,13 +36,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <div v-else class="no-data">
-          <ion-text color="medium">No sensors assigned</ion-text>
-          <ion-button fill="clear" size="small" @click="$emit('assign-device')">
-            Assign Device
-          </ion-button>
-        </div> -->
       </ion-card-content>
     </ion-card>
   </div>
@@ -57,8 +50,6 @@ import {
 } from '@ionic/vue';
 import { thermometerOutline } from 'ionicons/icons';
 import { useDeviceMapping } from '@/composables/useDeviceMapping';
-
-defineEmits(['assign-device']);
 
 const {
   getUnitStatus,

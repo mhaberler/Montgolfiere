@@ -1,52 +1,41 @@
 <template>
-    <!-- <div v-if="Object.keys(groupedSensors).length > 0"> -->
+    <ion-card class="unit-card" :class="`status-${status.color}`">
+        <ion-card-header>
+            <ion-card-title class="unit-title">
+                <div class="title-content">
+                    <ion-icon :icon="balloonOutline" />
+                    <span>Envelope</span>
+                </div>
+                <div class="status-indicator">
+                    <ion-badge :color="status.color" class="status-badge">
+                        {{ status.status.toUpperCase() }}
+                    </ion-badge>
+                </div>
+            </ion-card-title>
+        </ion-card-header>
 
-        <ion-card class="unit-card" :class="`status-${status.color}`">
-            <ion-card-header>
-                <ion-card-title class="unit-title">
-                    <div class="title-content">
-                        <ion-icon :icon="balloonOutline" />
-                        <span>Envelope</span>
-                    </div>
-                    <div class="status-indicator">
-                        <ion-badge :color="status.color" class="status-badge">
-                            {{ status.status.toUpperCase() }}
-                        </ion-badge>
-                    </div>
-                </ion-card-title>
-            </ion-card-header>
+        <ion-card-content>
+            <div v-if="Object.keys(groupedSensors).length > 0" class="data-display">
 
-            <ion-card-content>
-                <div v-if="Object.keys(groupedSensors).length > 0" class="data-display">
-
-                    <div class="consolidated-metrics">
-                        <div class="metrics-grid">
-                            <!-- Primary metrics -->
-                            <div v-for="metric in primaryMetrics" :key="`primary-${metric}`"
-                                class="metric-card primary">
-                                <div class="metric-label primary">{{ formatMetricName(metric) }}</div>
-                                <div class="metric-values">
-                                    <div v-for="reading in getMetricReadings(metric)" :key="reading.deviceId"
-                                        class="metric-reading primary" :class="getMetricAgeClass(reading.lastUpdate)">
-                                        <span class="value">{{ formatMetricValue(metric, reading.value) }}</span>
-                                        <span class="source">{{ reading.deviceType }} ({{ reading.deviceId.slice(-4)
-                                        }})</span>
-                                    </div>
+                <div class="consolidated-metrics">
+                    <div class="metrics-grid">
+                        <!-- Primary metrics -->
+                        <div v-for="metric in primaryMetrics" :key="`primary-${metric}`" class="metric-card primary">
+                            <div class="metric-label primary">{{ formatMetricName(metric) }}</div>
+                            <div class="metric-values">
+                                <div v-for="reading in getMetricReadings(metric)" :key="reading.deviceId"
+                                    class="metric-reading primary" :class="getMetricAgeClass(reading.lastUpdate)">
+                                    <span class="value">{{ formatMetricValue(metric, reading.value) }}</span>
+                                    <span class="source">{{ reading.deviceType }} ({{ reading.deviceId.slice(-4)
+                                    }})</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- <div v-else class="no-data">
-                    <ion-text color="medium">No sensors assigned</ion-text>
-                    <ion-button fill="clear" size="small" @click="$emit('assign-device')">
-                        Assign Device
-                    </ion-button>
-                </div> -->
-            </ion-card-content>
-        </ion-card>
-    <!-- </div> -->
+            </div>
+        </ion-card-content>
+    </ion-card>
 </template>
 
 <script setup lang="ts">
@@ -57,8 +46,6 @@ import {
 } from '@ionic/vue';
 import { balloonOutline } from 'ionicons/icons';
 import { useDeviceMapping } from '@/composables/useDeviceMapping';
-
-defineEmits(['assign-device']);
 
 const {
     getUnitStatus,
@@ -413,20 +400,20 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  plugins: [vue()],
-  optimizeDeps: {
-    exclude: [
-      '@capacitor-community/safe-area',
-      'capacitor-barometer'
-    ],
-    include: [
-      '@ionic/vue',
-      '@ionic/vue/css/core.css'
-    ]
-  },
-  build: {
-    commonjsOptions: {
-      include: [/node_modules/]
-    }
-  }
+plugins: [vue()],
+optimizeDeps: {
+exclude: [
+'@capacitor-community/safe-area',
+'capacitor-barometer'
+],
+include: [
+'@ionic/vue',
+'@ionic/vue/css/core.css'
+]
+},
+build: {
+commonjsOptions: {
+include: [/node_modules/]
+}
+}
 })
