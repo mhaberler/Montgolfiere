@@ -43,7 +43,7 @@ export function decodeBTHome(serviceData: DataView): BTHomeDecodedData | null {
     !serviceData ||
     serviceData.byteLength < 3 || // too short
     serviceData.getUint8(0) & 0x01 || // encrypted data not supported
-    (serviceData.getUint8(0) & 0x60) >> 5 != 2 // not BTHome v2
+    (serviceData.getUint8(0) & 0xe0) >> 5 != 2 // not BTHome v2
   ) {
     return null;
   }
@@ -161,15 +161,16 @@ export function decodeBTHome(serviceData: DataView): BTHomeDecodedData | null {
       // button event
       const eventId = serviceData.getUint8(offset + 1);
       if (eventId !== 0x00) {
-        const event = [
-          "press",
-          "double_press",
-          "triple_press",
-          "long_press",
-          "long_double_press",
-          "long_triple_press",
-        ][eventId - 1];
-        decodedValue.button = event;
+        const buttonEvents: Record<number, string> = {
+          0x01: "press",
+          0x02: "double_press",
+          0x03: "triple_press",
+          0x04: "long_press",
+          0x05: "long_double_press",
+          0x06: "long_triple_press",
+          0x80: "hold_press",
+        };
+        decodedValue.button = buttonEvents[eventId] ?? `unknown_${eventId}`;
       }
       offset += 2;
     } else if (objectId === 0x3c) {
@@ -263,19 +264,43 @@ const multilevelSensorsArray = [
     unit: "%",
   },
   {
+    id: 0x60,
+    label: "channel",
+    signed: false,
+    size: 1,
+  },
+  {
     id: 0x12,
     label: "co2",
     signed: false,
     size: 2,
     unit: "ppm",
   },
+  {
+    id: 0x56,
+    label: "conductivity",
+    signed: false,
+    size: 2,
+    unit: "µS/cm",
+  },
   { id: 0x09, label: "count", signed: false, size: 1 },
   { id: 0x3d, label: "count", signed: false, size: 2 },
   { id: 0x3e, label: "count", signed: false, size: 4 },
+  { id: 0x59, label: "count", signed: true, size: 1 },
+  { id: 0x5a, label: "count", signed: true, size: 2 },
+  { id: 0x5b, label: "count", signed: true, size: 4 },
   {
     id: 0x43,
     label: "current",
     signed: false,
+    size: 2,
+    factor: 0.001,
+    unit: "A",
+  },
+  {
+    id: 0x5d,
+    label: "current",
+    signed: true,
     size: 2,
     factor: 0.001,
     unit: "A",
@@ -287,6 +312,14 @@ const multilevelSensorsArray = [
     size: 2,
     factor: 0.01,
     unit: "°C",
+  },
+  {
+    id: 0x5e,
+    label: "direction",
+    signed: false,
+    size: 2,
+    factor: 0.01,
+    unit: "°",
   },
   {
     id: 0x40,
@@ -428,6 +461,22 @@ const multilevelSensorsArray = [
     unit: "W",
   },
   {
+    id: 0x5c,
+    label: "power",
+    signed: true,
+    size: 4,
+    factor: 0.01,
+    unit: "W",
+  },
+  {
+    id: 0x5f,
+    label: "precipitation",
+    signed: false,
+    size: 2,
+    factor: 0.1,
+    unit: "mm",
+  },
+  {
     id: 0x04,
     label: "pressure",
     signed: false,
@@ -442,6 +491,13 @@ const multilevelSensorsArray = [
     size: 2,
     factor: 0.1,
     unit: "°",
+  },
+  {
+    id: 0x61,
+    label: "rotational speed",
+    signed: false,
+    size: 2,
+    unit: "rpm",
   },
   {
     id: 0x44,
@@ -460,12 +516,27 @@ const multilevelSensorsArray = [
     unit: "m/s",
   },
   {
+    id: 0x57,
+    label: "temperature",
+    signed: true,
+    size: 1,
+    unit: "°C",
+  },
+  {
+    id: 0x58,
+    label: "temperature",
+    signed: true,
+    size: 1,
+    factor: 0.35,
+    unit: "°C",
+  },
+  {
     id: 0x45,
     label: "temperature",
     signed: true,
     size: 2,
     factor: 0.1,
-    unit: "C",
+    unit: "°C",
   },
   {
     id: 0x02,
@@ -473,7 +544,7 @@ const multilevelSensorsArray = [
     signed: true,
     size: 2,
     factor: 0.01,
-    unit: "C",
+    unit: "°C",
   },
   {
     id: 0x13,
@@ -523,7 +594,7 @@ const multilevelSensorsArray = [
   },
   {
     id: 0x49,
-    label: "volume Flow Rate",
+    label: "volume flow rate",
     signed: false,
     size: 2,
     factor: 0.001,
@@ -535,6 +606,14 @@ const multilevelSensorsArray = [
     signed: false,
     size: 1,
     factor: 0.1,
+  },
+  {
+    id: 0x55,
+    label: "volume storage",
+    signed: false,
+    size: 4,
+    factor: 0.001,
+    unit: "L",
   },
   {
     id: 0x4f,
