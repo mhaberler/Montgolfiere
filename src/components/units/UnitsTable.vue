@@ -1,6 +1,6 @@
 <template>
     <div class="overflow-x-auto bg-white rounded-lg">
-        <table class="w-full border-collapse text-[0.85rem]">
+        <table class="w-full border-collapse text-xl">
             <thead>
                 <tr>
                     <th class="bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700 border-b-2 border-gray-200 w-20">Unit</th>
