@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
     plugins: [vue(), qrcode(),
     tailwindcss(),
     ...(mode === "development" ? [
-      devtoolsJson(), 
+      devtoolsJson(),
       // vueDevTools()
     ] : []),
     ],
@@ -50,8 +50,67 @@ export default defineConfig(({ mode }) => {
     build: {
       target: "esnext", // This enables BigInt support
       minify: mode === "production" ? "esbuild" : false,
+      // Suppress warning for large chunks that are already optimized
+      // ionic: 609KB (131KB gzipped) - core framework
+      // mqtt: 365KB (109KB gzipped) - lazy-loaded
+      chunkSizeWarningLimit: 700,
       commonjsOptions: {
         include: [/node_modules/]
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            // MQTT client - large library, split out
+            if (id.includes('node_modules/mqtt')) {
+              return 'mqtt';
+            }
+
+            // D3 - large visualization library
+            if (id.includes('node_modules/d3')) {
+              return 'd3';
+            }
+
+            // MathJS - very large math library
+            if (id.includes('node_modules/mathjs')) {
+              return 'mathjs';
+            }
+
+            // PMTiles - map tiles library
+            if (id.includes('node_modules/pmtiles')) {
+              return 'pmtiles';
+            }
+
+            // Ionic framework - keep together
+            if (id.includes('node_modules/@ionic/vue') ||
+                id.includes('node_modules/@ionic/core')) {
+              return 'ionic';
+            }
+
+            // Capacitor plugins - group together
+            if (id.includes('node_modules/@capacitor') ||
+                id.includes('node_modules/@capawesome') ||
+                id.includes('node_modules/@capgo')) {
+              return 'capacitor';
+            }
+
+            // Vue core - separate chunk
+            if (id.includes('node_modules/vue') &&
+                !id.includes('@ionic') &&
+                !id.includes('vue-router')) {
+              return 'vue';
+            }
+
+            // VueUse utilities
+            if (id.includes('node_modules/@vueuse')) {
+              return 'vueuse';
+            }
+
+            // Other vendor libraries
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          }
+        }
       }
     },
     esbuild: {
