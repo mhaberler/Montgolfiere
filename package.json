@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.11.35",
+  "version": "1.11.36",
   "type": "module",
   "description": "An Ionic project",
   "config": {
