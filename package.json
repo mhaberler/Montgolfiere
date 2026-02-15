@@ -12,6 +12,7 @@
   },
   "scripts": {
     "watch": "vue-tsc --watch",
+    "typecheck": "vue-tsc --noEmit",
     "dev": "vite --port=$npm_package_config_port --host",
     "clean": "bunx rimraf ./dist",
     "build-dev": "vue-tsc && vite build --mode development",
