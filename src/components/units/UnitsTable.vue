@@ -77,7 +77,7 @@ interface UnitConfig {
 }
 
 const unitConfigs: UnitConfig[] = [
-    { type: 'Envelope', label: 'Envelope', icon: balloonOutline },
+    { type: 'Envelope', label: 'Env', icon: balloonOutline },
     { type: 'OAT', label: 'OAT', icon: thermometerOutline },
     { type: 'Tank1', label: 'Tank1', icon: flameOutline },
     { type: 'Tank2', label: 'Tank2', icon: flameOutline },
