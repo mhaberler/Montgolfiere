@@ -79,6 +79,14 @@ Build Android AAB locally with release signing
 
 Deploy a new beta build to Google Play
 
+### android beta_auto
+
+```sh
+[bundle exec] fastlane android beta_auto
+```
+
+Build and auto-publish to internal testing
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
