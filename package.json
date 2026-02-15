@@ -21,6 +21,7 @@
     "tag-and-push-beta": "bunx npm version patch --no-git-tag-version && fastlane   bump && git add . && git commit -m \"$npm_package_name v${npm_package_version}\" && git tag v${npm_package_version} && git push origin main && git push origin --tags && npm run clean && vite build --mode production && npm run sync",
     "ios-beta": "fastlane   ios beta",
     "android-beta": "fastlane   android beta",
+    "android-beta-auto": "fastlane android beta_auto",
     "deploy-mah.priv.at": "vite build --mode development --outDir ./dist.webtest --base=/apps/montgolfiere/  && rsync -avz --delete ./dist.webtest/ mah@mah.priv.at:/var/www/static.mah.priv.at/apps/montgolfiere/ && echo  https://static.mah.priv.at/apps/montgolfiere/ && qrcode-terminal https://static.mah.priv.at/apps/montgolfiere/",
     "debug-android-s24": "bunx cap run android  --live-reload  --port $npm_package_config_port --target R3CX90A30EW",
     "debug-android-s24x": "bunx cap run android  --live-reload  --port $npm_package_config_port  --host $npm_package_config_host --target R3CX90A30EW",

@@ -89,6 +89,30 @@ platform(:android) do
       package_name: ANDROID_PACKAGE_NAME
     )
   end
+
+  desc("Build and auto-publish to internal testing")
+  lane(:beta_auto) do
+    inc_ver_and  # Increment version
+
+    gradle(
+      task: "bundleRelease",
+      project_dir: "android",
+      properties: {
+        "android.injected.signing.store.file" => ENV["ANDROID_KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["ANDROID_KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["ANDROID_KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["ANDROID_KEY_PASSWORD"]
+      }
+    )
+
+    upload_to_play_store(
+      track: "internal",
+      release_status: "completed",  # Auto-publish
+      skip_upload_apk: true,
+      json_key: GOOGLE_PLAY_JSON_KEY,
+      package_name: ANDROID_PACKAGE_NAME
+    )
+  end
 end
 
 lane(:show_version) do
