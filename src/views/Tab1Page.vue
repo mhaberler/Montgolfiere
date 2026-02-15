@@ -251,13 +251,13 @@ const vsiIntermediateTicks = ref([-9, -8, -7, -6, -4, -3, -2, -0.5, 0.5, 2, 3, 4
 //const vsiWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
 const vsiWeights = ref([0.1, 0.1, 0.3, 0.3, 0.1, 0.1]);
 
-const vsiMajorTickTextOffset = ref(5)
+const vsiMajorTickTextOffset = ref(13)
 
 const vaccMajorTicks = ref([-1.0, -0.5, -0.1, 0, 0.1, 0.5, 1.0]);
 const vaccMinorTicks = ref([-0.09, -0.08, -0.07, -0.06, -0.04, -0.03, -0.02, -0.01, 0.01, 0.02, 0.03, 0.04, 0.06, 0.07, 0.08, 0.09]);
 const vaccIntermediateTicks = ref([-0.9, -0.8, -0.7, -0.6, -0.4, -0.3, -0.2, -0.1, -0.05, 0.05, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9]);
 const vaccWeights = ref([0.1, 0.15, 0.25, 0.25, 0.15, 0.1]);
-const vaccMajorTickTextOffset = ref(5)
+const vaccMajorTickTextOffset = ref(15)
 
 // Component imports
 import UnitsTable from '@/components/units/UnitsTable.vue';
