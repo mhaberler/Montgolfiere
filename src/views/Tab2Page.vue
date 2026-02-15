@@ -172,7 +172,6 @@ ion-spinner {
   font-weight: 500;
 }
 
-
 .data-row {
   display: flex;
   justify-content: space-between;
@@ -189,7 +188,6 @@ ion-spinner {
   font-size: 0.9em;
   color: var(--ion-color-medium);
   font-weight: 500;
-  /* text-transform: capitalize; */
 }
 
 .data-value {

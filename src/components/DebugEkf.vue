@@ -60,6 +60,17 @@ import {
 </script>
 
 <style scoped>
+/* Animation preserved - cannot use Tailwind for @keyframes */
+@keyframes pulse {
+    from {
+        opacity: 0.9;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Complex visual effects kept as CSS - gradients, backdrop-filter, pseudo-elements */
 .sensor-display {
     border: 2px solid currentColor;
     padding: 0.75rem 1rem;
@@ -104,16 +115,6 @@ import {
     text-align: center;
     text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
     animation: pulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes pulse {
-    from {
-        opacity: 0.9;
-    }
-
-    to {
-        opacity: 1;
-    }
 }
 
 .sensor-bottom {
@@ -184,7 +185,6 @@ import {
 
     .sensor-display:hover {
         transform: none;
-        /* Disable hover effects on mobile */
     }
 }
 </style>

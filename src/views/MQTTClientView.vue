@@ -400,6 +400,17 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Keep spin animation for connection indicator */
+.spinning-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Styles for elements that cannot easily use Tailwind */
 .connection-info {
   display: flex;
   flex-direction: column;
@@ -419,15 +430,6 @@ onUnmounted(() => {
   padding: 8px 16px;
   border-radius: 16px;
   font-weight: 600;
-}
-
-.spinning-icon {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 .broker-info {
@@ -529,7 +531,6 @@ onUnmounted(() => {
   overflow-y: auto;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .message-header {
     flex-direction: column;
@@ -542,4 +543,3 @@ onUnmounted(() => {
   }
 }
 </style>
-

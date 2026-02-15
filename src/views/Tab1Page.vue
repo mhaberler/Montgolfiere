@@ -36,7 +36,7 @@
                                 console.warn('Cannot show popup for elevation: invalid value', elevation)
                             }
                         }" :value="elevation" :name="'elevation'" :decimals="0" :unit="'m'"
-                            :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? 'bg-yellow-200' : ''" />
+                            :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? '!bg-red-200' : ''" />
                     </div>
 
 
@@ -60,11 +60,11 @@
 
                     <div>
                         <ValueCard :value="apexLevelRelative" :name="'ApexRel'" :decimals="0" :unit="'m'"
-                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
+                            :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'" />
                     </div>
                     <div>
                         <ValueCard :value="ekfTimeToZeroSpeed" :name="'TTA'" :decimals="0" :unit="'s'"
-                            :frameClass="willImpactGround ? 'impact-warning' : 'bg-white'" />
+                            :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'" />
                     </div>
 
                     <!-- <div>
@@ -345,11 +345,3 @@ const setOnGround = () => {
 }
 
 </script>
-
-<style scoped>
-/* No custom CSS needed as Tailwind handles all styling */
-:deep(.impact-warning) {
-    background-color: #fecaca !important;
-    /* red-200 color */
-}
-</style>

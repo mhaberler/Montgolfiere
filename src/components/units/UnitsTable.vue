@@ -1,29 +1,38 @@
 <template>
-    <div class="units-table-container">
-        <table class="units-table">
+    <div class="overflow-x-auto bg-white rounded-lg">
+        <table class="w-full border-collapse text-[0.85rem]">
             <thead>
                 <tr>
-                    <th class="unit-name-col">Unit</th>
-                    <th class="metrics-col">Metrics</th>
+                    <th class="bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700 border-b-2 border-gray-200 w-20">Unit</th>
+                    <th class="bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Metrics</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="unit in unitsData" :key="unit.type" :class="`status-row-${unit.status.color}`">
-                    <td class="unit-name-cell">
-                        <div class="unit-name-content">
-                            <ion-icon :icon="unit.icon" class="unit-icon" />
+                <tr v-for="unit in unitsData" :key="unit.type" :class="{
+                    'bg-emerald-500/5': unit.status.color === 'success',
+                    'bg-amber-500/10': unit.status.color === 'warning',
+                    'bg-red-500/10': unit.status.color === 'danger'
+                }">
+                    <td class="px-2 py-1 border-b border-gray-200 align-middle font-medium">
+                        <div class="flex items-center gap-1">
+                            <ion-icon :icon="unit.icon" class="text-base text-gray-500" />
                             <span>{{ unit.label }}</span>
                         </div>
                     </td>
-                    <td class="metrics-cell">
-                        <div class="metrics-inline">
+                    <td class="px-2 py-1 border-b border-gray-200 align-middle">
+                        <div class="flex flex-wrap gap-1 items-center">
                             <span v-for="(metric, idx) in unit.metrics" :key="metric.name"
-                                class="metric-item" :class="getMetricAgeClass(metric.lastUpdate)">
-                                <span class="metric-name">{{ metric.name }}:</span>
-                                <span class="metric-value">{{ metric.formattedValue }}</span>
-                                <span v-if="idx < unit.metrics.length - 1" class="metric-separator">|</span>
+                                class="inline-flex items-center gap-0.5 whitespace-nowrap" :class="{
+                                    'text-emerald-600 font-semibold': getMetricAgeClass(metric.lastUpdate) === 'age-fresh',
+                                    'text-gray-800 font-semibold': getMetricAgeClass(metric.lastUpdate) === 'age-recent',
+                                    'text-amber-600 font-semibold': getMetricAgeClass(metric.lastUpdate) === 'age-stale',
+                                    'text-red-600 font-semibold opacity-70': getMetricAgeClass(metric.lastUpdate) === 'age-old',
+                                }">
+                                <span class="text-gray-500 text-xs">{{ metric.name }}:</span>
+                                <span>{{ metric.formattedValue }}</span>
+                                <span v-if="idx < unit.metrics.length - 1" class="text-gray-300 mx-0.5">|</span>
                             </span>
-                            <span v-if="unit.metrics.length === 0" class="no-data">--</span>
+                            <span v-if="unit.metrics.length === 0" class="text-gray-400">--</span>
                         </div>
                     </td>
                 </tr>
@@ -198,124 +207,3 @@ const unitsData = computed(() => {
     }).filter(unit => unit.hasSensors);
 });
 </script>
-
-<style scoped>
-.units-table-container {
-    overflow-x: auto;
-    background: white;
-    border-radius: 8px;
-}
-
-.units-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-}
-
-.units-table th {
-    background: #f3f4f6;
-    padding: 6px 8px;
-    text-align: left;
-    font-weight: 600;
-    color: #374151;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.units-table td {
-    padding: 4px 8px;
-    border-bottom: 1px solid #e5e7eb;
-    vertical-align: middle;
-}
-
-.unit-name-col {
-    width: 80px;
-}
-
-.metrics-col {
-    width: auto;
-}
-
-.unit-name-cell {
-    font-weight: 500;
-}
-
-.unit-name-content {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.unit-icon {
-    font-size: 1rem;
-    color: #6b7280;
-}
-
-.status-badge-small {
-    font-size: 0.65rem;
-    padding: 2px 6px;
-}
-
-.metrics-inline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
-}
-
-.metric-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    white-space: nowrap;
-}
-
-.metric-name {
-    color: #6b7280;
-    font-size: 0.75rem;
-}
-
-.metric-value {
-    font-weight: 600;
-    color: #111827;
-}
-
-.metric-separator {
-    color: #d1d5db;
-    margin: 0 2px;
-}
-
-.no-data {
-    color: #9ca3af;
-}
-
-/* Status row backgrounds */
-.status-row-success {
-    background-color: rgba(16, 185, 129, 0.05);
-}
-
-.status-row-warning {
-    background-color: rgba(245, 158, 11, 0.1);
-}
-
-.status-row-danger {
-    background-color: rgba(239, 68, 68, 0.1);
-}
-
-/* Age-based styling */
-.age-fresh .metric-value {
-    color: #059669;
-}
-
-.age-recent .metric-value {
-    color: #111827;
-}
-
-.age-stale .metric-value {
-    color: #d97706;
-}
-
-.age-old .metric-value {
-    color: #dc2626;
-    opacity: 0.7;
-}
-</style>

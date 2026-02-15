@@ -459,49 +459,40 @@ watch(
 </script>
 
 <template>
-    <svg ref="svgRef"></svg>
+    <svg ref="svgRef" class="block w-full h-full bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)]"></svg>
 </template>
 
-<style scoped>
-/* Scoped styles for the LinearScale component */
-svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.tick line {
+<style>
+/* SVG internal element styling - cannot use Tailwind classes directly on dynamically created SVG elements */
+svg .tick line {
     stroke: #666;
     stroke-width: 1px;
 }
 
-.tick text {
+svg .tick text {
     font-size: 14px;
     fill: #333;
     text-anchor: middle;
 }
 
-.major-tick line {
+svg .major-tick line {
     stroke: #333;
     stroke-width: 2px;
 }
 
-.major-tick text {
+svg .major-tick text {
     font-weight: 700;
 }
 
-.indicator-triangle {
+svg .indicator-triangle {
     border-radius: 4px;
 }
 
-.confidence-box {
+svg .confidence-box {
     border-radius: 4px;
 }
 
-.scale-line {
+svg .scale-line {
     stroke: #333;
     stroke-width: 2px;
 }

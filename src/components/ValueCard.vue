@@ -2,7 +2,7 @@
     <div class="relative w-full h-full bg-white   p-1 sm:p-5 flex flex-col justify-between items-center text-center transition-all duration-300 ease-in-out transform hover:scale-105 border-4"
         :class="[frameClass, batteryBorderClass]">
         <!-- Value (Centered and Prominent) -->
-        <div class="flex-grow flex items-center justify-center w-full mb-0 mt-0">
+        <div class="grow flex items-center justify-center w-full mb-0 mt-0">
             <p class="text-2xl sm:text-4xl font-extrabold text-gray-800 leading-tight">
                 {{ formattedValue }}
             </p>
