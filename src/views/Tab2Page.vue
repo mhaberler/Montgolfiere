@@ -16,7 +16,7 @@
       <ion-button class="basis-1/4" @click="restartBLEScan">
         Restart
       </ion-button>
-      <div class="ble-container">
+      <div class="p-5 flex flex-col gap-5">
         <ion-list v-if="sortedDevices.length > 0">
           <ion-item v-for="device in sortedDevices" :key="device.scanResult.device.deviceId">
             <ion-label>
@@ -32,19 +32,19 @@
                   <ion-item slot="header">
                     <ion-label>Sensor Data ({{ Object.keys(device.decoded.value).length }} metrics)</ion-label>
                   </ion-item>
-                  <div slot="content" class="sensor-details">
-                    <div v-for="(value, key) in device.decoded.value" :key="key" class="data-row">
-                      <span class="data-label">{{ key }}:</span>
-                      <span class="data-value">{{ value }}</span>
+                  <div slot="content" class="p-2">
+                    <div v-for="(value, key) in device.decoded.value" :key="key" class="flex justify-between items-center py-1 border-b border-ion-light-shade last:border-b-0">
+                      <span class="text-[0.9em] text-ion-medium font-medium">{{ key }}:</span>
+                      <span class="text-[0.9em] font-semibold text-ion-dark font-mono">{{ value }}</span>
                     </div>
                   </div>
                 </ion-accordion>
               </ion-accordion-group>
 
-              <p v-if="getDeviceUnit(device.scanResult.device.deviceId)" class="assignment">
+              <p v-if="getDeviceUnit(device.scanResult.device.deviceId)" class="text-ion-primary font-medium">
                 Assigned to: {{ getDeviceUnit(device.scanResult.device.deviceId) }}
               </p>
-              <p class="last-seen">
+              <p class="text-[0.9em] text-ion-medium italic">
                 Last seen: {{ Math.floor((Date.now() - device.lastSeen) / 1000) }}s ago
               </p>
             </ion-label>
@@ -65,7 +65,7 @@
           <p>No devices found. Start scanning to discover BLE devices.</p>
         </ion-text>
 
-        <ion-spinner v-if="isScanning" name="circles"></ion-spinner>
+        <ion-spinner v-if="isScanning" name="circles" class="my-5 mx-auto"></ion-spinner>
 
         <ion-text color="danger" v-if="bleErrorMsg">
           {{ bleErrorMsg }}
@@ -144,56 +144,3 @@ onUnmounted(async () => {
   console.log('Tab2Page unmounted - BLE continues running globally');
 });
 </script>
-
-<style scoped>
-.ble-container {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-ion-list {
-  width: 100%;
-}
-
-ion-spinner {
-  margin: 20px auto;
-}
-
-.last-seen {
-  font-size: 0.9em;
-  color: var(--ion-color-medium);
-  font-style: italic;
-}
-
-.assignment {
-  color: var(--ion-color-primary);
-  font-weight: 500;
-}
-
-.data-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--ion-color-light-shade);
-}
-
-.data-row:last-child {
-  border-bottom: none;
-}
-
-.data-label {
-  font-size: 0.9em;
-  color: var(--ion-color-medium);
-  font-weight: 500;
-}
-
-.data-value {
-  font-size: 0.9em;
-  font-weight: 600;
-  color: var(--ion-color-dark);
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-}
-</style>
