@@ -62,3 +62,5 @@ Take timings from the ruuvi sensors here: SENSOR_STATUS_THRESHOLDS
 
 Add a unit called switch and include the primary attribute reed_switch, batt and temperature as secondary.
 
+
+Note the example code assumes the 2-byte service UUID is still prepended. So all offsets are off by 2. For instance the buffer length is actually 18 in this example Instead of 20.
