@@ -5,14 +5,12 @@ import {
   // volatile
   barometerAvailable,
   baroActive,
-  
+
   baroRate,
 
 } from "../sensors/barometer";
 
 import {
-  transitionAltitude,
-  historySamples,
   pressure,
   rawAltitudeISA,
   ekfAltitudeISA,
@@ -45,9 +43,6 @@ import {
 } from "../sensors/location";
 
 import {
-  bleScanTimeouts,
-  resetbleScanTimeouts,
-  bleInitErrors,
   bleAdvertisements,
   bleDeviceUpdates,
   bleScanStarts,
@@ -60,8 +55,7 @@ import {
 } from "../sensors/blesensors";
 
 import {
-  wakeLockAvailable,
-  showDebugInfo
+  wakeLockAvailable
 } from "./startup";
 
 import {
@@ -72,9 +66,7 @@ import {
 } from "../utils/ticker";
 
 export {
-  // persistent state
-  transitionAltitude,
-  historySamples,
+  // volatile state only - persisted vars moved to useAppState
   barometerAvailable,
   baroActive,
   pressure,
@@ -105,10 +97,6 @@ export {
   demUrl,
   demInfo,
   wakeLockAvailable,
-  showDebugInfo,
-  bleScanTimeouts,
-  resetbleScanTimeouts,
-  bleInitErrors,
   bleAdvertisements,
   bleDeviceUpdates,
   bleScanStarts,
@@ -121,6 +109,4 @@ export {
   startTimer,
   stopTimer,
   ticker,
-  tickerRunning,
-  
-};
+  tickerRunning,};

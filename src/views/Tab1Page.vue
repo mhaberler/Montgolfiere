@@ -36,7 +36,7 @@
                                 console.warn('Cannot show popup for elevation: invalid value', elevation)
                             }
                         }" :value="elevation" :name="'elevation'" :decimals="0" :unit="'m'"
-                            :frameClass="elevation && (!elevationAtTakeoff || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? '!bg-red-200' : ''" />
+                            :frameClass="elevation && (!elevationAtTakeoff.value.value || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? '!bg-red-200' : ''" />
                     </div>
 
 
@@ -168,9 +168,9 @@ import {
     ECET
 } from '../process/sun';
 
+import { elevationAtTakeoff, altitudeAtTakeoff } from '@/composables/useAppState';
 import ValueCard from '../components/ValueCard.vue';
 import LinearScale from '../components/LinearScale.vue';
-import { usePersistedRefWithTimestamp } from '../composables/usePersistedRefWithTimestamp'
 const confidenceColor = ref('#0de732');
 const maxElevationAtTakeoffAge = 3600 * 4; // 4 hours
 
@@ -201,12 +201,10 @@ const isModalOpen = ref(false);
 const modalData = ref<{ name: string, value: number, unit: string } | null>(null);
 const modal = ref();
 
-// const elevationAtTakeoff = ref<number | null>(null);
-const { value: elevationAtTakeoff, timestamp: elevationAtTakeoffTimestamp } =
-    usePersistedRefWithTimestamp<number | null>('elevationAtTakeoff', null);
-
-const { value: altitudeAtTakeoff, timestamp: altitudeAtTakeoffTimestamp } =
-    usePersistedRefWithTimestamp<number | null>('altitudeAtTakeoff', null);
+// Import flight telemetry refs from centralized app state (with timestamps)
+// usePersistedRefWithTimestamp returns { value: Ref<T>, timestamp: Ref<number> }
+const elevationAtTakeoffTimestamp = elevationAtTakeoff.timestamp;
+const altitudeAtTakeoffTimestamp = altitudeAtTakeoff.timestamp;
 
 const heightOverGround = ref<number | null>(null);
 const apexLevelRelative = ref<number | null>(null); // to current altitude
@@ -215,7 +213,6 @@ const ekfAltitudeISAfeet = ref<number>(0);
 const flightLevel = ref<number>(0);
 const useFlightLevel = ref<boolean>(false);
 const willImpactGround = ref<boolean>(false);
-
 
 watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     // console.log(`ekfAltitudeISA is ${newekfAltitudeISA}`)
@@ -227,9 +224,9 @@ watch(ekfAltitudeISA, (newekfAltitudeISA) => {
     } else {
         apexLevelRelative.value = null;
     }
-    if (elevationAtTakeoff.value !== null && altitudeAtTakeoff.value != null && elevation.value !== null) {
-        const heightAboveTakeoff = newekfAltitudeISA - altitudeAtTakeoff.value;
-        const elevationABoveTakeoff = elevation.value - elevationAtTakeoff.value;
+    if (elevationAtTakeoff.value.value !== null && altitudeAtTakeoff.value.value != null && elevation.value !== null) {
+        const heightAboveTakeoff = newekfAltitudeISA - altitudeAtTakeoff.value.value;
+        const elevationABoveTakeoff = elevation.value - elevationAtTakeoff.value.value;
         heightOverGround.value = heightAboveTakeoff - elevationABoveTakeoff;
         if (apexLevelRelative.value != null) {
             willImpactGround.value = (heightOverGround.value - apexLevelRelative.value) < 0;
@@ -274,9 +271,11 @@ import {
     ekfZeroSpeedAltitude,
     ekfZeroSpeedValid,
     vspeedCI95,
-    vaccelCI95,
-    transitionAltitude
+    vaccelCI95
 } from '../utils/state';
+
+// Persistent state imports
+import { transitionAltitude } from '../composables/useAppState';
 
 
 const router = useRouter();
@@ -335,8 +334,8 @@ const setOnGround = () => {
             // Set ground reference logic here
             console.log('Ground elevation set to:', modalData.value.value);
             // You might want to emit an event or update a global state
-            elevationAtTakeoff.value = elevation.value;
-            altitudeAtTakeoff.value = ekfAltitudeISA.value;
+            elevationAtTakeoff.value.value = elevation.value;
+            altitudeAtTakeoff.value.value = ekfAltitudeISA.value;
         }
 
         // Close the modal after action

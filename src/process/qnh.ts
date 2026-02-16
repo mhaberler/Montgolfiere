@@ -1,6 +1,6 @@
 import { locationAvailable, location } from '../sensors/location'
 import { Position } from '@capacitor/geolocation'
-import { usePersistedRef } from '@/composables/usePersistedRef'
+import { manualQNHvalue, autoQNHflag } from '@/composables/useAppState'
 
 import { Http, HttpResponse } from '@leadscout/http'
 import { ref, watch, watchEffect } from 'vue'
@@ -10,9 +10,7 @@ import { point } from '@turf/helpers'
 const degrees = 2
 const numNeighbours = 5
 
-const manualQNHvalue = usePersistedRef<number>('manualQNHvalue', 1013.25) // aka QNH in hPa, default is 1013.25 hPa (sea level standard atmospheric pressure)
-// QNH auto setting
-const autoQNHflag = usePersistedRef<boolean>('autoQNHflag', true)
+// Persisted QNH settings - imported directly from centralized app state
 const currentQNH = ref<number>(0)
 const currentQNHsource = ref<string>('man')
 

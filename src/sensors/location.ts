@@ -6,13 +6,13 @@ import { selectedDemUrl } from '@/composables/useDemUrl'
 
 const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode
-  timeout: 20000,
+  timeout: 60000,
   maximumAge: 0, // Do not use cached position
 }
 
 const androidOptions: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode
-  timeout: 20000,
+  timeout: 60000,
   maximumAge: 0,
 }
 

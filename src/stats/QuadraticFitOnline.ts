@@ -11,7 +11,7 @@ export class QuadraticFitOnline {
 
     constructor() {
         // Initialize coefficients to zero
-        this.beta = zeros([3, 1]) as Matrix;
+        this.beta = matrix([[0], [0], [0]]);
 
         // Initialize P to a large diagonal matrix (1e6 * I)
         this.P = multiply(1e6, identity(3)) as Matrix;
@@ -161,7 +161,7 @@ export class QuadraticFitOnline {
      * Reset the quadratic fit to initial state
      */
     clear(): void {
-        this.beta = zeros([3, 1]) as Matrix;
+        this.beta = matrix([[0], [0], [0]]);
         this.P = multiply(1e6, identity(3)) as Matrix;
     }
 

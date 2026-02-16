@@ -43,15 +43,17 @@ import {
     vaccelCI95,
     currentVariance,
     pressure,
-    rawAltitudeISA,
-    bleScanTimeouts,
-    resetbleScanTimeouts
+    rawAltitudeISA
 } from '@/utils/state';
 
 import {
+    bleScanTimeouts,
     showDebugInfo,
-} from '@/utils/startup';
+} from '@/composables/useAppState';
 
+import {
+    resetbleScanTimeouts
+} from '@/sensors/blesensors';
 
 import {
     baroRate,

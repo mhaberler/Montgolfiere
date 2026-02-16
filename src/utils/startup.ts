@@ -1,31 +1,24 @@
-import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 import { Capacitor } from "@capacitor/core";
 import { Device } from '@capacitor/device';
-import { Network } from '@capacitor/network';
 
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
 import { startBarometer, stopBarometer } from "../sensors/barometer";
-import { usePersistedRef } from "../composables/usePersistedRef";
+import { showDebugInfo } from "../composables/useAppState";
+import { useAppLifecycle } from "../composables/useAppLifecycle";
 import { initializeAndStartBLEScan, startBLEScan, cleanupBLE } from '../sensors/blesensors';
+import { startNetworkObserver, stopNetworkObserver } from '../sensors/network';
 import {
   startTimer,
   stopTimer,
 } from "./ticker";
+import { Share } from '@capacitor/share';
+import QRCode from 'qrcode';
+// import { startScan } from "@/sensors/mdns";
+
 const isWeb = Capacitor.getPlatform() === "web";
-
 const wakeLockAvailable = ref(false);
-
-//Network.addListener('networkStatusChange', status => {
-//  console.log('Network status changed', status);
-//});
-
-const logCurrentNetworkStatus = async () => {
-  const status = await Network.getStatus();
-
-  console.log('Network status:', status);
-};
 
 const logDeviceInfo = async () => {
   const info = await Device.getInfo();
@@ -34,7 +27,6 @@ const logDeviceInfo = async () => {
 
 const logBatteryInfo = async () => {
   const info = await Device.getBatteryInfo();
-
   console.log(info);
 };
 
@@ -48,10 +40,7 @@ const getDeviceId = async () => {
   }
 };
 
-const showDebugInfo = usePersistedRef<boolean>(
-  "showDebugInfo",
-  import.meta.env.MODE === "development"
-);
+// Debug info visibility - imported directly from centralized app state
 
 const isSupported = async () => {
   const result = await KeepAwake.isSupported();
@@ -71,10 +60,17 @@ const cameToForeground = async () => {
   if (!isWeb) {
     // Restart BLE scanning when app comes to foreground
     try {
+      await startNetworkObserver();
+    } catch (e) {
+      console.error('Failed to start startNetworkObserver in foreground:', e);
+    }
+    try {
       await startBLEScan();
     } catch (e) {
       console.error('Failed to start BLE scanning in foreground:', e);
     }
+    // startScan();
+
   }
   if (wakeLockAvailable.value) {
     if (!(await isKeptAwake())) {
@@ -87,7 +83,6 @@ const cameToForeground = async () => {
 const wentToBackground = async () => {
   console.log("App is in the background");
   stopBarometer();
-
   stopTimer();
   stopLocation();
   if (!isWeb) {
@@ -97,6 +92,7 @@ const wentToBackground = async () => {
     } catch (e) {
       console.error('Failed to cleanup BLE in background:', e);
     }
+    stopNetworkObserver();
   }
   if (wakeLockAvailable.value) {
     if (await isKeptAwake()) {
@@ -106,8 +102,7 @@ const wentToBackground = async () => {
   }
 };
 
-import { Share } from '@capacitor/share';
-import QRCode from 'qrcode';
+
 
 const shareData = async () => {
   await Share.share({
@@ -167,9 +162,13 @@ const initializeApp = async () => {
   // await shareData();
   // await shareQRCode("https://static.mah.priv.at/apps/flightview");
 
+  startLocation();
+  startBarometer();
+
   // Handle app state changes
-  App.addListener("appStateChange", (state) => {
-    if (state.isActive) {
+  const { isActive } = useAppLifecycle();
+  watch(isActive, (active) => {
+    if (active) {
       console.log("App is in the foreground");
       cameToForeground();
     } else {
@@ -177,8 +176,7 @@ const initializeApp = async () => {
       wentToBackground();
     }
   });
-  startLocation();
-  startBarometer();
+
   if (!isWeb) {
     // Initialize BLE scanning
     try {
@@ -186,9 +184,14 @@ const initializeApp = async () => {
     } catch (e) {
       console.error('Failed to initialize BLE scanning:', e);
     }
+    try {
+      await startNetworkObserver();
+    } catch (e) {
+      console.error('Failed to start startNetworkObserver in foreground:', e);
+    }
   }
   startTimer();
-
+  // console.log('Network status:', networkStatus.value?.connected, networkStatus.value?.connectionType);
   console.log("App initialized and ready to use.");
 };
 

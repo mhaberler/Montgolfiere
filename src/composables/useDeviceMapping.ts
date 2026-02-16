@@ -1,5 +1,5 @@
 import { ref, computed, readonly } from "vue";
-import { usePersistedRef } from "@/composables/usePersistedRef";
+import { deviceMappings } from "@/composables/useAppState";
 import type { UnitType } from "@/types/units";
 
 export interface UnitSensorData {
@@ -187,10 +187,7 @@ const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
 };
 
 // Persisted mapping: deviceId -> unitType (allows conflicts/multiple assignments)
-const deviceMappings = usePersistedRef<Record<string, UnitType | null>>(
-  "device-unit-mappings",
-  {}
-);
+// Imported directly from centralized app state
 
 // Real-time unit data: unitType -> array of sensor data
 const unitSensors = ref<Record<UnitType, UnitSensorData[]>>({

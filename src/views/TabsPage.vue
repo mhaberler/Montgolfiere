@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
 import { airplaneOutline, bluetoothOutline, cloudDownloadOutline, settingsOutline, flashOutline, flashlightOutline } from 'ionicons/icons';
-import { showDebugInfo } from '@/utils/state';
+import { showDebugInfo } from '@/composables/useAppState';
 import { onMounted, onUnmounted } from 'vue';
 // import { StatusBar, Style } from '@capacitor/status-bar';
 

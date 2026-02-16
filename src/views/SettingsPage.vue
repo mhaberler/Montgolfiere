@@ -25,11 +25,11 @@
               </div>
               <div>
                 <ion-input type="number" min="5" max="100" v-model.number="historySamples" @ionBlur="
-                    () => {
-                      if (historySamples < 5) historySamples = 5
-                      if (historySamples > 500) historySamples = 500
-                    }
-                  "></ion-input>
+                  () => {
+                    if (historySamples < 5) historySamples = 5
+                    if (historySamples > 500) historySamples = 500
+                  }
+                "></ion-input>
               </div>
 
               <div v-if="isAndroid">
@@ -154,18 +154,14 @@
           </div>
         </ion-accordion>
 
-        <!-- <ion-accordion value="browser">
+        <ion-accordion value="mqtt">
           <ion-item slot="header">
-            <ion-label>Start browser</ion-label>
+            <ion-label>MQTT</ion-label>
           </ion-item>
           <div slot="content">
-            <div class="mt-4 p-4">
-              <ion-button expand="block" color="warning" @click="openCapacitorSite">
-                Start Browser
-              </ion-button>
-            </div>
+            <ScannerView />
           </div>
-        </ion-accordion> -->
+        </ion-accordion>
 
         <ion-accordion value="build-info">
           <ion-item slot="header">
@@ -235,56 +231,33 @@
 </template>
 
 <script setup lang="ts">
+import { watch, computed, ref, onMounted } from 'vue'
+import {
+  IonPage, IonContent, IonLabel, IonToggle, IonInput,
+  IonCard, IonCardHeader, IonCardTitle, IonCardContent,
+  IonButton, IonSelect, IonSelectOption,
+  IonAccordionGroup, IonAccordion, IonItem, IonText,
+  IonHeader, IonTitle, IonToolbar, IonCheckbox,
+} from '@ionic/vue'
+import { Preferences } from '@capacitor/preferences'
+import { Capacitor } from '@capacitor/core'
+import { Browser } from '@capacitor/browser'
+
+import DebugEkf from '@/components/DebugEkf.vue'
+import ScannerView from '@/components/ScannerView.vue'
+import { useAppLifecycle } from '@/composables/useAppLifecycle'
+import { airportQnhData, updateQnhFromLocation } from '@/process/qnh'
+import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg } from '@/utils/mqtt'
+import { initializeMqtt } from '@/utils/mqttService'
+import { decimateEKFSamples, transitionAltitude, historySamples, showDebugInfo, manualQNHvalue, autoQNHflag } from '@/composables/useAppState'
+import { selectedDemUrl } from '@/composables/useDemUrl'
+
 // Track which accordion is open
-import { watch } from 'vue'
 const openAccordion = ref('')
 watch(openAccordion, (val) => {
   showDebugInfo.value = val === 'debug'
 })
 
-import {
-  IonPage,
-  IonContent,
-  IonLabel,
-  IonToggle,
-  IonInput,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonButton,
-  IonSelect,
-  IonSelectOption,
-  IonAccordionGroup,
-  IonAccordion,
-  IonItem,
-  IonText,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonCheckbox,
-} from '@ionic/vue'
-import { Preferences } from '@capacitor/preferences'
-
-import DebugEkf from '@/components/DebugEkf.vue'
-import { computed, ref } from 'vue'
-import { airportQnhData, updateQnhFromLocation } from '@/process/qnh'
-// import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg, checkMqttConnection } from '@/utils/mqtt';
-import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg } from '@/utils/mqtt'
-import { initializeMqtt } from '@/utils/mqttService'
-import { decimateEKFSamples } from '@/process/pressure'
-import { selectedDemUrl } from '@/composables/useDemUrl'
-
-import { transitionAltitude, historySamples } from '@/utils/state'
-
-import { manualQNHvalue, autoQNHflag } from '../process/qnh'
-import { showDebugInfo } from '@/utils/startup'
-// Add these imports
-import { Capacitor } from '@capacitor/core'
-
-import { Browser } from '@capacitor/browser';
-
-// Add platform detection
 const isAndroid = computed(() => Capacitor.getPlatform() === 'android')
 
 // Build information constants
@@ -298,11 +271,6 @@ const clearAllPreferences = async () => {
   await Preferences.clear()
   console.log('All preferences cleared.')
 }
-
-const openCapacitorSite = async () => {
-  await Browser.open({ url: 'http://capacitorjs.com/' });
-};
-
 
 interface MqttInitOptions {
   brokerUrl: string
@@ -389,11 +357,18 @@ const handleUpdateQnh = async () => {
   }
 }
 
-import { onMounted } from 'vue'
 onMounted(() => {
   // Optionally trigger initial QNH update on mount
   if (airportQnhData.value.length === 0) {
     handleUpdateQnh()
+  }
+})
+
+// Blur focused element when page hides (accessibility)
+const { isActive } = useAppLifecycle()
+watch(isActive, (active) => {
+  if (!active) {
+    ;(document.activeElement as HTMLElement)?.blur()
   }
 })
 </script>

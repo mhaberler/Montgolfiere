@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import './assets/style.css'
 
 import router from './router';
 
@@ -46,7 +47,7 @@ import { vOnLongPress } from '@vueuse/components';
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
     // Don't prevent the error from being logged, but don't crash the app
-    if (event.reason && event.reason instanceof Error && 
+    if (event.reason && event.reason instanceof Error &&
         event.reason.message && event.reason.message.includes('vnode')) {
         console.warn('Caught vnode error during app reload - this is expected');
         event.preventDefault(); // Prevent the error from crashing the app
@@ -56,7 +57,7 @@ window.addEventListener('unhandledrejection', (event) => {
 // // Add global error handler for Vue errors
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
-    if (event.error && event.error instanceof Error && 
+    if (event.error && event.error instanceof Error &&
         event.error.message && event.error.message.includes('vnode')) {
         console.warn('Caught vnode error - this is expected during app reload');
         event.preventDefault(); // Prevent the error from crashing the app
@@ -80,13 +81,13 @@ app.config.errorHandler = (err, instance, info) => {
     console.error('Vue error:', err);
     console.error('Component instance:', instance);
     console.error('Error info:', info);
-    
+
     // Don't crash the app for vnode errors during reload
     if (err && err instanceof Error && err.message && err.message.includes('vnode')) {
         console.warn('Caught Vue vnode error - this is expected during app reload');
         return;
     }
-    
+
     // Re-throw other errors
     throw err;
 };

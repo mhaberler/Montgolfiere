@@ -1,30 +1,13 @@
 import { ref, watch, computed } from 'vue'
 import { Capacitor } from '@capacitor/core'
 
-import { usePersistedRef } from '@/composables/usePersistedRef'
+import { transitionAltitude, historySamples, decimateEKFSamples } from '@/composables/useAppState'
 import { currentQNH } from '../process/qnh'
 import { altitudeByPressure, isaToQnhAltitude } from '../utils/meteo-utils'
 import { Kalman } from '../ekf/kalman'
 
-const platformEnv = import.meta.env.VITE_CAPACITOR_PLATFORM
-
-// persistent config state - automatically restored from Capacitor Preferences
-const transitionAltitude = usePersistedRef<number>('transitionAltitude', 7000) // altitude in ft where we transition from QNH to ISA model
-const historySamples = usePersistedRef<number>(
-  'historySamples',
-  platformEnv == 'ios' || platformEnv == 'web' ? 5 : 50,
-)
-
-// Platform-specific default: iOS/web = 1, Android = 5
-const getDefaultDecimation = (): number => {
-  return Capacitor.getPlatform() === 'android' ? 5 : 1
-}
-
-// Add a sample counter
-let sampleCounter = 0
-
-// Make decimate pressure samples persistent with platform-specific default
-const decimateEKFSamples = usePersistedRef<number>('decimateEKFSamples', getDefaultDecimation())
+// Persistent config state - automatically restored from Capacitor Preferences
+// Imported directly from centralized app state
 
 const pressure = ref<number>(1013.25)
 const rawAltitudeISA = ref<number>(0.0)
@@ -46,6 +29,7 @@ const ekfVaccelStdDev = ref<number>(0)
 const ekf = new Kalman()
 
 let previousTimestamp = 0 // seconds/ Unix timestamp
+let sampleCounter = 0 // Counter for EKF sample decimation
 
 // Watcher with immediate option - runs immediately on setup
 watch(

@@ -20,20 +20,18 @@ export function usePersistedRef<T>(key: string, defaultValue: T): Ref<T> {
 
       if (storedValue !== null) {
         try {
-          if (typeof defaultValue === 'object' && defaultValue !== null) {
-            data.value = JSON.parse(storedValue) as T;
-          } else {
-            if (typeof defaultValue === 'number') {
-              data.value = Number(storedValue) as T;
-            } else if (typeof defaultValue === 'boolean') {
-              data.value = (storedValue === 'true') as T;
-            } else {
-              data.value = storedValue as T;
-            }
-          }
+          // Try JSON parsing first (handles objects, arrays, and nullable object refs)
+          data.value = JSON.parse(storedValue) as T;
         } catch (e) {
-          console.warn(`Could not parse stored value for key "${key}". Using default.`, e);
-          data.value = defaultValue;
+          // If JSON parse fails, apply type-specific coercion based on defaultValue
+          if (typeof defaultValue === 'number') {
+            data.value = Number(storedValue) as T;
+          } else if (typeof defaultValue === 'boolean') {
+            data.value = (storedValue === 'true') as T;
+          } else {
+            // Plain string
+            data.value = storedValue as T;
+          }
         }
       }
     } catch (error) {
@@ -63,8 +61,9 @@ export function usePersistedRef<T>(key: string, defaultValue: T): Ref<T> {
     }
   };
 
+  // Watch with deep enabled if the current value is an object (not based on defaultValue)
   watch(data, saveData, {
-    deep: typeof defaultValue === 'object' && defaultValue !== null,
+    deep: true,
   });
 
   return data;

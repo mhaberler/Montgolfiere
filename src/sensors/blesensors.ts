@@ -13,7 +13,7 @@ import { parseTPMS0100, parseTPMS00AC } from "@/decoders/tpms";
 import { decodeBTHome } from "@/decoders/bthome";
 import { parseMikrotik } from "@/decoders/mikrotik";
 import { useDeviceMapping } from "@/composables/useDeviceMapping";
-import { usePersistedRef } from "../composables/usePersistedRef";
+import { bleScanTimeouts, bleInitErrors } from "@/composables/useAppState";
 
 // Extended device interface with decoded data and timestamp
 export interface ExtendedScanResult {
@@ -27,8 +27,9 @@ export const isScanning = ref(false);
 export const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 export const bleErrorMsg = ref<string | null>(null);
 
-export const bleScanTimeouts = usePersistedRef<number>("bleScanTimeouts", 0);
-export const bleInitErrors = usePersistedRef<number>("bleInitErrors", 0);
+// BLE debugging statistics - imported directly from centralized app state
+// Re-export for backward compatibility
+export { bleScanTimeouts, bleInitErrors };
 export const bleAdvertisements = ref(0);
 export const bleDeviceUpdates = ref(0);
 export const bleScanStarts = ref(0);

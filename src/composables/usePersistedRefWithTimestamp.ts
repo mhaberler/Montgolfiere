@@ -58,8 +58,9 @@ export function usePersistedRefWithTimestamp<T>(
         }
     };
 
+    // Watch with deep enabled to catch nested object changes
     watch(value, saveData, {
-        deep: typeof defaultValue === 'object' && defaultValue !== null,
+        deep: true,
     });
 
     return { value, timestamp };
