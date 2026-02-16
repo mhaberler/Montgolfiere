@@ -239,13 +239,13 @@ function drawScale() {
         return;
     }
 
-    console.log("Drawing scale. Orientation:", props.orientation);
-    console.log("Current Padding:", props.scalePadding);
-    console.log("SVG Dimensions:", svgWidth.value, svgHeight.value);
-    console.log("Major Ticks:", props.majorTicks);
-    console.log("Minor Ticks:", props.minorTicks);
-    console.log("Intermediate Ticks:", props.intermediateTicks);
-    console.log("Weights:", props.weights);
+    // console.log("Drawing scale. Orientation:", props.orientation);
+    // console.log("Current Padding:", props.scalePadding);
+    // console.log("SVG Dimensions:", svgWidth.value, svgHeight.value);
+    // console.log("Major Ticks:", props.majorTicks);
+    // console.log("Minor Ticks:", props.minorTicks);
+    // console.log("Intermediate Ticks:", props.intermediateTicks);
+    // console.log("Weights:", props.weights);
 
     const d3svg = d3.select(svgRef.value);
     d3svg.selectAll("*").remove(); // Clear previous SVG content
@@ -284,7 +284,7 @@ function drawScale() {
         indicatorPoints = `${scaleLinePos - indicatorHorizontalOffset + indicatorSize},0 ${scaleLinePos - indicatorHorizontalOffset}, -${indicatorSize / 2} ${scaleLinePos - indicatorHorizontalOffset},${indicatorSize / 2}`;
     }
 
-    console.log("Scale range after creation:", scale.range());
+    // console.log("Scale range after creation:", scale.range());
 
     // Draw the main scale line within the SVG
     d3svg.append("line")
@@ -303,7 +303,7 @@ function drawScale() {
         ...props.intermediateTicks
     ])].sort((a, b) => a - b);
 
-    console.log("All tick values for rendering:", allTickValues);
+    // console.log("All tick values for rendering:", allTickValues);
 
     // Create a group for each tick mark, appended to SVG
     d3svg.selectAll(".tick")
