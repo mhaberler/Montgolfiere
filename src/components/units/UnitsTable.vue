@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { IonIcon } from '@ionic/vue';
-import { balloonOutline, thermometerOutline, flameOutline, batteryHalfOutline, paperPlaneOutline } from 'ionicons/icons';
+import { balloonOutline, thermometerOutline, flameOutline, batteryHalfOutline, paperPlaneOutline, toggleOutline } from 'ionicons/icons';
 import { useDeviceMapping } from '@/composables/useDeviceMapping';
 import type { UnitType } from '@/types/units';
 
@@ -84,6 +84,7 @@ const unitConfigs: UnitConfig[] = [
     { type: 'Tank3', label: 'Tank3', icon: flameOutline },
     { type: 'Box', label: 'Box', icon: batteryHalfOutline },
     { type: 'Vario', label: 'Vario', icon: paperPlaneOutline },
+    { type: 'Switch', label: 'Switch', icon: toggleOutline },
 ];
 
 // Metric formatting functions
@@ -105,6 +106,8 @@ const formatMetricName = (metric: string): string => {
         "distance (m)_m": 'm',
         "speed_m/s": 'm/s',
         "acceleration_m/s²": 'm/s²',
+        reed_switch: 'Reed',
+        window: 'Window',
     };
     return nameMap[metric] || metric;
 };
@@ -129,10 +132,15 @@ const formatMetricValue = (metric: string, value: any): string => {
         "distance (m)_m": (v) => `${v.toFixed(1)}`,
         "speed_m/s": (v) => `${v.toFixed(1)}`,
         "acceleration_m/s²": (v) => `${v.toFixed(3)}`,
+        reed_switch: (v) => v ? 'Closed' : 'Open',
+        window: (v) => v ? 'Closed' : 'Open',
     };
 
     const formatter = formatMap[metric];
     if (formatter && typeof value === 'number') {
+        return formatter(value);
+    }
+    if (formatter && typeof value === 'boolean' && metric === 'reed_switch') {
         return formatter(value);
     }
     return String(value);

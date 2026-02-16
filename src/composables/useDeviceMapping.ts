@@ -166,8 +166,8 @@ const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
     ],
   },
   Switch: {
-    primary: ["reed_switch"],
-    secondary: ["batpct", "temp"],
+    primary: ["reed_switch", "window"],
+    secondary: ["battery_%"],
     hidden: [
       "accx",
       "accy",
