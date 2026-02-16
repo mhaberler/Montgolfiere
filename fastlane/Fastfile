@@ -92,7 +92,7 @@ platform(:android) do
 
   desc("Build and auto-publish to internal testing")
   lane(:beta_auto) do
-    inc_ver_and  # Increment version
+    # inc_ver_and  # Increment version
 
     gradle(
       task: "bundleRelease",
