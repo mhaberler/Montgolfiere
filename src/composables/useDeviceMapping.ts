@@ -42,6 +42,7 @@ export const unitTypes: UnitType[] = [
   "Tank3",
   "Box",
   "Vario",
+  "Switch",
 ];
 
 const SENSOR_CLEANUP_TIMER = 2000;
@@ -74,6 +75,11 @@ const SENSOR_STATUS_THRESHOLDS = {
     online: 4 * 1000, // 3 seconds (very frequent)
     warning: 10 * 1000, // 5 seconds
     offline: 30 * 1000,
+  },
+  MikroTik: {
+    online: 10 * 1000, // Same as Ruuvi (broadcasts every 1-2s)
+    warning: 20 * 1000,
+    offline: 60 * 1000,
   },
   default: {
     online: 30 * 1000, // Default 30 seconds
@@ -159,6 +165,25 @@ const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
     hidden: [
     ],
   },
+  Switch: {
+    primary: ["reed_switch"],
+    secondary: ["batpct", "temp"],
+    hidden: [
+      "accx",
+      "accy",
+      "accz",
+      "version",
+      "salt",
+      "uptime",
+      "accel_tilt",
+      "accel_drop",
+      "impact_x",
+      "impact_y",
+      "impact_z",
+      "dev",
+      "encrypted",
+    ],
+  },
 };
 
 // Persisted mapping: deviceId -> unitType (allows conflicts/multiple assignments)
@@ -176,6 +201,7 @@ const unitSensors = ref<Record<UnitType, UnitSensorData[]>>({
   Tank3: [],
   Box: [],
   Vario: [],
+  Switch: [],
 });
 
 // Reactive timestamp for time-based calculations

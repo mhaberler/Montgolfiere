@@ -11,6 +11,7 @@ import { parseMystery } from "@/decoders/mystery";
 import { parseMopeka } from "@/decoders/mopeka";
 import { parseTPMS0100, parseTPMS00AC } from "@/decoders/tpms";
 import { decodeBTHome } from "@/decoders/bthome";
+import { parseMikrotik } from "@/decoders/mikrotik";
 import { useDeviceMapping } from "@/composables/useDeviceMapping";
 import { usePersistedRef } from "../composables/usePersistedRef";
 
@@ -84,6 +85,7 @@ const allowedManufacturerIds = {
   0x00ac: { type: "TPMS1", sortingPriority: 4 },
   0x0100: { type: "TPMS4", sortingPriority: 5 },
   0x0059: { type: "Mopeka", sortingPriority: 6 },
+  0x094f: { type: "MikroTik", sortingPriority: 8 },
 
   //   0x0ba9: { type: "BTHome-v2", sortingPriority: 7 },
   // Add more manufacturer IDs as needed
@@ -401,6 +403,9 @@ const decodeSensor = (result: ScanResult): Record<string, any> => {
           break;
         case "TPMS4":
           decoded.value = parseTPMS0100(dataView);
+          break;
+        case "MikroTik":
+          decoded.value = parseMikrotik(dataView);
           break;
         default:
           decoded.type = "Unknown";

@@ -1,5 +1,5 @@
 // Unit types and configurations
-export type UnitType = "Envelope" | "OAT" | "Tank1" | "Tank2" | "Tank3" | "Box" | "Vario";
+export type UnitType = "Envelope" | "OAT" | "Tank1" | "Tank2" | "Tank3" | "Box" | "Vario" | "Switch";
 
 export interface UnitConfig {
   id: string;
@@ -58,5 +58,12 @@ export const UNIT_CONFIGS: Record<UnitType, UnitConfig> = {
     name: "Vario",
     description: "Vario",
     iconName: "paper-plane",
+  },
+  Switch: {
+    id: "switch",
+    type: "Switch",
+    name: "Switch",
+    description: "MikroTik reed switch sensor",
+    iconName: "toggle-outline",
   },
 };
