@@ -622,11 +622,14 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
-@import "../assets/style.css"
-
 .broker-row {
-  @apply px-3 py-2 bg-white rounded-lg border border-gray-100 transition-colors;
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  border: 1px solid #f3f4f6;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 .broker-row:hover {
   border-color: rgba(33, 150, 243, 0.2);
@@ -636,7 +639,15 @@ export default defineComponent({
   box-shadow: 0 0 0 1px #FFD700;
 }
 .btn-icon {
-  @apply w-8 h-8 flex items-center justify-center rounded-full transition-colors;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
   min-width: 32px;
   min-height: 32px;
 }
