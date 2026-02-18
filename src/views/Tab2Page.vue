@@ -6,16 +6,17 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-button class="basis-1/4" @click="exportMappings">
-        Export
-      </ion-button>
-      <ion-button class="basis-1/4" @click="clearBLEDevices">
-        Clear
-      </ion-button>
-
-      <ion-button class="basis-1/4" @click="restartBLEScan">
-        Restart
-      </ion-button>
+      <div class="flex gap-2 p-2">
+        <ion-button @click="exportMappings">
+          Export
+        </ion-button>
+        <ion-button @click="clearBLEDevices">
+          Clear
+        </ion-button>
+        <ion-button @click="restartBLEScan">
+          Restart
+        </ion-button>
+      </div>
       <div class="p-5 flex flex-col gap-5">
         <ion-list v-if="sortedDevices.length > 0">
           <ion-item v-for="device in sortedDevices" :key="device.scanResult.device.deviceId">
@@ -33,19 +34,19 @@
                     <ion-label>Sensor Data ({{ Object.keys(device.decoded.value).length }} metrics)</ion-label>
                   </ion-item>
                   <div slot="content" class="p-2">
-                    <div v-for="(value, key) in device.decoded.value" :key="key" class="flex justify-between items-center py-1 border-b border-ion-light-shade last:border-b-0">
-                      <span class="text-[0.9em] text-ion-medium font-medium">{{ key }}:</span>
-                      <span class="text-[0.9em] font-semibold text-ion-dark font-mono">{{ value }}</span>
+                    <div v-for="(value, key) in device.decoded.value" :key="key" class="flex justify-between items-center py-1 border-b border-gray-200 last:border-b-0">
+                      <span class="text-sm text-gray-500 font-medium">{{ key }}:</span>
+                      <span class="text-sm font-semibold text-gray-900 tabular-nums">{{ value }}</span>
                     </div>
                   </div>
                 </ion-accordion>
               </ion-accordion-group>
 
-              <p v-if="getDeviceUnit(device.scanResult.device.deviceId)" class="text-ion-primary font-medium">
+              <p v-if="getDeviceUnit(device.scanResult.device.deviceId)" class="text-blue-600 font-medium">
                 Assigned to: {{ getDeviceUnit(device.scanResult.device.deviceId) }}
               </p>
-              <p class="text-[0.9em] text-ion-medium italic">
-                Last seen: {{ Math.floor((Date.now() - device.lastSeen) / 1000) }}s ago
+              <p class="text-sm text-gray-500 italic">
+                Last seen: {{ Math.floor((reactiveTime - device.lastSeen) / 1000) }}s ago
               </p>
             </ion-label>
 
@@ -65,7 +66,9 @@
           <p>No devices found. Start scanning to discover BLE devices.</p>
         </ion-text>
 
-        <ion-spinner v-if="isScanning" name="circles" class="my-5 mx-auto"></ion-spinner>
+        <div v-if="isScanning" class="flex justify-center py-5">
+          <ion-spinner name="circles"></ion-spinner>
+        </div>
 
         <ion-text color="danger" v-if="bleErrorMsg">
           {{ bleErrorMsg }}
@@ -76,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import {
   IonPage,
   IonHeader,
@@ -110,6 +113,21 @@ import { UNIT_CONFIGS, type UnitType } from '@/types/units';
 
 const { assignDeviceToUnit, getDeviceUnit, exportMappings } = useDeviceMapping();
 
+// Reactive timestamp for "last seen" display (updates every 5s)
+const reactiveTime = ref(Date.now());
+let reactiveTimer: number | undefined;
+
+onMounted(() => {
+  reactiveTimer = window.setInterval(() => {
+    reactiveTime.value = Date.now();
+  }, 5000);
+});
+
+onUnmounted(() => {
+  if (reactiveTimer !== undefined) clearInterval(reactiveTimer);
+  console.log('Tab2Page unmounted - BLE continues running globally');
+});
+
 const assignDevice = (deviceId: string, unitType: UnitType | null) => {
   assignDeviceToUnit(deviceId, unitType);
 };
@@ -135,12 +153,5 @@ const sortedDevices = computed(() => {
       const typeB = b.decoded.type || 'Unknown';
       return typeA.localeCompare(typeB);
     });
-});
-
-// Clean up when component unmounts
-onUnmounted(async () => {
-  // Note: We don't cleanup BLE here since it's managed globally
-  // The scanning will continue in the background for other parts of the app
-  console.log('Tab2Page unmounted - BLE continues running globally');
 });
 </script>
