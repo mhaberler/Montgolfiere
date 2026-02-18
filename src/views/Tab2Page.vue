@@ -2,64 +2,65 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>BLE Scanner</ion-title>
+        <ion-title class="[&.ios]:static [&.ios]:text-left [&.ios]:pl-4 [&.ios]:pb-2 [&.md]:pl-4">BLE Scanner</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="solid" color="primary" @click="clearBLEDevices">
+            Clear
+          </ion-button>
+          <ion-button fill="solid" color="primary" @click="restartBLEScan">
+            Restart
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <div class="flex gap-2 p-2">
-        <ion-button @click="exportMappings">
-          Export
-        </ion-button>
-        <ion-button @click="clearBLEDevices">
-          Clear
-        </ion-button>
-        <ion-button @click="restartBLEScan">
-          Restart
-        </ion-button>
-      </div>
-      <div class="p-5 flex flex-col gap-5">
+      <div class="p-2 flex flex-col gap-1">
         <ion-list v-if="sortedDevices.length > 0">
-          <ion-item v-for="device in sortedDevices" :key="device.scanResult.device.deviceId">
-            <ion-label>
-              <h2>{{ device.scanResult.device.name || 'Unnamed Device' }}</h2>
-              <p>ID: {{ device.scanResult.device.deviceId }}</p>
-              <p>RSSI: {{ device.scanResult.rssi }} dBm</p>
-
-              <p v-if="device.decoded.type">
+          <div v-for="device in sortedDevices" :key="device.scanResult.device.deviceId"
+            class="grid grid-cols-2 gap-1 py-1 px-2 border-b border-gray-200 last:border-b-0">
+            <!-- Left column: sensor info -->
+            <div>
+              <p class="text-base font-semibold">{{ device.scanResult.device.name || 'Unnamed Device' }}</p>
+              <p class="text-sm text-gray-600">ID: {{ device.scanResult.device.deviceId }}</p>
+              <p class="text-sm text-gray-600">RSSI: {{ device.scanResult.rssi }} dBm</p>
+              <p v-if="device.decoded.type" class="text-sm text-gray-600">
                 Type: {{ device.decoded.type }}
-              </p>
-              <ion-accordion-group v-if="device.decoded.value">
-                <ion-accordion>
-                  <ion-item slot="header">
-                    <ion-label>Sensor Data ({{ Object.keys(device.decoded.value).length }} metrics)</ion-label>
-                  </ion-item>
-                  <div slot="content" class="p-2">
-                    <div v-for="(value, key) in device.decoded.value" :key="key" class="flex justify-between items-center py-1 border-b border-gray-200 last:border-b-0">
-                      <span class="text-sm text-gray-500 font-medium">{{ key }}:</span>
-                      <span class="text-sm font-semibold text-gray-900 tabular-nums">{{ value }}</span>
-                    </div>
-                  </div>
-                </ion-accordion>
-              </ion-accordion-group>
-
-              <p v-if="getDeviceUnit(device.scanResult.device.deviceId)" class="text-blue-600 font-medium">
-                Assigned to: {{ getDeviceUnit(device.scanResult.device.deviceId) }}
               </p>
               <p class="text-sm text-gray-500 italic">
                 Last seen: {{ Math.floor((reactiveTime - device.lastSeen) / 1000) }}s ago
               </p>
-            </ion-label>
+            </div>
 
-            <!-- Unit Assignment Dropdown -->
-            <ion-select slot="end" :value="getDeviceUnit(device.scanResult.device.deviceId)"
-              @ionChange="assignDevice(device.scanResult.device.deviceId, $event.detail.value)"
-              placeholder="Assign Unit" interface="popover">
-              <ion-select-option :value="null">Unassigned</ion-select-option>
-              <ion-select-option v-for="unitType in unitTypes" :key="unitType" :value="unitType">
-                {{ UNIT_CONFIGS[unitType].name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
+            <!-- Right column: unit assignment (top) + sensor data (bottom) -->
+            <div class="flex flex-col gap-2">
+              <div class="flex-1 flex items-center justify-end">
+                <ion-select :value="getDeviceUnit(device.scanResult.device.deviceId)"
+                  @ionChange="assignDevice(device.scanResult.device.deviceId, $event.detail.value)"
+                  placeholder="Assign Unit" interface="popover" class="text-lg font-bold">
+                  <ion-select-option :value="null">Unassigned</ion-select-option>
+                  <ion-select-option v-for="unitType in unitTypes" :key="unitType" :value="unitType">
+                    {{ UNIT_CONFIGS[unitType].name }}
+                  </ion-select-option>
+                </ion-select>
+              </div>
+              <div class="flex-1 flex items-center justify-center" v-if="device.decoded.value">
+                <ion-accordion-group>
+                  <ion-accordion>
+                    <ion-item slot="header">
+                      <ion-label class="text-sm">{{ Object.keys(device.decoded.value).length }} metrics</ion-label>
+                    </ion-item>
+                    <div slot="content" class="p-2">
+                      <div v-for="(value, key) in device.decoded.value" :key="key"
+                        class="flex justify-between items-center py-1 border-b border-gray-200 last:border-b-0">
+                        <span class="text-sm text-gray-500 font-medium">{{ key }}:</span>
+                        <span class="text-sm font-semibold text-gray-900 tabular-nums">{{ value }}</span>
+                      </div>
+                    </div>
+                  </ion-accordion>
+                </ion-accordion-group>
+              </div>
+            </div>
+          </div>
         </ion-list>
 
         <ion-text v-else-if="!isScanning" color="medium">
