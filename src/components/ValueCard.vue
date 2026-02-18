@@ -143,7 +143,3 @@ const batteryBorderClass = computed(() => {
     }
 });
 </script>
-
-<style scoped>
-/* No custom CSS needed as Tailwind handles all styling */
-</style>

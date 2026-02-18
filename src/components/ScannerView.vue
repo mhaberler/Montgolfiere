@@ -81,20 +81,20 @@
       <div v-if="preconfiguredList.length > 0">
         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 mb-1">Pre-configured</div>
         <div v-for="entry in preconfiguredList" :key="entry.key"
-          class="broker-row" :class="{ 'broker-row-preferred': isPreferred(entry.service) }"
+          class="py-2 px-3 bg-white rounded border transition-all" :class="isPreferred(entry.service) ? 'border-2 border-amber-300 shadow-md' : 'border-gray-200 hover:border-blue-200'"
           style="display: grid; grid-template-columns: 1fr auto; align-items: center;">
           <div style="min-width: 0;">
             <span class="font-semibold text-sm text-gray-800 truncate">{{ entry.service.name }}</span>
             <span class="text-[10px] text-gray-400 font-mono">{{ entry.service.host }}:{{ entry.service.port }}</span>
           </div>
           <div class="flex items-center gap-1 flex-shrink-0">
-            <button @click="navigateToClient(entry.service)" class="btn-icon text-primary" title="Open client">
+            <button @click="navigateToClient(entry.service)" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-primary" title="Open client">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </button>
-            <button v-if="!isPreferred(entry.service)" @click="setPreferred(entry.service)" class="btn-icon text-warning" title="Set preferred">
+            <button v-if="!isPreferred(entry.service)" @click="setPreferred(entry.service)" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-warning" title="Set preferred">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
             </button>
-            <span v-else class="btn-icon text-amber-500">
+            <span v-else class="w-8 h-8 flex items-center justify-center rounded-full text-amber-500">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
             </span>
           </div>
@@ -105,7 +105,7 @@
       <div v-if="discoveredList.length > 0">
         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 mt-2 mb-1">Discovered</div>
         <div v-for="entry in discoveredList" :key="entry.key"
-          class="broker-row" :class="{ 'broker-row-preferred': isPreferred(entry.service) }"
+          class="py-2 px-3 bg-white rounded border transition-all" :class="isPreferred(entry.service) ? 'border-2 border-amber-300 shadow-md' : 'border-gray-200 hover:border-blue-200'"
           style="display: grid; grid-template-columns: 1fr auto; align-items: center;">
           <div style="min-width: 0;">
             <div class="flex items-center gap-2">
@@ -115,13 +115,13 @@
             <span class="text-[10px] text-gray-400 font-mono">{{ entry.service.host }}:{{ entry.service.port }}</span>
           </div>
           <div class="flex items-center gap-1 flex-shrink-0">
-            <button @click="navigateToClient(entry.service)" class="btn-icon text-primary" title="Open client">
+            <button @click="navigateToClient(entry.service)" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-primary" title="Open client">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </button>
-            <button v-if="!isPreferred(entry.service)" @click="setPreferred(entry.service)" class="btn-icon text-warning" title="Set preferred">
+            <button v-if="!isPreferred(entry.service)" @click="setPreferred(entry.service)" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-warning" title="Set preferred">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
             </button>
-            <span v-else class="btn-icon text-amber-500">
+            <span v-else class="w-8 h-8 flex items-center justify-center rounded-full text-amber-500">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
             </span>
           </div>
@@ -132,23 +132,23 @@
       <div>
         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 mt-2 mb-1">Manual</div>
         <!-- Existing manual broker (if any) -->
-        <div v-if="manualEntry" class="broker-row" :class="{ 'broker-row-preferred': isPreferred(manualEntry) }"
+        <div v-if="manualEntry" class="py-2 px-3 bg-white rounded border transition-all" :class="isPreferred(manualEntry) ? 'border-2 border-amber-300 shadow-md' : 'border-gray-200 hover:border-blue-200'"
           style="display: grid; grid-template-columns: 1fr auto; align-items: center;">
           <div style="min-width: 0;">
             <span class="font-semibold text-sm text-gray-800 truncate">{{ manualEntry.name }}</span>
             <span class="text-[10px] text-gray-400 font-mono">{{ manualEntry.host }}:{{ manualEntry.port }}</span>
           </div>
           <div class="flex items-center gap-1 flex-shrink-0">
-            <button @click="navigateToClient(manualEntry)" class="btn-icon text-primary" title="Open client">
+            <button @click="navigateToClient(manualEntry)" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-primary" title="Open client">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </button>
-            <button v-if="!isPreferred(manualEntry)" @click="setPreferred(manualEntry)" class="btn-icon text-warning" title="Set preferred">
+            <button v-if="!isPreferred(manualEntry)" @click="setPreferred(manualEntry)" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-warning" title="Set preferred">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
             </button>
-            <span v-else class="btn-icon text-amber-500">
+            <span v-else class="w-8 h-8 flex items-center justify-center rounded-full text-amber-500">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
             </span>
-            <button @click="removeManualEntry" class="btn-icon text-red-400 hover:text-red-600" title="Remove">
+            <button @click="removeManualEntry" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-red-400 hover:text-red-600" title="Remove">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
@@ -620,38 +620,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.broker-row {
-  padding: 0.5rem 0.75rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  border: 1px solid #f3f4f6;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-.broker-row:hover {
-  border-color: rgba(33, 150, 243, 0.2);
-}
-.broker-row-preferred {
-  border: 2px solid #FFD700 !important;
-  box-shadow: 0 0 0 1px #FFD700;
-}
-.btn-icon {
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-  min-width: 32px;
-  min-height: 32px;
-}
-.btn-icon:hover {
-  background-color: #f3f4f6;
-}
-</style>

@@ -13,5 +13,20 @@
     },
     "tailwindCSS.includeLanguages": {
         "vue": "html"
-    }
+    },
+    "gitingest.ignorePatterns": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/__pycache__/**",
+        "dist/**",
+        "android/**",
+        "ios/**",
+        "untracked/**",
+        ".venv/*",
+        "tests/**",
+        ".capgo*",
+        "**ipa",
+        "python/**",
+        "scripts/**"
+    ]
 }
