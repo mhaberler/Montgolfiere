@@ -15,6 +15,7 @@ interface SensorDefinition {
   signed: boolean;
   size: number;
   factor?: number;
+  decimals?: number;
   unit?: string;
 }
 
@@ -141,6 +142,10 @@ export function decodeBTHome(serviceData: DataView): BTHomeDecodedData | null {
 
       if (def.factor) {
         value *= def.factor;
+      }
+      {
+        const decimals = def.decimals ?? (def.factor ? Math.ceil(-Math.log10(def.factor)) : 0);
+        value = Number(value.toFixed(decimals));
       }
 
       let key = def.label;
@@ -500,11 +505,14 @@ const multilevelSensorsArray = [
     unit: "rpm",
   },
   {
+    // decimals: override auto-derived rounding (default: ceil(-log10(factor))).
+    // e.g. factor 0.01 auto-rounds to 2 decimals; set decimals: 1 to show 1.
     id: 0x44,
     label: "speed",
     signed: false,
     size: 2,
     factor: 0.01,
+    decimals: 1,
     unit: "m/s",
   },
   {
