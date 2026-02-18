@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { Barometer } from '@mhaberler/capacitor-barometer'
 import type { PluginListenerHandle } from '@capacitor/core'
 import { RateStats } from '../stats/RateStats'
-import { processPressureSample } from '@/utils/state'
+import { processPressureSample } from '@/process/pressure'
 
 interface BarometerAvailable {
   available: boolean

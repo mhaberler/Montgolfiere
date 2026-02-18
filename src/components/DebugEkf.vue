@@ -44,7 +44,7 @@ import {
     currentVariance,
     pressure,
     rawAltitudeISA
-} from '@/utils/state';
+} from '@/process/pressure'
 
 import {
     bleScanTimeouts,

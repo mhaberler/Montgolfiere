@@ -260,9 +260,8 @@ const vaccMajorTickTextOffset = ref(15)
 import UnitsTable from '@/components/units/UnitsTable.vue';
 
 // State imports
+import { location, elevation } from '@/sensors/location'
 import {
-    location,
-    elevation,
     ekfAltitudeISA,
     ekfAltitudeQNH,
     ekfVelocity,
@@ -272,7 +271,7 @@ import {
     ekfZeroSpeedValid,
     vspeedCI95,
     vaccelCI95
-} from '../utils/state';
+} from '@/process/pressure'
 
 // Persistent state imports
 import { transitionAltitude } from '../composables/useAppState';

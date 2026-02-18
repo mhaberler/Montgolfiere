@@ -95,14 +95,14 @@ import {
   IonAccordion
 } from '@ionic/vue';
 
-// Import BLE state and functions from centralized module
+// Import BLE state and functions directly from sensor module
 import {
   isScanning,
   devices,
   bleErrorMsg,
   restartBLEScan,
   clearBLEDevices,
-} from '@/utils/state';
+} from '@/sensors/blesensors'
 
 // Import device mapping functionality
 import { useDeviceMapping, unitTypes } from '@/composables/useDeviceMapping';
