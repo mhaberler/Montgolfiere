@@ -6,9 +6,9 @@
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
-            <div class="bg-white shadow-1xl rounded-1xl">
-                <div class=" grid grid-cols-4 grid-rows-5 gap-1 ">
-                    <ValueCard name=" GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
+            <div class="bg-white shadow-xl rounded-xl">
+                <div class="grid grid-cols-4 gap-1">
+                    <ValueCard name="GPS" :value="location?.coords?.altitude" unit="m" :decimals="0" />
 
                     <ValueCard :value="useFlightLevel ? `FL${flightLevel.toString().padStart(3, '0')}` : ekfAltitudeQNH"
                         :name="useFlightLevel ? 'Flightlevel' : 'MSL'" :decimals="useFlightLevel ? 0 : 0"
@@ -18,80 +18,51 @@
                     <ValueCard name="heading" :value="formatHeading(location?.coords?.speed, location?.coords?.heading)"
                         :decimals="0" unit="°" />
 
-                    <div>
-                        <ValueCard :value="ekfVelocity" :name="'vSpeed'" :decimals="1" :unit="'m/s'" />
-                    </div>
-                    <div>
-                        <ValueCard :value="ekfAcceleration" :name="'vAccel'" :decimals="3" :unit="'m/s\u00B2'" />
-                    </div>
+                    <ValueCard :value="ekfVelocity" name="vSpeed" :decimals="1" unit="m/s" />
+                    <ValueCard :value="ekfAcceleration" name="vAccel" :decimals="3" :unit="'m/s\u00B2'" />
 
-                    <div>
-                        <ValueCard :value="heightOverGround" :name="'AGL'" :decimals="0" :unit="'m'" />
-                    </div>
-                    <div>
-                        <ValueCard v-on-long-press="() => {
-                            if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
-                                showPopup({ name: 'elevation', value: elevation, unit: 'm' })
-                            } else {
-                                console.warn('Cannot show popup for elevation: invalid value', elevation)
-                            }
-                        }" :value="elevation" :name="'elevation'" :decimals="0" :unit="'m'"
-                            :frameClass="elevation && (!elevationAtTakeoff.value.value || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? '!bg-red-200' : ''" />
-                    </div>
+                    <ValueCard :value="heightOverGround" name="AGL" :decimals="0" unit="m" />
+                    <ValueCard v-on-long-press="() => {
+                        if (elevation !== null && elevation !== undefined && !isNaN(elevation)) {
+                            showPopup({ name: 'elevation', value: elevation, unit: 'm' })
+                        } else {
+                            console.warn('Cannot show popup for elevation: invalid value', elevation)
+                        }
+                    }" :value="elevation" name="elevation" :decimals="0" unit="m"
+                        :frameClass="elevation && (!elevationAtTakeoff.value.value || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? '!bg-red-200' : ''" />
 
-
-                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50 pl-2">
-                        <LinearScale :value="ekfVelocity" :orientation="'vertical'" :scalePadding="15"
+                    <div class="row-span-3 col-span-1 text-xs w-full h-50">
+                        <LinearScale :value="ekfVelocity" orientation="vertical" :scalePadding="15"
                             :indicatorSize="20" :confidenceBoxCrossDimension="10" :confidenceLower="vspeedCI95.lower"
                             :confidenceUpper="vspeedCI95.upper" :transitionDuration="0.95" :majorTicks="vsiMajorTicks"
                             :minorTicks="vsiMinorTicks" :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
                             :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="22"
-                            :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
+                            :confidenceColor="confidenceColor" :confidenceOpacity="0.8" :scaleLinePercent="30" />
                     </div>
-                    <div class="row-span-3 col-span-1 -translate-x-6 text-xs w-full  h-50">
-                        <LinearScale :value="ekfAcceleration" :orientation="'vertical'" :scalePadding="15"
+                    <div class="row-span-3 col-span-1 text-xs w-full h-50">
+                        <LinearScale :value="ekfAcceleration" orientation="vertical" :scalePadding="15"
                             :indicatorSize="20" :confidenceBoxCrossDimension="10" :transitionDuration="0.95"
                             :majorTicks="vaccMajorTicks" :minorTicks="vaccMinorTicks"
                             :intermediateTicks="vaccIntermediateTicks" :weights="vaccWeights"
                             :majorTickTextOffset="vaccMajorTickTextOffset" :indicatorDistancePercent="22"
                             :confidenceLower="vaccelCI95.lower" :confidenceUpper="vaccelCI95.upper"
-                            :confidenceColor="confidenceColor" :confidenceOpacity="0.8" />
+                            :confidenceColor="confidenceColor" :confidenceOpacity="0.8" :scaleLinePercent="30" />
                     </div>
 
-                    <div>
-                        <ValueCard :value="apexLevelRelative" :name="'ApexRel'" :decimals="0" :unit="'m'"
-                            :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'" />
-                    </div>
-                    <div>
-                        <ValueCard :value="ekfTimeToZeroSpeed" :name="'TTA'" :decimals="0" :unit="'s'"
-                            :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'" />
-                    </div>
+                    <ValueCard :value="apexLevelRelative" name="ApexRel" :decimals="0" unit="m"
+                        :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'" />
+                    <ValueCard :value="ekfTimeToZeroSpeed" name="TTA" :decimals="0" unit="s"
+                        :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'" />
 
-                    <!-- <div>
-                        <ValueCard :value="airportQnhData?.[0]?.qnh ?? '--'" :name="'QNH'" :decimals="0"
-                            :unit="airportQnhData?.[0]?.icao ?? ''" />
-                    </div> -->
+                    <ValueCard :value="BCMT" name="BCMT" unit="UTC" />
+                    <ValueCard :value="ECET" name="ECET" unit="UTC" />
 
-                    <div>
-                        <ValueCard :value="BCMT" :name="'BCMT'" :unit="'UTC'" />
-                    </div>
-                    <div>
-                        <ValueCard :value="ECET" :name="'ECET'" :unit="'UTC'" />
-                    </div>
-
-                    <div>
-                        <ValueCard :value="currentQNH" :name="'QNH'" :decimals="0" :unit="currentQNHsource" />
-                    </div>
-
-                    <div>
-                        <ValueCard :value="currentTimeUTC" :name="'TIME'" :unit="'UTC'" />
-                    </div>
+                    <ValueCard :value="currentQNH" name="QNH" :decimals="0" :unit="currentQNHsource" />
+                    <ValueCard :value="currentTimeUTC" name="TIME" unit="UTC" />
 
                 </div>
-                <div class="overflow-y-auto overflow-x-hidden">
-                    <div class="bg-white p-2">
-                        <UnitsTable />
-                    </div>
+                <div class="overflow-y-auto overflow-x-hidden p-2">
+                    <UnitsTable />
                 </div>
             </div>
 

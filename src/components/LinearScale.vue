@@ -83,6 +83,10 @@ const props = defineProps({
     majorTickTextOffset: { // New prop for configurable text offset
         type: Number,
         default: 15
+    },
+    scaleLinePercent: { // Cross-axis position of scale line as % (0-100)
+        type: Number,
+        default: 50
     }
 });
 
@@ -197,9 +201,9 @@ function updateIndicatorAndConfidence() {
 
     let scaleLinePos;
     if (props.orientation === 'horizontal') {
-        scaleLinePos = svgHeight.value / 2;
+        scaleLinePos = svgHeight.value * (props.scaleLinePercent / 100);
     } else {
-        scaleLinePos = svgWidth.value / 2;
+        scaleLinePos = svgWidth.value * (props.scaleLinePercent / 100);
     }
 
     // Update indicator position
@@ -262,22 +266,20 @@ function drawScale() {
     const confidenceBoxCrossDimension = props.confidenceBoxCrossDimension;
     const transitionDuration = props.transitionDuration;
 
-    // Set SVG dimensions and viewBox based on orientation and current size
-    d3svg.attr("width", svgWidth.value)
-        .attr("height", svgHeight.value)
-        .attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
+    // Set viewBox to match current dimensions (CSS owns actual sizing via w-full/h-full)
+    d3svg.attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
 
     // Create the custom scale based on the total dimension (width or height)
     if (props.orientation === 'horizontal') {
         scale = createCustomScale(svgWidth.value, props.majorTicks, props.weights, props.orientation, props.scalePadding);
-        scaleLinePos = svgHeight.value / 2; // Center vertically in SVG
+        scaleLinePos = svgHeight.value * (props.scaleLinePercent / 100);
 
         // Indicator points DOWN towards the scale line (from above)
         const indicatorVerticalOffset = (indicatorDistancePercent / 100) * svgHeight.value; // Still relative to full SVG height
         indicatorPoints = `0,${scaleLinePos - indicatorVerticalOffset + indicatorSize} -${indicatorSize / 2},${scaleLinePos - indicatorVerticalOffset} ${indicatorSize / 2},${scaleLinePos - indicatorVerticalOffset}`;
     } else { // vertical
         scale = createCustomScale(svgHeight.value, props.majorTicks, props.weights, props.orientation, props.scalePadding);
-        scaleLinePos = svgWidth.value / 2; // Center horizontally in SVG
+        scaleLinePos = svgWidth.value * (props.scaleLinePercent / 100);
 
         // Indicator points LEFT towards the scale line (from right)
         const indicatorHorizontalOffset = (indicatorDistancePercent / 100) * svgWidth.value; // Still relative to full SVG width
@@ -449,7 +451,8 @@ watch(
         () => props.weights,
         () => props.indicatorSize,
         () => props.indicatorDistancePercent,
-        () => props.majorTickTextOffset
+        () => props.majorTickTextOffset,
+        () => props.scaleLinePercent
     ],
     () => {
         drawScale();
@@ -459,41 +462,7 @@ watch(
 </script>
 
 <template>
-    <svg ref="svgRef" class="block w-full h-full bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)]"></svg>
+    <svg ref="svgRef" class="block w-full h-full bg-white rounded-xl shadow-md"></svg>
 </template>
 
-<style>
-/* SVG internal element styling - cannot use Tailwind classes directly on dynamically created SVG elements */
-svg .tick line {
-    stroke: #666;
-    stroke-width: 1px;
-}
 
-svg .tick text {
-    font-size: 14px;
-    fill: #333;
-    text-anchor: middle;
-}
-
-svg .major-tick line {
-    stroke: #333;
-    stroke-width: 2px;
-}
-
-svg .major-tick text {
-    font-weight: 700;
-}
-
-svg .indicator-triangle {
-    border-radius: 4px;
-}
-
-svg .confidence-box {
-    border-radius: 4px;
-}
-
-svg .scale-line {
-    stroke: #333;
-    stroke-width: 2px;
-}
-</style>
