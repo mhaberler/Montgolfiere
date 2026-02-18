@@ -6,7 +6,7 @@ Montgolfiere is a cross-platform mobile app for balloon pilots, built with Vue, 
 
 - **Barometer integration** (barometric altitude, vertical speed, vertical acceleration)
 - **Device sensor support** (GPS, altitude, heading, speed pressure, etc.)
-- **Bloetooth sensor support** (envelope temperature, tank levels + pressure etc)
+- **Bluetooth sensor support** (envelope temperature, tank levels + pressure etc)
 - **Modern UI** with Ionic Vue components
 - **Debug and configuration panels**
 - **Live QNH** from nearby airports
@@ -15,12 +15,9 @@ Montgolfiere is a cross-platform mobile app for balloon pilots, built with Vue, 
 
 ## Screenshots
 
-### Android
-
-![Androd](assets/android-screenshot.png)
-
-### IOS
-![IOS](assets/ios-screenshot.png)
+| Android | iOS |
+|---------|-----|
+| ![Android](assets/android-screenshot.jpeg) | ![iOS](assets/ios-screenshot.png) |
 
 
 ## [Devin DeepWiki](https://deepwiki.com/mhaberler/Montgolfiere)
