@@ -176,7 +176,7 @@
       <!-- Empty state -->
       <div v-if="Object.keys(services).length === 0 && !manualEntry" class="py-8 text-center text-gray-400 text-sm">
         <p>No brokers available. Discover via mDNS or add one manually.</p>
-        <p class="text-xs mt-1 italic">Common ports: 1883 (MQTT), 8883 (MQTTS), 9001 (WS)</p>
+        <p class="text-xs mt-1 italic">Common ports: 8883 (MQTT-WS)</p>
       </div>
     </div>
   </div>
@@ -201,7 +201,7 @@ export default defineComponent({
     const router = useRouter()
     const services = ref<Record<string, ServiceEntry>>({})
     const manualHost = ref<string>('')
-    const manualPort = ref<number>(1883)
+    const manualPort = ref<number>(import.meta.env.VITE_MQTT_BROKER_PORT || 8883)
     const selectedType = ref<string>('_mqtt-ws._tcp.')
     const manualRejectUnauthorized = ref<boolean>(true)
     const isScanning = ref<boolean>(false)
@@ -370,7 +370,7 @@ export default defineComponent({
         preferredBroker.value = { ...entry, tested: false, autoConnect: false }
         testResult.value = null
         manualHost.value = ''
-        manualPort.value = 1883
+        manualPort.value = import.meta.env.VITE_MQTT_BROKER_PORT || 8883
       }
     }
 

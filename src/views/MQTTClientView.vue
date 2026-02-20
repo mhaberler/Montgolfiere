@@ -143,7 +143,7 @@ export default defineComponent({
       name: (route.query.name as string) || 'Unknown Service',
       type: (route.query.type as string) || '_mqtt._tcp.',
       host: (route.query.host as string) || 'localhost',
-      port: parseInt((route.query.port as string) || '1883', 10) || 1883,
+      port: parseInt((route.query.port as string) || '8883', 10) || import.meta.env.VITE_MQTT_BROKER_PORT || 8883,
       discovered: (route.query.discovered as string) === 'true',
       txtRecord: route.query.txtRecord ? JSON.parse(route.query.txtRecord as string) : {}
     }

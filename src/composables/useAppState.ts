@@ -77,7 +77,7 @@ export const preferredBroker = usePersistedRef<ServiceEntry | null>('preferredBr
 // BLE Scanner UI State
 // ============================================================================
 export const manualHost = usePersistedRef<string>('manualHost', '')
-export const manualPort = usePersistedRef<number>('manualPort', 1883)
+export const manualPort = usePersistedRef<number>('manualPort', import.meta.env.VITE_MQTT_BROKER_PORT || 8883)
 export const selectedType = usePersistedRef<string>('selectedType', '_mqtt-ws._tcp')
 
 // ============================================================================

@@ -65,7 +65,7 @@
         </ion-text>
 
         <ion-list v-if="Object.keys(services).length > 0">
-          <ion-item v-for="(service, key) in services" :key="key" button @click="handleServicePress(service)" :class="{ 
+          <ion-item v-for="(service, key) in services" :key="key" button @click="handleServicePress(service)" :class="{
               'discovered': service.discovered,
               'resolved': service.resolved
             }">
@@ -137,7 +137,7 @@ function removeLeadingAndTrailingDots(str: string): string {
 const router = useRouter();
 const services = ref<Record<string, any>>({});
 const manualHost = ref('');
-const manualPort = ref(1883);
+const manualPort = ref(import.meta.env.VITE_MQTT_BROKER_PORT || 8883);
 const selectedType = ref('_mqtt._tcp');
 const isScanning = ref(false);
 const isCapacitorApp = ref(Capacitor.isNativePlatform());
@@ -200,7 +200,7 @@ const addManualService = () => {
       port: parseInt(manualPort.value.toString())
     };
     manualHost.value = '';
-    manualPort.value = 1883;
+    manualPort.value = import.meta.env.VITE_MQTT_BROKER_PORT || 8883;
   }
 };
 
@@ -226,7 +226,7 @@ const handleServicePress = (service: any) => {
 
 const onServiceEvent = (arg: any) => {
   if (!arg) return;
-  
+
   const { action, service } = arg;
   const st = removeLeadingAndTrailingDots(service.type);
   const key = `${service.name}_${service.domain}_${st}`;
