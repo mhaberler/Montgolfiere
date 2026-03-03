@@ -3,7 +3,7 @@
         :class="[frameClass, batteryBorderClass]">
         <!-- Value (Centered and Prominent) -->
         <div class="grow flex items-center justify-center w-full mb-0 mt-0">
-            <p class="tabular-nums text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight">
+            <p class="tabular-nums text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight -ml-[0.3em]">
                 <span class="inline-block w-[0.6em] text-right">{{ signChar }}</span>{{ absValue }}
             </p>
         </div>
