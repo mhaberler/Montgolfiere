@@ -3,7 +3,7 @@
         :class="[frameClass, batteryBorderClass]">
         <!-- Value (Centered and Prominent) -->
         <div class="grow flex items-center justify-center w-full mb-0 mt-0">
-            <p class="text-2xl sm:text-4xl font-extrabold text-gray-800 leading-tight">
+            <p class="tabular-nums text-2xl sm:text-4xl font-extrabold text-gray-800 leading-tight">
                 {{ formattedValue }}
             </p>
         </div>
@@ -109,7 +109,11 @@ const formattedValue = computed(() => {
       return "--";
     }
     if (typeof props.value === 'number' && typeof props.decimals === 'number') {
-        return props.value.toFixed(props.decimals)
+        // return props.value.toFixed(props.decimals)
+
+        const formatted = props.value.toFixed(props.decimals)
+        // Prepend figure space (\u2007) for non-negative values to match minus sign width
+        return props.value < 0 ? formatted : '\u2007' + formatted
     }
     return props.value
 })
