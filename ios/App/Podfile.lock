@@ -22,7 +22,7 @@ PODS:
     - Capacitor
   - CapacitorCommunityBluetoothLe (8.1.0):
     - Capacitor
-  - CapacitorCommunityCameraPreview (7.0.4):
+  - CapacitorCommunityCameraPreview (7.0.5):
     - Capacitor
   - CapacitorCommunityKeepAwake (8.0.0):
     - Capacitor
@@ -34,16 +34,16 @@ PODS:
   - CapacitorGeolocation (8.1.0):
     - Capacitor
     - IONGeolocationLib (= 2.0.0)
-  - CapacitorHaptics (8.0.0):
+  - CapacitorHaptics (8.0.1):
     - Capacitor
   - CapacitorInappbrowser (3.0.2):
     - Capacitor
     - OSInAppBrowserLib (~> 2.3.1)
-  - CapacitorKeyboard (8.0.0):
+  - CapacitorKeyboard (8.0.1):
     - Capacitor
   - CapacitorLocalNotifications (8.0.1):
     - Capacitor
-  - CapacitorMlkitBarcodeScanning (8.0.0):
+  - CapacitorMlkitBarcodeScanning (8.0.1):
     - Capacitor
     - GoogleMLKit/BarcodeScanning (~> 8.0.0)
   - CapacitorNetwork (8.0.1):
@@ -62,21 +62,21 @@ PODS:
     - Capacitor
   - CapacitorToast (8.0.1):
     - Capacitor
-  - CapawesomeCapacitorBackgroundTask (8.0.0):
+  - CapawesomeCapacitorBackgroundTask (8.0.2):
     - Capacitor
-  - CapawesomeCapacitorFilePicker (8.0.1):
+  - CapawesomeCapacitorFilePicker (8.0.2):
     - Capacitor
-  - CapawesomeCapacitorScreenOrientation (8.0.0):
+  - CapawesomeCapacitorScreenOrientation (8.0.1):
     - Capacitor
-  - CapawesomeCapacitorScreenshot (8.0.0):
+  - CapawesomeCapacitorScreenshot (8.0.1):
     - Capacitor
-  - CapgoCapacitorShake (8.0.18):
+  - CapgoCapacitorShake (8.0.22):
     - Capacitor
-  - CapgoCapacitorUploader (8.1.5):
+  - CapgoCapacitorUploader (8.1.11):
     - Capacitor
-  - CapgoNativeAudio (8.2.9):
+  - CapgoNativeAudio (8.3.2):
     - Capacitor
-  - CapgoNativegeocoder (8.0.18):
+  - CapgoNativegeocoder (8.0.22):
     - Capacitor
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
@@ -290,17 +290,17 @@ SPEC CHECKSUMS:
   CapacitorCommunityAppleSignIn: 271cb2860576fd2961508bbfa7a82117d93eadca
   CapacitorCommunityBarcodeScanner: 100051f49caad62966f331cbdf6844a3e51db8e9
   CapacitorCommunityBluetoothLe: e13e717be92b19f5573141b5d7a32a8ea16c4e69
-  CapacitorCommunityCameraPreview: 44c56001c577be07d7c7674c335e1af908112b84
+  CapacitorCommunityCameraPreview: 9fc4839381eb4cb1da64343d601a8f08818fbdba
   CapacitorCommunityKeepAwake: 332bf035bbdf0b1c244fd492b35a8a06c8802111
   CapacitorCordova: e8b76fd95fc1e157775abc484c59cc0de464095d
   CapacitorDevice: ff033fa0c4ec19f5e059a073769a9b2347e69f57
   CapacitorDialog: 854c5dac405081cae697c177ca43bcaa95ae67bf
   CapacitorGeolocation: 7132de914f9d853ec4642dc1d36e4e2018a4e8a8
-  CapacitorHaptics: 2079d9fa04c5a71e18663b4722323c304c58245c
+  CapacitorHaptics: 4df2c625445cef39b67ea635a21802bc92df3b82
   CapacitorInappbrowser: fb46fb96a23af9a62b0c4d0750d3466ccf11f31d
-  CapacitorKeyboard: d7868c079a4d5277a3deca27a10a488fcbbb8b69
+  CapacitorKeyboard: 867eb4b3c901d9bb5c3d0c93b546185d52484e19
   CapacitorLocalNotifications: bc5325611c92ac302732413bc69244575cd4eaaf
-  CapacitorMlkitBarcodeScanning: c990cd038eeede95212af747f0e7fcf9c91e61e7
+  CapacitorMlkitBarcodeScanning: d97b2398adb4a8686fce9b1c0c6f09623f1baae8
   CapacitorNetwork: 8812ce60d11fb63d8f2e4ba51a49b2e59892ebe2
   CapacitorPreferences: cca2021f386efb75947c850334447d9ff22b14f1
   CapacitorScreenReader: 48e053fe6ecb0ecf5596d7e5b7e41951ab5e30b3
@@ -309,14 +309,14 @@ SPEC CHECKSUMS:
   CapacitorStatusBar: 32206abd53b14f339763da26f71286deaa891e16
   CapacitorTextZoom: b3c80b09abef831245bc3434b1c03aa898ad4762
   CapacitorToast: 408036fbd702120d3adde3980b740f3c0fb60c9e
-  CapawesomeCapacitorBackgroundTask: ec4304958c7711bb7fb973757be2e0806d31b6e8
-  CapawesomeCapacitorFilePicker: cbd96b593d2bfdceb353ed161f9462ce4a9d67a9
-  CapawesomeCapacitorScreenOrientation: 0ccf8e1fe6e9a5bb48f200a4f4b5df7a0c82f68a
-  CapawesomeCapacitorScreenshot: 267ba20680879adcf4cdc39cfb4f8187c640a683
-  CapgoCapacitorShake: 8b99dd16b372001121c81cd422dfc439f8a6b721
-  CapgoCapacitorUploader: 9c411903d52d2252754427a0d7024abb5edc34c8
-  CapgoNativeAudio: 8d7074bffdb38aa725f0b44f01b0f9c7f00784e4
-  CapgoNativegeocoder: 5e6e7c8344e26346b6f935085ae615dad84e1c99
+  CapawesomeCapacitorBackgroundTask: ca454a603fbe27d624c928d0c5e7477a920e468d
+  CapawesomeCapacitorFilePicker: eb29fb54c59614fede51e0e0fe25070dda9d024c
+  CapawesomeCapacitorScreenOrientation: 81a4e51518bc6d6d1971ebe4f45892e29115c79e
+  CapawesomeCapacitorScreenshot: 12d23f0773903de4e5b0b3fdebabef1d3813f826
+  CapgoCapacitorShake: d6bcb22115b034a29734abb93b3a13bcaf5d718b
+  CapgoCapacitorUploader: 9ef8885ab0cfe8c594d080e34938dc32eb4cde53
+  CapgoNativeAudio: a86e34ae2acf3a5977ccd56060cf087e658e45f6
+  CapgoNativegeocoder: 98337dd217fbf3943f73bac5ceb8018d1bc46c4c
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: ddd51d7dff36ff28defa69afedd9cdce684fd857
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
