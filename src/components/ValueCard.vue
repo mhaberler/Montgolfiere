@@ -90,6 +90,10 @@ const props = defineProps({
         required: false,
         default: ''
     },
+    forceCentered: {
+        type: Boolean,
+        default: false
+    },
     batteryStatus: {
         type: [Number, null], // Can be a number (0-100) or null if not applicable
         default: null, // Default to null, so the bar is not shown by default
@@ -105,7 +109,7 @@ watch(() => props.value, () => {
 })
 
 const isNumeric = computed(() => {
-    return typeof props.value === 'number' && typeof props.decimals === 'number'
+    return !props.forceCentered && typeof props.value === 'number' && typeof props.decimals === 'number'
 })
 
 const signChar = computed(() => {
