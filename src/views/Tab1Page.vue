@@ -32,8 +32,8 @@
                         :frameClass="elevation && (!elevationAtTakeoff.value.value || ((Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000) > maxElevationAtTakeoffAge)) ? '!bg-red-200' : ''" />
 
                     <div class="row-span-3 col-span-1 text-xs w-full h-50">
-                        <LinearScale :value="ekfVelocity" orientation="vertical" :scalePadding="15"
-                            :indicatorSize="20" :confidenceBoxCrossDimension="10" :confidenceLower="vspeedCI95.lower"
+                        <LinearScale :value="ekfVelocity" orientation="vertical" :scalePadding="15" :indicatorSize="20"
+                            :confidenceBoxCrossDimension="10" :confidenceLower="vspeedCI95.lower"
                             :confidenceUpper="vspeedCI95.upper" :transitionDuration="0.95" :majorTicks="vsiMajorTicks"
                             :minorTicks="vsiMinorTicks" :intermediateTicks="vsiIntermediateTicks" :weights="vsiWeights"
                             :majorTickTextOffset="vsiMajorTickTextOffset" :indicatorDistancePercent="22"
@@ -57,7 +57,8 @@
                     <ValueCard :value="BCMT" name="BCMT" unit="UTC" />
                     <ValueCard :value="ECET" name="ECET" unit="UTC" />
 
-                    <ValueCard :value="currentQNH" name="QNH" :decimals="0" :unit="currentQNHsource" />
+                    <ValueCard :value="currentQNH" name="QNH" :decimals="0" :unit="currentQNHsource"
+                        :forceCentered="true" />
                     <ValueCard :value="currentTimeUTC" name="TIME" unit="UTC" />
 
                 </div>
