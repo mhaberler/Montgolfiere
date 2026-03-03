@@ -3,8 +3,11 @@
         :class="[frameClass, batteryBorderClass]">
         <!-- Value (Centered and Prominent) -->
         <div class="grow flex items-center justify-center w-full mb-0 mt-0">
-            <p class="tabular-nums text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight -ml-[0.3em]">
+            <p v-if="isNumeric" class="tabular-nums text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight -ml-[0.3em]">
                 <span class="inline-block w-[0.6em] text-right">{{ signChar }}</span>{{ absValue }}
+            </p>
+            <p v-else class="text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight">
+                {{ displayValue }}
             </p>
         </div>
 
@@ -101,17 +104,25 @@ watch(() => props.value, () => {
     lastUpdated.value = new Date()
 })
 
+const isNumeric = computed(() => {
+    return typeof props.value === 'number' && typeof props.decimals === 'number'
+})
+
 const signChar = computed(() => {
-    if (typeof props.value === 'number' && typeof props.decimals === 'number') {
+    if (isNumeric.value) {
         return props.value < 0 ? '\u2212' : ''
     }
     return ''
 })
 
 const absValue = computed(() => {
-    if (typeof props.value === 'number' && typeof props.decimals === 'number') {
+    if (isNumeric.value) {
         return Math.abs(props.value).toFixed(props.decimals)
     }
+    return ''
+})
+
+const displayValue = computed(() => {
     if (props == null || !props.value) {
         return '--'
     }
