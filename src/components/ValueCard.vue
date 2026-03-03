@@ -109,11 +109,11 @@ const formattedValue = computed(() => {
       return "--";
     }
     if (typeof props.value === 'number' && typeof props.decimals === 'number') {
-        // return props.value.toFixed(props.decimals)
+        return props.value.toFixed(props.decimals)
 
-        const formatted = props.value.toFixed(props.decimals)
-        // Prepend figure space (\u2007) for non-negative values to match minus sign width
-        return props.value < 0 ? formatted : '\u2007' + formatted
+        // const formatted = props.value.toFixed(props.decimals)
+        // // Prepend figure space (\u2007) for non-negative values to match minus sign width
+        // return props.value < 0 ? formatted : '\u2007' + formatted
     }
     return props.value
 })
