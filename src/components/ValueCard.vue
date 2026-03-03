@@ -4,7 +4,7 @@
         <!-- Value (Centered and Prominent) -->
         <div class="grow flex items-center justify-center w-full mb-0 mt-0">
             <p class="tabular-nums text-2xl sm:text-4xl font-extrabold text-gray-800 leading-tight">
-                {{ formattedValue }}
+                <span class="inline-block w-[0.6em] text-right">{{ signChar }}</span>{{ absValue }}
             </p>
         </div>
 
@@ -101,19 +101,19 @@ watch(() => props.value, () => {
     lastUpdated.value = new Date()
 })
 
-const formattedValue = computed(() => {
-    if (props == null) {
-      return "--";
-    }
-    if (!props.value) {
-      return "--";
-    }
+const signChar = computed(() => {
     if (typeof props.value === 'number' && typeof props.decimals === 'number') {
-        return props.value.toFixed(props.decimals)
+        return props.value < 0 ? '\u2212' : ''
+    }
+    return ''
+})
 
-        // const formatted = props.value.toFixed(props.decimals)
-        // // Prepend figure space (\u2007) for non-negative values to match minus sign width
-        // return props.value < 0 ? formatted : '\u2007' + formatted
+const absValue = computed(() => {
+    if (typeof props.value === 'number' && typeof props.decimals === 'number') {
+        return Math.abs(props.value).toFixed(props.decimals)
+    }
+    if (props == null || !props.value) {
+        return '--'
     }
     return props.value
 })
