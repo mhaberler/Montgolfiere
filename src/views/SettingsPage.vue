@@ -50,6 +50,9 @@
                 <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
                 <select v-model="selectedUrl" class="w-full rounded-md border border-gray-300 p-2"
                   @change="updateDemUrl">
+                  <option value="https://download.mapterhorn.com/planet.pmtiles">
+                    Mapterhorn Global
+                  </option>
                   <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">
                     Europe 30m
                   </option>

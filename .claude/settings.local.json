@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/mapterhorn/mapterhorn/refs/heads/main/website/examples/pmtiles/example.html\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/mhaberler/cesium-martini/refs/heads/main/examples/vite-pmtiles/terrarium.worker.ts\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/mhaberler/cesium-martini/refs/heads/main/examples/vite-pmtiles/main.ts\")",
+      "Bash(npx vue-tsc:*)",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__list_console_messages",
+      "Read(//var/folders/n0/7n4k3ql90hj1m24dhxp_zvg00000gn/T/chrome-devtools-mcp-Wto38U/**)",
+      "Read(//private/var/folders/n0/7n4k3ql90hj1m24dhxp_zvg00000gn/T/chrome-devtools-mcp-Wto38U/**)",
+      "mcp__chrome-devtools__evaluate_script"
+    ]
+  }
+}

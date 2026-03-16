@@ -1,12 +1,15 @@
 import { PMTiles, TileType } from 'pmtiles';
 
+export type ElevationEncoding = 'mapbox' | 'terrarium';
+
 export interface DEMInfo {
   bounds: [number, number, number, number]; // [minLon, minLat, maxLon, maxLat]
   minZoom: number;
   maxZoom: number;
   tileType: TileType;
   metersPerPixel: number;
-  encoding: string;
+  encoding: string; // image format: 'PNG' | 'WebP'
+  elevationEncoding: ElevationEncoding;
   attribution?: string;
   tileSize: number; // Tile size in pixels (e.g., 256, 512)
 }
@@ -30,11 +33,11 @@ export interface BoundingBox {
 }
 
 export class DEMLookup {
-  private pmtiles: PMTiles;
-  private cache: TileCache = {};
-  private maxCacheSize: number = 100;
-  private debug: boolean = false;
-  private demInfo?: DEMInfo;
+  protected pmtiles: PMTiles;
+  protected cache: TileCache = {};
+  protected maxCacheSize: number = 100;
+  protected debug: boolean = false;
+  protected demInfo?: DEMInfo;
   private webpSupported: boolean = false;
 
   constructor(
@@ -71,7 +74,7 @@ export class DEMLookup {
     });
   }
 
-  private async initializeDEMInfo(): Promise<void> {
+  protected async initializeDEMInfo(): Promise<void> {
     try {
       if (this.debug) {
         console.log('PMTiles initialized:', this.pmtiles);
@@ -100,6 +103,9 @@ export class DEMLookup {
         tileSize = await this.detectTileSize(header);
       }
 
+      // Auto-detect elevation encoding from metadata
+      const elevationEncoding = this.detectElevationEncoding(metadata);
+
       this.demInfo = {
         bounds: [header.minLon, header.minLat, header.maxLon, header.maxLat],
         minZoom: header.minZoom,
@@ -108,12 +114,27 @@ export class DEMLookup {
         tileSize: tileSize,
         metersPerPixel: this.calculateMetersPerPixel(header.maxZoom, tileSize),
         encoding: header.tileType === TileType.Png ? 'PNG' : 'WebP',
+        elevationEncoding,
         attribution: (metadata as any)?.attribution,
       };
     } catch (error) {
       console.error('Failed to initialize DEM info:', error);
       // throw error;
     }
+  }
+
+  protected detectElevationEncoding(metadata: any): ElevationEncoding {
+    const enc = metadata?.encoding;
+    if (typeof enc === 'string' && enc.toLowerCase() === 'terrarium') {
+      if (this.debug) {
+        console.log('Detected terrarium elevation encoding from metadata');
+      }
+      return 'terrarium';
+    }
+    if (this.debug) {
+      console.log('Using default mapbox elevation encoding');
+    }
+    return 'mapbox';
   }
 
   private async detectTileSize(header: any): Promise<number> {
@@ -146,7 +167,7 @@ export class DEMLookup {
     return 256;
   }
 
-  private calculateMetersPerPixel(zoom: number, tileSize: number = 256): number {
+  protected calculateMetersPerPixel(zoom: number, tileSize: number = 256): number {
     // Earth's circumference at equator in meters / tiles at zoom level / pixels per tile
     const earthCircumference = 40075016.686;
     const tilesAtZoom = Math.pow(2, zoom);
@@ -209,7 +230,7 @@ export class DEMLookup {
     };
   }
 
-  private async fetchTile(x: number, y: number, z: number): Promise<ArrayBuffer | null> {
+  protected async fetchTile(x: number, y: number, z: number): Promise<ArrayBuffer | null> {
     try {
       const tileResult = await this.pmtiles.getZxy(z, x, y);
       return tileResult?.data || null;
@@ -257,8 +278,10 @@ export class DEMLookup {
       const imageData = ctx.getImageData(clampedX, clampedY, 1, 1);
       const [r, g, b] = imageData.data;
 
-      // Mapbox RGB encoding: elevation = -10000 + ((R * 256 * 256 + G * 256 + B) * 0.1)
-      const elevation = -10000 + (r * 256 * 256 + g * 256 + b) * 0.1;
+      // Decode elevation based on encoding
+      const elevation = this.demInfo?.elevationEncoding === 'terrarium'
+        ? r * 256 + g + b / 256 - 32768  // Terrarium encoding
+        : -10000 + (r * 256 * 256 + g * 256 + b) * 0.1;  // Mapbox RGB encoding
 
       if (this.debug) {
         console.log(`RGB values: (${r}, ${g}, ${b}) -> elevation: ${elevation.toFixed(1)}m`);
@@ -294,7 +317,7 @@ export class DEMLookup {
     return { x: Math.floor(x), y: Math.floor(y) };
   }
 
-  private addToCache(key: string, data: ArrayBuffer): void {
+  protected addToCache(key: string, data: ArrayBuffer): void {
     // Simple LRU cache implementation
     if (Object.keys(this.cache).length >= this.maxCacheSize) {
       const firstKey = Object.keys(this.cache)[0];

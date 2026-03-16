@@ -2,6 +2,7 @@ import { ref, watch } from 'vue'
 import { Geolocation, Position } from '@capacitor/geolocation'
 import { Capacitor } from '@capacitor/core'
 import { DEMLookup, DEMInfo } from '@/dem/DEMLookup'
+import { MapterhornDEMLookup } from '@/dem/MapterhornDEMLookup'
 import { selectedDemUrl } from '@/composables/useDemUrl'
 
 const options: PositionOptions = {
@@ -35,10 +36,21 @@ watch(
   async (newdemUrl, olddemUrl) => {
     // instantiate new DEMlookupp here
     try {
-      demLookup.value = new DEMLookup(selectedDemUrl.value, {
-        maxCacheSize: 10,
-        debug: false,
-      })
+      const url = selectedDemUrl.value
+      const isMapterhorn = url.includes('download.mapterhorn.com')
+      if (isMapterhorn) {
+        // Extract base URL (strip /planet.pmtiles if present)
+        const baseUrl = url.replace(/\/planet\.pmtiles$/, '')
+        demLookup.value = new MapterhornDEMLookup(baseUrl, {
+          maxCacheSize: 10,
+          debug: false,
+        })
+      } else {
+        demLookup.value = new DEMLookup(url, {
+          maxCacheSize: 10,
+          debug: false,
+        })
+      }
       demInfo.value = await demLookup.value.getDEMInfo()
       console.log(`DEM url is ${newdemUrl}, old = ${olddemUrl}`)
       console.log(`demInfo: ${JSON.stringify(demInfo.value)}`)
