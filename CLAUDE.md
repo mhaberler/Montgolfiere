@@ -367,6 +367,15 @@ const resetWatchdog = () => {
 
 ## Build & Deployment
 
+**Code Quality & Validation:**
+
+```bash
+bun run type-check       # TypeScript validation (vue-tsc)
+bun run lint             # ESLint with auto-fix
+bun run prettier         # Format all files with Prettier
+bun run prettier-check   # Check formatting (no changes)
+```
+
 **Development:**
 
 ```bash
@@ -386,7 +395,7 @@ bun run build-dev        # Web build
 **Capacitor Sync:**
 
 ```bash
-npx cap sync             # Sync web assets to native platforms
+bun run sync             # Sync web assets to native platforms
 ```
 
 ## Common Issues & Solutions
@@ -453,8 +462,9 @@ For questions or issues, refer to the project repository documentation or contac
 
 ---
 
-**Last Updated:** February 1, 2026
-**Version:** 1.0.0
+**Last Updated:** April 6, 2026
+**Version:** 1.1.0
+**Latest Changes:** Completed ESLint 9 flat config migration; added comprehensive code quality scripts (type-check, lint, prettier); resolved 275 linting errors to 0.
 
 # CLAUDE.md
 
