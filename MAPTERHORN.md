@@ -10,10 +10,10 @@ This integration adds Mapterhorn as a DEM source for elevation lookups in the ap
 
 Mapterhorn splits tiles across multiple PMTiles files:
 
-| Zoom Level | File | Coverage |
-|---|---|---|
-| z <= 12 | `planet.pmtiles` | Global |
-| z > 12 | `6-{rx}-{ry}.pmtiles` | Regional (where `rx = x >> (z-6)`, `ry = y >> (z-6)`) |
+| Zoom Level | File                  | Coverage                                              |
+| ---------- | --------------------- | ----------------------------------------------------- |
+| z <= 12    | `planet.pmtiles`      | Global                                                |
+| z > 12     | `6-{rx}-{ry}.pmtiles` | Regional (where `rx = x >> (z-6)`, `ry = y >> (z-6)`) |
 
 Base URL: `https://download.mapterhorn.com`
 
@@ -47,6 +47,7 @@ The encoding is auto-detected from PMTiles metadata. `MapterhornDEMLookup` force
 - **`examples/leaflet-elevation/index.html`** — Standalone HTML file (no build step). Opens in any browser or static file server.
 
 Features:
+
 - Leaflet map with OSM base tiles
 - Mousemove: displays lat, lon, elevation, zoom level, resolution (m/px), and source PMTiles file
 - Click: popup with elevation and source
@@ -54,6 +55,7 @@ Features:
 - Throttled lookups (100ms) and LRU tile cache (100 tiles)
 
 Usage:
+
 ```bash
 cd examples/leaflet-elevation
 python3 -m http.server 8765
@@ -62,13 +64,13 @@ python3 -m http.server 8765
 
 ## Verified Elevation Accuracy
 
-| Location | Returned | Expected | Zoom | Source |
-|---|---|---|---|---|
-| Zurich | 408.4m | ~408m | 12 | planet.pmtiles |
-| Innsbruck | 585.0m | ~574m | 15 | 6-34-22.pmtiles |
-| Jungfrau | 4101.7m | ~4158m | 12 | planet.pmtiles |
-| Basel (Rhine) | 253.1m | ~245m | 12 | planet.pmtiles |
-| Switzerland | 1851.5m | — | 15 | 6-33-22.pmtiles |
+| Location      | Returned | Expected | Zoom | Source          |
+| ------------- | -------- | -------- | ---- | --------------- |
+| Zurich        | 408.4m   | ~408m    | 12   | planet.pmtiles  |
+| Innsbruck     | 585.0m   | ~574m    | 15   | 6-34-22.pmtiles |
+| Jungfrau      | 4101.7m  | ~4158m   | 12   | planet.pmtiles  |
+| Basel (Rhine) | 253.1m   | ~245m    | 12   | planet.pmtiles  |
+| Switzerland   | 1851.5m  | —        | 15   | 6-33-22.pmtiles |
 
 ## References
 

@@ -11,17 +11,13 @@ Montgolfiere is a cross-platform mobile app for balloon pilots, built with Vue, 
 - **Debug and configuration panels**
 - **Live QNH** from nearby airports
 
-
-
 ## Screenshots
 
-| Android | iOS |
-|---------|-----|
+| Android                                    | iOS                               |
+| ------------------------------------------ | --------------------------------- |
 | ![Android](assets/android-screenshot.jpeg) | ![iOS](assets/ios-screenshot.png) |
 
-
 ## [Devin DeepWiki](https://deepwiki.com/mhaberler/Montgolfiere)
-
 
 ---
 

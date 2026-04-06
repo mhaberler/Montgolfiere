@@ -17,9 +17,9 @@ const config: CapacitorConfig = {
 
   server: {
     allowNavigation: [
-      "ws://10.*.*.*:*",    // Allow your local subnets
-      "ws://172.16.0.*:*", 
-      "ws://192.168.*.*:*"  // Common local networks
+      "ws://10.*.*.*:*", // Allow your local subnets
+      "ws://172.16.0.*:*",
+      "ws://192.168.*.*:*", // Common local networks
     ],
     cleartext: true,
   },
@@ -44,7 +44,7 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: true,
   },
   ios: {
-    minVersion: '16.0'
+    minVersion: "16.0",
   },
   plugins: {
     extConfig: {},

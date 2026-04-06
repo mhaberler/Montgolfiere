@@ -7,7 +7,7 @@
  * https://github.com/AlCalzone/ioBroker.ble.git
  * MIT license
  */
-import {logDataViewAsHex} from "@/utils/ble-utils";
+import { logDataViewAsHex } from "@/utils/ble-utils";
 
 interface SensorDefinition {
   id: number;
@@ -144,7 +144,8 @@ export function decodeBTHome(serviceData: DataView): BTHomeDecodedData | null {
         value *= def.factor;
       }
       {
-        const decimals = def.decimals ?? (def.factor ? Math.ceil(-Math.log10(def.factor)) : 0);
+        const decimals =
+          def.decimals ?? (def.factor ? Math.ceil(-Math.log10(def.factor)) : 0);
         value = Number(value.toFixed(decimals));
       }
 
@@ -198,7 +199,7 @@ export function decodeBTHome(serviceData: DataView): BTHomeDecodedData | null {
       const textBytes = new Uint8Array(
         serviceData.buffer,
         serviceData.byteOffset + offset + 2,
-        length
+        length,
       );
       const value = new TextDecoder("utf-8").decode(textBytes);
       decodedValue.text = value;
@@ -209,25 +210,28 @@ export function decodeBTHome(serviceData: DataView): BTHomeDecodedData | null {
       const rawBytes = new Uint8Array(
         serviceData.buffer,
         serviceData.byteOffset + offset + 2,
-        length
+        length,
       );
       const value = Array.from(rawBytes)
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
       decodedValue.raw = value;
       offset += 2 + length;
-    } else if (objectId === 0xF0) { // device type id, 	uint16 (2 bytes)
+    } else if (objectId === 0xf0) {
+      // device type id, 	uint16 (2 bytes)
       const devType = serviceData.getUint16(offset + 1, true); // little endian);
       decodedValue[`devicetype`] = devType;
       offset += 3;
-    } else if (objectId === 0xF1) { // firmware version, 	uint32 (4 bytes)
+    } else if (objectId === 0xf1) {
+      // firmware version, 	uint32 (4 bytes)
       const major = serviceData.getUint8(offset + 4);
       const minor = serviceData.getUint8(offset + 3);
       const patch = serviceData.getUint8(offset + 2);
       const rel = serviceData.getUint8(offset + 1);
       decodedValue[`fwversion4`] = `${major}.${minor}.${patch}.${rel}`;
       offset += 5;
-    } else if (objectId === 0xF2) { // firmware version, uint24 (3 bytes)
+    } else if (objectId === 0xf2) {
+      // firmware version, uint24 (3 bytes)
       const patch = serviceData.getUint8(offset + 1);
       const minor = serviceData.getUint8(offset + 2);
       const major = serviceData.getUint8(offset + 3);
@@ -633,7 +637,7 @@ const multilevelSensorsArray = [
   },
 ];
 const multilevelSensorDefinitions = new Map<number, SensorDefinition>(
-  multilevelSensorsArray.map((def) => [def.id, def])
+  multilevelSensorsArray.map((def) => [def.id, def]),
 );
 const binarySensorsArray = [
   { id: 0x15, label: "battery", states: { false: "Normal", true: "Low" } },
@@ -710,5 +714,5 @@ const binarySensorsArray = [
   { id: 0x2d, label: "window", states: { false: "Closed", true: "Open" } },
 ];
 const binarySensorDefinitions = new Map<number, BinarySensorDefinition>(
-  binarySensorsArray.map((def) => [def.id, def])
+  binarySensorsArray.map((def) => [def.id, def]),
 );

@@ -127,11 +127,12 @@ const isAllowedBeacon = (result: ScanResult): boolean => {
 // Initialize BLE client
 export const initializeBLE = async (): Promise<void> => {
   try {
-    await BleClient.initialize({ androidNeverForLocation : true});
+    await BleClient.initialize({ androidNeverForLocation: true });
     console.log("BLE initialized successfully");
   } catch (e) {
     bleInitErrors.value++;
-    bleErrorMsg.value = "Failed to initialize Bluetooth: " + (e as Error).message;
+    bleErrorMsg.value =
+      "Failed to initialize Bluetooth: " + (e as Error).message;
     console.error("BLE initialization error:", e);
     throw e;
   }
@@ -148,7 +149,7 @@ export const setScanMode = (mode: ScanMode): void => {
 
 // Start BLE scanning
 export const startBLEScan = async (): Promise<void> => {
-    bleScanStarts.value++;
+  bleScanStarts.value++;
   try {
     // devices.value = [];
     bleErrorMsg.value = null;
@@ -187,7 +188,7 @@ export const startBLEScan = async (): Promise<void> => {
           updateUnitData(
             deviceId,
             extendedDevice.decoded.value,
-            extendedDevice.decoded.type || "Unknown"
+            extendedDevice.decoded.type || "Unknown",
           );
         } else {
           // Update existing device's last seen timestamp, scan result, and decoded data
@@ -199,14 +200,14 @@ export const startBLEScan = async (): Promise<void> => {
           updateUnitData(
             deviceId,
             exists.decoded.value,
-            exists.decoded.type || "Unknown"
+            exists.decoded.type || "Unknown",
           );
         }
         bleDeviceUpdates.value++;
 
         // Reset the watchdog timer on each valid scan result
         resetWatchdog();
-      }
+      },
     );
 
     // Start watchdog timer
@@ -369,7 +370,7 @@ const decodeSensor = (result: ScanResult): Record<string, any> => {
   }
 
   for (const [manufacturerIdStr, dataView] of Object.entries(
-    result.manufacturerData
+    result.manufacturerData,
   )) {
     const manufacturerId = parseInt(manufacturerIdStr, 10);
     const manufacturerInfo =

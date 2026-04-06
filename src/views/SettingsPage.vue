@@ -17,19 +17,30 @@
                 <ion-label>Transition alt (ft)</ion-label>
               </div>
               <div>
-                <ion-input type="number" min="0" max="12000" step="1000"
-                  v-model.number="transitionAltitude"></ion-input>
+                <ion-input
+                  type="number"
+                  min="0"
+                  max="12000"
+                  step="1000"
+                  v-model.number="transitionAltitude"
+                ></ion-input>
               </div>
               <div>
                 <ion-label>Variance samples</ion-label>
               </div>
               <div>
-                <ion-input type="number" min="5" max="100" v-model.number="historySamples" @ionBlur="
-                  () => {
-                    if (historySamples < 5) historySamples = 5
-                    if (historySamples > 500) historySamples = 500
-                  }
-                "></ion-input>
+                <ion-input
+                  type="number"
+                  min="5"
+                  max="100"
+                  v-model.number="historySamples"
+                  @ionBlur="
+                    () => {
+                      if (historySamples < 5) historySamples = 5;
+                      if (historySamples > 500) historySamples = 500;
+                    }
+                  "
+                ></ion-input>
               </div>
 
               <div v-if="isAndroid">
@@ -47,57 +58,96 @@
               </div>
 
               <div class="mt-4 space-y-2 p-4">
-                <label for="pmtiles-url" class="block text-sm font-medium">Digital Elevation Model:</label>
-                <select v-model="selectedUrl" class="w-full rounded-md border border-gray-300 p-2"
-                  @change="updateDemUrl">
-                  <option value="https://download.mapterhorn.com/planet.pmtiles">
+                <label for="pmtiles-url" class="block text-sm font-medium"
+                  >Digital Elevation Model:</label
+                >
+                <select
+                  v-model="selectedUrl"
+                  class="w-full rounded-md border border-gray-300 p-2"
+                  @change="updateDemUrl"
+                >
+                  <option
+                    value="https://download.mapterhorn.com/planet.pmtiles"
+                  >
                     Mapterhorn Global
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles"
+                  >
                     Europe 30m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Austria_10m_v2_by_Sonny.pmtiles"
+                  >
                     Austria 10m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Slovenia_20m_v1_by_Sonny.pmtiles"
+                  >
                     Slovenia 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Germany_20m_v3b_by_Sonny.pmtiles"
+                  >
                     Germany 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Italy_20m_v2b_by_Sonny.pmtiles"
+                  >
                     Italy 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Switzerland_10m_v2_by_Sonny.pmtiles"
+                  >
                     Switzerland 10m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Sweden_20m_v2_by_Sonny.pmtiles"
+                  >
                     Sweden 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Croatia_20m_v1_by_Sonny.pmtiles"
+                  >
                     Croatia 10m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Hungary_20m_v1_by_Sonny.pmtiles"
+                  >
                     Hungary 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Slovakia_20m_v2_by_Sonny.pmtiles"
+                  >
                     Slovakia 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Czechia_20m_v2_by_Sonny.pmtiles"
+                  >
                     Czechia 20m
                   </option>
-                  <option value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles">
+                  <option
+                    value="https://static.mah.priv.at/cors/dem/DTM_Poland_20m_v1_by_Sonny.pmtiles"
+                  >
                     Poland 20m
                   </option>
                   <option value="custom">Custom URL...</option>
                 </select>
-                <input v-if="selectedUrl === 'custom'" v-model="customUrl"
-                  class="w-full rounded-md border border-gray-300 p-2" placeholder="Enter custom PMTiles URL"
-                  @input="updateDemUrl" />
+                <input
+                  v-if="selectedUrl === 'custom'"
+                  v-model="customUrl"
+                  class="w-full rounded-md border border-gray-300 p-2"
+                  placeholder="Enter custom PMTiles URL"
+                  @input="updateDemUrl"
+                />
               </div>
 
               <div class="mt-4 p-4">
-                <ion-button expand="block" color="warning" @click="clearAllPreferences">
+                <ion-button
+                  expand="block"
+                  color="warning"
+                  @click="clearAllPreferences"
+                >
                   Reset preferences to defaults
                 </ion-button>
               </div>
@@ -118,32 +168,56 @@
               </div>
 
               <div>
-                <ion-label :class="{ 'opacity-50': autoQNHflag }">manual QNH (hPa)</ion-label>
+                <ion-label :class="{ 'opacity-50': autoQNHflag }"
+                  >manual QNH (hPa)</ion-label
+                >
               </div>
               <div>
-                <ion-input type="number" min="800" max="1100" step="1" v-model.number="manualQNHvalue"
-                  :disabled="autoQNHflag" :class="{ 'opacity-50': autoQNHflag }"></ion-input>
+                <ion-input
+                  type="number"
+                  min="800"
+                  max="1100"
+                  step="1"
+                  v-model.number="manualQNHvalue"
+                  :disabled="autoQNHflag"
+                  :class="{ 'opacity-50': autoQNHflag }"
+                ></ion-input>
               </div>
             </div>
 
             <ion-card>
               <ion-card-content>
                 <div v-if="airportQnhData.length > 0" class="space-y-2">
-                  <div v-for="airport in airportQnhData" :key="airport.icao" class="flex items-center justify-between">
+                  <div
+                    v-for="airport in airportQnhData"
+                    :key="airport.icao"
+                    class="flex items-center justify-between"
+                  >
                     <div>
                       <span class="font-semibold">{{ airport.site }}</span>
-                      <span class="ml-2 text-xs text-gray-500">({{ airport.icao }})</span>
-                      <span class="ml-2 text-xs text-gray-500">{{ airport.distance }} km</span>
+                      <span class="ml-2 text-xs text-gray-500"
+                        >({{ airport.icao }})</span
+                      >
+                      <span class="ml-2 text-xs text-gray-500"
+                        >{{ airport.distance }} km</span
+                      >
                     </div>
                     <div>
                       <span class="font-mono">QNH: {{ airport.qnh }}</span>
                     </div>
                   </div>
                 </div>
-                <ion-button class="mt-4" expand="block" @click="handleUpdateQnh" :disabled="loadingQnh">
-                  {{ loadingQnh ? 'Updating...' : 'Update QNH from Location' }}
+                <ion-button
+                  class="mt-4"
+                  expand="block"
+                  @click="handleUpdateQnh"
+                  :disabled="loadingQnh"
+                >
+                  {{ loadingQnh ? "Updating..." : "Update QNH from Location" }}
                 </ion-button>
-                <div v-if="qnhError" class="mt-2 text-red-500">{{ qnhError }}</div>
+                <div v-if="qnhError" class="mt-2 text-red-500">
+                  {{ qnhError }}
+                </div>
               </ion-card-content>
             </ion-card>
           </div>
@@ -183,8 +257,11 @@
 
                 <div class="font-medium">Git SHA:</div>
                 <div class="font-mono text-xs">
-                  <a :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`" target="_blank"
-                    class="text-blue-600 underline hover:text-blue-800">
+                  <a
+                    :href="`https://github.com/mhaberler/Montgolfiere/commit/${gitSha}`"
+                    target="_blank"
+                    class="text-blue-600 underline hover:text-blue-800"
+                  >
                     {{ gitSha }}
                   </a>
                 </div>
@@ -224,7 +301,9 @@
               <ion-text>{{ mqttStatusMsg }}</ion-text>
             </div>
             <div class="config-item">
-              <ion-button expand="full" @click="checkMqttConnection"> Check Connection </ion-button>
+              <ion-button expand="full" @click="checkMqttConnection">
+                Check Connection
+              </ion-button>
             </div>
           </div>
         </ion-card-content>
@@ -234,89 +313,116 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, ref, onMounted } from 'vue'
+import { watch, computed, ref, onMounted } from "vue";
 import {
-  IonPage, IonContent, IonLabel, IonToggle, IonInput,
-  IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-  IonButton, IonSelect, IonSelectOption,
-  IonAccordionGroup, IonAccordion, IonItem, IonText,
-  IonHeader, IonTitle, IonToolbar, IonCheckbox,
-} from '@ionic/vue'
-import { Preferences } from '@capacitor/preferences'
-import { Capacitor } from '@capacitor/core'
-import { Browser } from '@capacitor/browser'
+  IonPage,
+  IonContent,
+  IonLabel,
+  IonToggle,
+  IonInput,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonButton,
+  IonSelect,
+  IonSelectOption,
+  IonAccordionGroup,
+  IonAccordion,
+  IonItem,
+  IonText,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonCheckbox,
+} from "@ionic/vue";
+import { Preferences } from "@capacitor/preferences";
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
-import DebugEkf from '@/components/DebugEkf.vue'
-import ScannerView from '@/components/ScannerView.vue'
-import { useAppLifecycle } from '@/composables/useAppLifecycle'
-import { airportQnhData, updateQnhFromLocation } from '@/process/qnh'
-import { mqttBrokerUrl, mqttUser, mqttPassword, mqttStatusMsg } from '@/utils/mqtt'
-import { initializeMqtt } from '@/utils/mqttService'
-import { decimateEKFSamples, transitionAltitude, historySamples, showDebugInfo, manualQNHvalue, autoQNHflag } from '@/composables/useAppState'
-import { selectedDemUrl } from '@/composables/useDemUrl'
+import DebugEkf from "@/components/DebugEkf.vue";
+import ScannerView from "@/components/ScannerView.vue";
+import { useAppLifecycle } from "@/composables/useAppLifecycle";
+import { airportQnhData, updateQnhFromLocation } from "@/process/qnh";
+import {
+  mqttBrokerUrl,
+  mqttUser,
+  mqttPassword,
+  mqttStatusMsg,
+} from "@/utils/mqtt";
+import { initializeMqtt } from "@/utils/mqttService";
+import {
+  decimateEKFSamples,
+  transitionAltitude,
+  historySamples,
+  showDebugInfo,
+  manualQNHvalue,
+  autoQNHflag,
+} from "@/composables/useAppState";
+import { selectedDemUrl } from "@/composables/useDemUrl";
 
 // Track which accordion is open
-const openAccordion = ref('')
+const openAccordion = ref("");
 watch(openAccordion, (val) => {
-  showDebugInfo.value = val === 'debug'
-})
+  showDebugInfo.value = val === "debug";
+});
 
-const isAndroid = computed(() => Capacitor.getPlatform() === 'android')
+const isAndroid = computed(() => Capacitor.getPlatform() === "android");
 
 // Build information constants
-const gitSha = __GIT_COMMIT_HASH__ || 'N/A'
-const gitBranch = __GIT_BRANCH_NAME__ || 'N/A'
-const gitTag = __GIT_TAG__ || ''
-const buildDate = __VITE_BUILD_DATE__ || 'N/A'
-const appVersion = __APP_VERSION__ || 'N/A'
+const gitSha = __GIT_COMMIT_HASH__ || "N/A";
+const gitBranch = __GIT_BRANCH_NAME__ || "N/A";
+const gitTag = __GIT_TAG__ || "";
+const buildDate = __VITE_BUILD_DATE__ || "N/A";
+const appVersion = __APP_VERSION__ || "N/A";
 
 const clearAllPreferences = async () => {
-  await Preferences.clear()
-  console.log('All preferences cleared.')
-}
+  await Preferences.clear();
+  console.log("All preferences cleared.");
+};
 
 interface MqttInitOptions {
-  brokerUrl: string
-  topics: string[]
-  onMessageCallback: (topic: string, message: string | Buffer) => void
-  onStatusChange: (status: string) => void
+  brokerUrl: string;
+  topics: string[];
+  onMessageCallback: (topic: string, message: string | Buffer) => void;
+  onStatusChange: (status: string) => void;
 }
 
 const checkMqttConnection = async (): Promise<void> => {
-  console.log(`------------fooo`)
+  console.log(`------------fooo`);
   await initializeMqtt({
-    brokerUrl: 'wss://test.mosquitto.org:8081/mqtt',
+    brokerUrl: "wss://test.mosquitto.org:8081/mqtt",
     // mqttBrokerUrl.value,
-    topics: ['location/updates', 'barometer/readings', 'ble/advertisements'],
+    topics: ["location/updates", "barometer/readings", "ble/advertisements"],
     onMessageCallback: (topic: string, message: string | Buffer): void => {
-      const data: unknown = JSON.parse(message.toString())
+      const data: unknown = JSON.parse(message.toString());
       // Process location, barometer, or BLE data here
-      console.log(`Processed data from ${topic}:`, data)
+      console.log(`Processed data from ${topic}:`, data);
     },
     onStatusChange: (status: string): void => {
-      console.log(`MQTT status updated: ${status}`)
+      console.log(`MQTT status updated: ${status}`);
       // Update UI or app state based on status, e.g., show connection indicator
     },
-  } as MqttInitOptions)
-}
+  } as MqttInitOptions);
+};
 
 // const toggleDebugInfo = () => {
 //   showDebugInfo.value = !showDebugInfo.value;
 // };
 
 // PMTiles URL management
-const selectedUrl = selectedDemUrl
-const customUrl = ref('')
+const selectedUrl = selectedDemUrl;
+const customUrl = ref("");
 
 const updateDemUrl = () => {
-  if (selectedUrl.value === 'custom') {
+  if (selectedUrl.value === "custom") {
     if (customUrl.value.trim()) {
-      selectedUrl.value = customUrl.value.trim()
+      selectedUrl.value = customUrl.value.trim();
     }
   }
   // selectedUrl.value is automatically updated when dropdown changes
   // The watcher in location.ts will handle the DEM loading
-}
+};
 
 // // Get sensor source options based on platform
 // const sensorSourceOptions = computed(() => {
@@ -335,45 +441,45 @@ const updateDemUrl = () => {
 // });
 
 // QNH update state
-const loadingQnh = ref(false)
-const qnhError = ref('')
+const loadingQnh = ref(false);
+const qnhError = ref("");
 
 const handleUpdateQnh = async () => {
-  loadingQnh.value = true
-  qnhError.value = ''
+  loadingQnh.value = true;
+  qnhError.value = "";
   try {
-    await updateQnhFromLocation()
+    await updateQnhFromLocation();
   } catch (err) {
-    let msg = 'Failed to update QNH.'
-    if (err && typeof err === 'object') {
-      if ('message' in err && typeof (err as any).message === 'string') {
-        msg = (err as any).message
+    let msg = "Failed to update QNH.";
+    if (err && typeof err === "object") {
+      if ("message" in err && typeof (err as any).message === "string") {
+        msg = (err as any).message;
       } else {
-        msg = JSON.stringify(err)
+        msg = JSON.stringify(err);
       }
-    } else if (typeof err === 'string') {
-      msg = err
+    } else if (typeof err === "string") {
+      msg = err;
     }
-    qnhError.value = msg
+    qnhError.value = msg;
   } finally {
-    loadingQnh.value = false
+    loadingQnh.value = false;
   }
-}
+};
 
 onMounted(() => {
   // Optionally trigger initial QNH update on mount
   if (airportQnhData.value.length === 0) {
-    handleUpdateQnh()
+    handleUpdateQnh();
   }
-})
+});
 
 // Blur focused element when page hides (accessibility)
-const { isActive } = useAppLifecycle()
+const { isActive } = useAppLifecycle();
 watch(isActive, (active) => {
   if (!active) {
-    ;(document.activeElement as HTMLElement)?.blur()
+    (document.activeElement as HTMLElement)?.blur();
   }
-})
+});
 </script>
 
 <style scoped>

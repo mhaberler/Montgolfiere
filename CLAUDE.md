@@ -5,6 +5,7 @@
 Montgolfiere is an Ionic/Vue 3/Capacitor mobile application for iOS and Android that provides real-time monitoring of hot air balloon systems during flight. The app collects telemetry from Bluetooth Low Energy (BLE) sensors and displays critical flight information including GPS position, altitude, vertical speed, and equipment status.
 
 **Tech Stack:**
+
 - **Framework:** Ionic Framework with Vue 3 Composition API
 - **Platform:** Capacitor (iOS & Android)
 - **Language:** TypeScript
@@ -67,6 +68,7 @@ src/
 ### 1. BLE Sensor Management (`src/sensors/blesensors.ts`)
 
 **Responsibilities:**
+
 - Initialize BLE client
 - Start/stop continuous scanning with `allowDuplicates: true`
 - Filter advertisements by manufacturer ID and service UUID
@@ -75,6 +77,7 @@ src/
 - Auto-restart scanning if no data received for 10 seconds
 
 **Key Exports:**
+
 - `devices: Ref<Map<string, ExtendedScanResult>>` - Discovered BLE devices
 - `isScanning: Ref<boolean>` - Scanning state
 - `startBLEScan()` - Begin scanning
@@ -82,6 +85,7 @@ src/
 - `restartBLEScan()` - Restart with cleanup
 
 **Supported Sensors:**
+
 - **Ruuvi** (0x0499): Temperature, humidity, pressure sensors
 - **Mopeka** (0x0059): Propane tank level sensors
 - **TPMS** (0x00AC, 0x0100): Tire pressure monitoring (repurposed)
@@ -92,6 +96,7 @@ src/
 ### 2. Device Mapping Composable (`src/composables/useDeviceMapping.ts`)
 
 **Responsibilities:**
+
 - Map BLE device IDs to logical balloon units (Envelope, Tank1, Tank2, Tank3, OAT, Box, Vario)
 - Persist device assignments across app restarts
 - Aggregate sensor data by unit
@@ -100,6 +105,7 @@ src/
 - Clean up stale sensors (>10 minutes old)
 
 **Unit Types:**
+
 - **Envelope**: Main balloon envelope temperature sensors
 - **OAT**: Outside Air Temperature sensors
 - **Tank1/2/3**: Propane tank level and temperature sensors
@@ -107,6 +113,7 @@ src/
 - **Vario**: Variometer/altimeter sensors
 
 **Status Thresholds (per sensor type):**
+
 ```typescript
 Ruuvi:   online: 5s,  warning: 10s,  offline: 15s   (broadcasts every 1-2s)
 Mopeka:  online: 20s, warning: 30s,  offline: 60s   (broadcasts every 5-10s)
@@ -114,6 +121,7 @@ TPMS:    online: 400s, warning: 500s, offline: 800s (broadcasts every 360s)
 ```
 
 **Key Functions:**
+
 - `assignDeviceToUnit(deviceId, unitType)` - Assign device to unit
 - `getDeviceUnit(deviceId)` - Get unit for device
 - `getUnitStatus(unitType)` - Get unit status
@@ -125,6 +133,7 @@ TPMS:    online: 400s, warning: 500s, offline: 800s (broadcasts every 360s)
 Each BLE protocol has a dedicated decoder that parses raw advertisement data into structured objects with standardized metric names:
 
 **Common Metrics:**
+
 - `temp` / `temperature` - Temperature in °C
 - `hum` / `humidity` - Relative humidity %
 - `batpct` - Battery percentage
@@ -134,20 +143,22 @@ Each BLE protocol has a dedicated decoder that parses raw advertisement data int
 - `voltage` - Voltage measurements
 
 **Example: Mopeka Decoder**
+
 ```typescript
 export const parseMopeka = (data: DataView) => {
   return {
-    percent: (reading / 255 * 100).toFixed(1),
+    percent: ((reading / 255) * 100).toFixed(1),
     temp: data.getUint8(10) - 40,
     batpct: data.getUint8(11),
-    qualityStars: calculateQuality(data)
+    qualityStars: calculateQuality(data),
   };
-}
+};
 ```
 
 ### 4. Main Flight Display (`src/views/Tab1Page.vue`)
 
 **Components:**
+
 - GPS altitude, speed, heading
 - Kalman-filtered altitude (QNH corrected)
 - Vertical speed with confidence interval
@@ -158,6 +169,7 @@ export const parseMopeka = (data: DataView) => {
 - Units table showing all sensor data
 
 **Key Features:**
+
 - Real-time updates from BLE sensors
 - Color-coded status indicators
 - Confidence intervals for EKF estimates
@@ -168,6 +180,7 @@ export const parseMopeka = (data: DataView) => {
 Tabular display of all balloon units with their current metrics:
 
 **Display Format:**
+
 ```
 Unit     | Metrics
 ---------|----------------------------------
@@ -177,6 +190,7 @@ Tank1    | %: 78% | Level: 245mm | Bar: 12.5
 ```
 
 **Features:**
+
 - Row background colored by status (green/yellow/red)
 - Metric values colored by age (fresh/recent/stale/old)
 - Units without sensors automatically hidden
@@ -187,15 +201,18 @@ Tank1    | %: 78% | Level: 245mm | Bar: 12.5
 Extended Kalman Filter (EKF) for smooth altitude and velocity estimation:
 
 **State Vector:**
+
 - Altitude (ISA and QNH corrected)
 - Vertical velocity
 - Vertical acceleration
 
 **Inputs:**
+
 - Device barometer pressure
 - Optional GPS altitude (for calibration)
 
 **Outputs:**
+
 - Filtered altitude with 95% confidence interval
 - Filtered velocity with 95% confidence interval
 - Filtered acceleration
@@ -207,11 +224,16 @@ Extended Kalman Filter (EKF) for smooth altitude and velocity estimation:
 ### State Management Pattern
 
 **Persistent State:** Use `usePersistedRef` for data that should survive app restarts
+
 ```typescript
-const deviceMappings = usePersistedRef<Record<string, UnitType>>('device-mappings', {});
+const deviceMappings = usePersistedRef<Record<string, UnitType>>(
+  "device-mappings",
+  {},
+);
 ```
 
 **Volatile State:** Use regular `ref` for temporary runtime state
+
 ```typescript
 const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 ```
@@ -221,12 +243,14 @@ const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 ### BLE Development
 
 **Adding New Sensor Types:**
+
 1. Add manufacturer ID or service UUID to `allowedManufacturerIds` or `allowedServiceUUIDs` in `blesensors.ts`
 2. Create decoder in `src/decoders/[sensor-type].ts`
 3. Add case in `decodeSensor()` function
 4. Update type definitions
 
 **Decoder Best Practices:**
+
 - Return plain objects with standardized metric names
 - Handle missing/invalid data gracefully
 - Use `DataView` for binary data parsing
@@ -235,6 +259,7 @@ const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 ### UI Component Patterns
 
 **Unit Components:** Follow the pattern in `src/components/units/`
+
 - Use `useDeviceMapping()` composable
 - Implement reactive timestamp for age calculations
 - Use computed properties for status and metrics
@@ -242,6 +267,7 @@ const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 - Display source device for each metric
 
 **Metric Formatting:**
+
 - Temperature: 1 decimal (`24.5°`)
 - Humidity: no decimals (`65%`)
 - Battery: no decimals (`87%`)
@@ -251,12 +277,14 @@ const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 ### Testing
 
 **BLE Testing:**
+
 - Use Tab2 (BLE Scanner) to view raw sensor data
 - Check decoded values match expected format
 - Verify device appears with correct type and priority
 - Test assignment to units
 
 **Debug Info:**
+
 - Enable via Settings (Tab3)
 - Shows EKF state, confidence intervals, BLE statistics
 - Watchdog timeout counter for scan health
@@ -276,7 +304,7 @@ setInterval(() => {
 // Use in computed
 const ageClass = computed(() => {
   const age = reactiveTime.value - lastUpdate;
-  return age < 10000 ? 'fresh' : 'stale';
+  return age < 10000 ? "fresh" : "stale";
 });
 ```
 
@@ -288,11 +316,11 @@ Encapsulate reusable logic in composables:
 export const useDeviceMapping = () => {
   // State
   const deviceMappings = usePersistedRef(...);
-  
+
   // Functions
   const assignDevice = (id, unit) => { ... };
   const getStatus = (unit) => { ... };
-  
+
   // Return API
   return {
     assignDevice,
@@ -321,6 +349,7 @@ const resetWatchdog = () => {
 ## App Lifecycle
 
 **Foreground:**
+
 - Start BLE scanning
 - Start location tracking
 - Start barometer
@@ -328,6 +357,7 @@ const resetWatchdog = () => {
 - Acquire wake lock (keep screen on)
 
 **Background:**
+
 - Stop BLE scanning (battery optimization)
 - Stop location tracking
 - Stop barometer
@@ -338,6 +368,7 @@ const resetWatchdog = () => {
 ## Build & Deployment
 
 **Development:**
+
 ```bash
 bun run dev              # Web development server
 bun run debug-ios-i16    # iOS simulator
@@ -345,6 +376,7 @@ bun run debug-android-a15 # Android emulator
 ```
 
 **Production Builds:**
+
 ```bash
 bun run ios-beta         # iOS beta build
 bun run android-beta     # Android beta build
@@ -352,6 +384,7 @@ bun run build-dev        # Web build
 ```
 
 **Capacitor Sync:**
+
 ```bash
 npx cap sync             # Sync web assets to native platforms
 ```
@@ -359,24 +392,28 @@ npx cap sync             # Sync web assets to native platforms
 ## Common Issues & Solutions
 
 **BLE Scanning Stops:**
+
 - Check watchdog counter in Debug Info
 - Manually restart scan from Tab2
 - Verify device Bluetooth is enabled
 - Check for Capacitor plugin issues
 
 **Sensor Not Appearing:**
+
 - Verify manufacturer ID is in allowed list
 - Check sensor is broadcasting (use generic BLE scanner app)
 - Verify decoder handles data format correctly
 - Check console for decoding errors
 
 **Stale Data:**
+
 - Check sensor battery level
 - Verify sensor is within range (<10m)
 - Check sensor broadcast interval
 - Verify threshold matches sensor type
 
 **Unit Status Wrong:**
+
 - Check sensor age vs. threshold
 - Verify device assignment is correct
 - Check reactive timestamp is updating
@@ -418,6 +455,7 @@ For questions or issues, refer to the project repository documentation or contac
 
 **Last Updated:** February 1, 2026
 **Version:** 1.0.0
+
 # CLAUDE.md
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
@@ -429,6 +467,7 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing:
+
 - State your assumptions explicitly. If uncertain, ask.
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
@@ -451,12 +490,14 @@ Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, sim
 **Touch only what you must. Clean up only your own mess.**
 
 When editing existing code:
+
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
 - If you notice unrelated dead code, mention it - don't delete it.
 
 When your changes create orphans:
+
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
@@ -467,11 +508,13 @@ The test: Every changed line should trace directly to the user's request.
 **Define success criteria. Loop until verified.**
 
 Transform tasks into verifiable goals:
+
 - "Add validation" → "Write tests for invalid inputs, then make them pass"
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
 For multi-step tasks, state a brief plan:
+
 ```
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]

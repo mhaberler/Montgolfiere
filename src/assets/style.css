@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #2196F3;
-  --color-success: #4CAF50;
-  --color-error: #F44336;
-  --color-warning: #FF9800;
+  --color-primary: #2196f3;
+  --color-success: #4caf50;
+  --color-error: #f44336;
+  --color-warning: #ff9800;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -23,11 +23,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  padding:
-    env(safe-area-inset-top)
-    env(safe-area-inset-right)
-    env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Base button reset for non-Tailwind buttons (fallback) */
@@ -150,5 +147,5 @@ body {
 
 .bg-white ::placeholder,
 .bg-gray-50 ::placeholder {
-  color: rgba(33,53,71,0.5);
+  color: rgba(33, 53, 71, 0.5);
 }

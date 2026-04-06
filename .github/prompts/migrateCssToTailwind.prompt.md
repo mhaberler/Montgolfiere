@@ -9,6 +9,7 @@ argument-hint: Optional - specific components, directories, or scope to focus on
 Analyze the current project and systematically convert traditional CSS (scoped, module, or global) to Tailwind utility classes.
 
 ## Discovery Phase
+
 1. **Audit current state:**
    - Verify Tailwind installation and version
    - Identify all components using traditional CSS
@@ -22,6 +23,7 @@ Analyze the current project and systematically convert traditional CSS (scoped, 
    - Build tool configuration (Vite, Webpack, etc.)
 
 ## Planning Phase
+
 3. **Create conversion strategy:**
    - Prioritize components by complexity (simple utility-replaceable CSS first)
    - Group related components with shared patterns
@@ -35,6 +37,7 @@ Analyze the current project and systematically convert traditional CSS (scoped, 
    - Set up purge/content paths correctly
 
 ## Implementation Phase
+
 5. **Convert components systematically:**
    - Replace CSS properties with Tailwind utilities
    - Convert dynamic classes from template literals to object syntax
@@ -56,12 +59,14 @@ Analyze the current project and systematically convert traditional CSS (scoped, 
    - Verify design system integration remains functional
 
 ## Output
+
 - Report conversion statistics (lines removed, components converted)
 - List any remaining CSS with justification
 - Confirm build/type validation passes
 - Note any optional follow-up work
 
 ## Notes
+
 - Bias toward Tailwind utilities but don't force it for CSS that doesn't translate well
 - Maintain code readability - use semantic class groupings
 - Follow framework conventions for dynamic class bindings

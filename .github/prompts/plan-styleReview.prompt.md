@@ -7,7 +7,8 @@ The Prettier config says single quotes + no semicolons, but a large portion of f
 ## 2. The unit components are 80% copy-paste
 
 EnvelopeUnit.vue, BoxUnit.vue, OATUnit.vue, and VarioUnit.vue are near-identical. Each duplicates:
-- `formatMetricName` / `formatMetricValue` / `getMetricAgeClass` / `getMetricReadings` — with *subtly different* format maps (e.g., EnvelopeUnit formats temp as `24.5°C`, UnitsTable as `24.5°`)
+
+- `formatMetricName` / `formatMetricValue` / `getMetricAgeClass` / `getMetricReadings` — with _subtly different_ format maps (e.g., EnvelopeUnit formats temp as `24.5°C`, UnitsTable as `24.5°`)
 - A `setInterval` for the reactive timestamp (duplicated 8+ times across the app)
 - The same template structure with different hardcoded unit names and icons
 

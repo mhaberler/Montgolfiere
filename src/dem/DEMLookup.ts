@@ -1,6 +1,6 @@
-import { PMTiles, TileType } from 'pmtiles';
+import { PMTiles, TileType } from "pmtiles";
 
-export type ElevationEncoding = 'mapbox' | 'terrarium';
+export type ElevationEncoding = "mapbox" | "terrarium";
 
 export interface DEMInfo {
   bounds: [number, number, number, number]; // [minLon, minLat, maxLon, maxLat]
@@ -65,40 +65,46 @@ export class DEMLookup {
       webP.onload = webP.onerror = () => {
         this.webpSupported = webP.height === 2;
         if (this.debug) {
-          console.log(`WebP support: ${this.webpSupported ? 'Yes' : 'No'}`);
+          console.log(`WebP support: ${this.webpSupported ? "Yes" : "No"}`);
         }
         resolve();
       };
       webP.src =
-        'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+        "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA";
     });
   }
 
   protected async initializeDEMInfo(): Promise<void> {
     try {
       if (this.debug) {
-        console.log('PMTiles initialized:', this.pmtiles);
+        console.log("PMTiles initialized:", this.pmtiles);
       }
 
       const header = await this.pmtiles.getHeader();
       const metadata = await this.pmtiles.getMetadata();
 
       if (this.debug) {
-        console.log('Metadata:', metadata);
+        console.log("Metadata:", metadata);
       }
 
       // Check for tile size in metadata first, then fall back to autodetection
       let tileSize: number;
       const metadataTileSize = (metadata as any)?.tileSize;
 
-      if (metadataTileSize && typeof metadataTileSize === 'number' && metadataTileSize > 0) {
+      if (
+        metadataTileSize &&
+        typeof metadataTileSize === "number" &&
+        metadataTileSize > 0
+      ) {
         tileSize = metadataTileSize;
         if (this.debug) {
           console.log(`Using tile size from metadata: ${tileSize}px`);
         }
       } else {
         if (this.debug) {
-          console.log('No tile size in metadata, detecting from sample tile...');
+          console.log(
+            "No tile size in metadata, detecting from sample tile...",
+          );
         }
         tileSize = await this.detectTileSize(header);
       }
@@ -113,28 +119,28 @@ export class DEMLookup {
         tileType: header.tileType,
         tileSize: tileSize,
         metersPerPixel: this.calculateMetersPerPixel(header.maxZoom, tileSize),
-        encoding: header.tileType === TileType.Png ? 'PNG' : 'WebP',
+        encoding: header.tileType === TileType.Png ? "PNG" : "WebP",
         elevationEncoding,
         attribution: (metadata as any)?.attribution,
       };
     } catch (error) {
-      console.error('Failed to initialize DEM info:', error);
+      console.error("Failed to initialize DEM info:", error);
       // throw error;
     }
   }
 
   protected detectElevationEncoding(metadata: any): ElevationEncoding {
     const enc = metadata?.encoding;
-    if (typeof enc === 'string' && enc.toLowerCase() === 'terrarium') {
+    if (typeof enc === "string" && enc.toLowerCase() === "terrarium") {
       if (this.debug) {
-        console.log('Detected terrarium elevation encoding from metadata');
+        console.log("Detected terrarium elevation encoding from metadata");
       }
-      return 'terrarium';
+      return "terrarium";
     }
     if (this.debug) {
-      console.log('Using default mapbox elevation encoding');
+      console.log("Using default mapbox elevation encoding");
     }
-    return 'mapbox';
+    return "mapbox";
   }
 
   private async detectTileSize(header: any): Promise<number> {
@@ -159,7 +165,7 @@ export class DEMLookup {
       }
     } catch (error) {
       if (this.debug) {
-        console.warn('Could not detect tile size, using default 256:', error);
+        console.warn("Could not detect tile size, using default 256:", error);
       }
     }
 
@@ -167,14 +173,20 @@ export class DEMLookup {
     return 256;
   }
 
-  protected calculateMetersPerPixel(zoom: number, tileSize: number = 256): number {
+  protected calculateMetersPerPixel(
+    zoom: number,
+    tileSize: number = 256,
+  ): number {
     // Earth's circumference at equator in meters / tiles at zoom level / pixels per tile
     const earthCircumference = 40075016.686;
     const tilesAtZoom = Math.pow(2, zoom);
     return earthCircumference / (tilesAtZoom * tileSize);
   }
 
-  async getElevation(lat: number, lon: number): Promise<ElevationResult | null> {
+  async getElevation(
+    lat: number,
+    lon: number,
+  ): Promise<ElevationResult | null> {
     if (!this.demInfo) {
       await this.initializeDEMInfo();
     }
@@ -184,7 +196,9 @@ export class DEMLookup {
     const [x, y, z] = tileCoords;
 
     if (this.debug) {
-      console.log(`Getting elevation for lat: ${lat}, lon: ${lon}, zoom: ${zoom}, tile: ${x}/${y}/${z}`);
+      console.log(
+        `Getting elevation for lat: ${lat}, lon: ${lon}, zoom: ${zoom}, tile: ${x}/${y}/${z}`,
+      );
     }
 
     const tileKey = `${z}/${x}/${y}`;
@@ -216,7 +230,11 @@ export class DEMLookup {
       );
     }
 
-    const elevation = await this.extractElevationFromTile(tileData, tilePixelX, tilePixelY);
+    const elevation = await this.extractElevationFromTile(
+      tileData,
+      tilePixelX,
+      tilePixelY,
+    );
 
     if (elevation === null) {
       return null;
@@ -230,7 +248,11 @@ export class DEMLookup {
     };
   }
 
-  protected async fetchTile(x: number, y: number, z: number): Promise<ArrayBuffer | null> {
+  protected async fetchTile(
+    x: number,
+    y: number,
+    z: number,
+  ): Promise<ArrayBuffer | null> {
     try {
       const tileResult = await this.pmtiles.getZxy(z, x, y);
       return tileResult?.data || null;
@@ -246,10 +268,14 @@ export class DEMLookup {
     tileData: ArrayBuffer,
     pixelX: number,
     pixelY: number,
-  ): Promise<{ elevation: number; rgbValues: [number, number, number] } | null> {
+  ): Promise<{
+    elevation: number;
+    rgbValues: [number, number, number];
+  } | null> {
     try {
       const blob = new Blob([tileData]);
-      const imageFormat = this.demInfo?.encoding === 'PNG' ? 'image/png' : 'image/webp';
+      const imageFormat =
+        this.demInfo?.encoding === "PNG" ? "image/png" : "image/webp";
 
       if (this.debug) {
         console.log(`Decoding ${this.demInfo?.encoding} tile`);
@@ -258,10 +284,10 @@ export class DEMLookup {
       const imageBitmap = await createImageBitmap(blob);
 
       // Create canvas to extract pixel data
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = imageBitmap.width;
       canvas.height = imageBitmap.height;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext("2d")!;
 
       ctx.drawImage(imageBitmap, 0, 0);
 
@@ -279,12 +305,15 @@ export class DEMLookup {
       const [r, g, b] = imageData.data;
 
       // Decode elevation based on encoding
-      const elevation = this.demInfo?.elevationEncoding === 'terrarium'
-        ? r * 256 + g + b / 256 - 32768  // Terrarium encoding
-        : -10000 + (r * 256 * 256 + g * 256 + b) * 0.1;  // Mapbox RGB encoding
+      const elevation =
+        this.demInfo?.elevationEncoding === "terrarium"
+          ? r * 256 + g + b / 256 - 32768 // Terrarium encoding
+          : -10000 + (r * 256 * 256 + g * 256 + b) * 0.1; // Mapbox RGB encoding
 
       if (this.debug) {
-        console.log(`RGB values: (${r}, ${g}, ${b}) -> elevation: ${elevation.toFixed(1)}m`);
+        console.log(
+          `RGB values: (${r}, ${g}, ${b}) -> elevation: ${elevation.toFixed(1)}m`,
+        );
       }
 
       imageBitmap.close();
@@ -295,20 +324,30 @@ export class DEMLookup {
       };
     } catch (error) {
       if (this.debug) {
-        console.error('Failed to extract elevation from tile:', error);
+        console.error("Failed to extract elevation from tile:", error);
       }
       return null;
     }
   }
 
-  private latLonToTile(lat: number, lon: number, zoom: number): [number, number, number] {
+  private latLonToTile(
+    lat: number,
+    lon: number,
+    zoom: number,
+  ): [number, number, number] {
     const latRad = (lat * Math.PI) / 180;
     const x = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
-    const y = Math.floor(((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * Math.pow(2, zoom));
+    const y = Math.floor(
+      ((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * Math.pow(2, zoom),
+    );
     return [x, y, zoom];
   }
 
-  private latLonToPixel(lat: number, lon: number, zoom: number): { x: number; y: number } {
+  private latLonToPixel(
+    lat: number,
+    lon: number,
+    zoom: number,
+  ): { x: number; y: number } {
     const latRad = (lat * Math.PI) / 180;
     const tileSize = this.demInfo?.tileSize || 256;
     const mapSize = tileSize * Math.pow(2, zoom);
@@ -350,7 +389,11 @@ export class DEMLookup {
   async preCacheBoundingBox(
     bbox: BoundingBox,
     zoom?: number,
-  ): Promise<{ total: number; cached: number; progress: (current: number, total: number) => void }> {
+  ): Promise<{
+    total: number;
+    cached: number;
+    progress: (current: number, total: number) => void;
+  }> {
     const targetZoom = zoom || this.demInfo?.maxZoom || 10;
 
     // Calculate tile bounds for the bounding box
@@ -389,7 +432,7 @@ export class DEMLookup {
   clearCache(): void {
     this.cache = {};
     if (this.debug) {
-      console.log('Cache cleared');
+      console.log("Cache cleared");
     }
   }
 

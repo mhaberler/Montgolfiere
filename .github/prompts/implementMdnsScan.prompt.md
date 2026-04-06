@@ -20,31 +20,31 @@ Review the provided requirements or specification and implement a comprehensive 
    - Only allow one selected item at a time
    - Provide clear visual indication of which item is preferred (e.g., Background color. )
 
-2. **Persistent Toggles**
+1. **Persistent Toggles**
    - Implement toggle controls (e.g., "Auto Scan") with persistent state
    - Save toggle state to storage and restore on app restart
    - Disable dependent toggles when prerequisites aren't met
    - Add appropriate visual feedback for disabled states
 
-3. **Smart Matching & Status**
+1. **Smart Matching & Status**
    - Create matching logic to find preferred item among available options
    - Implement status indicators (e.g., "Found", "Searching", "Not found")
    - Use computed properties for reactive status updates
    - Add appropriate fallback strategies if exact match fails
 
-4. **Visual Feedback**
+1. **Visual Feedback**
    - Design prominent card/banner to display preferred item with status badge
    - Add visual highlighting (e.g., colored border/outline) to preferred item in lists
    - Use color coding for different states (green=found, orange=searching, red=not found)
    - For non-preferred items: allow click-anywhere or explicit button based on UX needs
 
-5. **Automatic Navigation & Connection**
+1. **Automatic Navigation & Connection**
    - Automatically navigate to detail/connection view when conditions are met
    - Initiate connection immediately upon view entry
    - Watch for status changes and trigger auto-connect when preferred item becomes available
    - Implement intelligent timeout handling with user feedback
 
-6. **State Management Across Views**
+1. **State Management Across Views**
    - Disable auto-connect toggle when navigating back to prevent reconnection loops
    - Preserve other persistent settings appropriately
    - Clean up resources on unmount/navigation
@@ -71,4 +71,3 @@ Review the provided requirements or specification and implement a comprehensive 
 
 I wish I could motivate you to work on zeroconf resolution of the MQTT broker host name/service
 This will cover the autonomous scenario where the broker is connected to the hotspot of the mobile.
-

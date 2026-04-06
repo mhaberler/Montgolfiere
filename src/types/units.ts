@@ -1,5 +1,13 @@
 // Unit types and configurations
-export type UnitType = "Envelope" | "OAT" | "Tank1" | "Tank2" | "Tank3" | "Box" | "Vario" | "Switch";
+export type UnitType =
+  | "Envelope"
+  | "OAT"
+  | "Tank1"
+  | "Tank2"
+  | "Tank3"
+  | "Box"
+  | "Vario"
+  | "Switch";
 
 export interface UnitConfig {
   id: string;

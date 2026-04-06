@@ -9,7 +9,7 @@ interface KalmanInterface {
     dt: number,
     altitude: number,
     loudness: number,
-    duration: number
+    duration: number,
   ): void;
   setAltitudeVarianceHistoryWindow(samples: number): void;
   setVspeedStdDevHistoryWindow(samples: number): void;
@@ -31,7 +31,9 @@ export class Kalman extends BalloonEKF implements KalmanInterface {
 
   constructor() {
     super();
-    this.altiudeVarianceHistory = new WindowVariance(this.altiudeVarianceWindowSize);
+    this.altiudeVarianceHistory = new WindowVariance(
+      this.altiudeVarianceWindowSize,
+    );
     this.vspeedHistory = new WindowVariance(this.vspeedHistoryWindowSize);
     this.vaccelHistory = new WindowVariance(this.vaccelHistoryWindowSize);
   }
@@ -40,7 +42,7 @@ export class Kalman extends BalloonEKF implements KalmanInterface {
     deltaT: number,
     altitude: number,
     loudness: number = 0,
-    duration: number = 0
+    duration: number = 0,
   ) {
     this.altiudeVarianceHistory.add(altitude);
     this.windowedAltiudeVariance = this.altiudeVarianceHistory.variance();
@@ -49,16 +51,17 @@ export class Kalman extends BalloonEKF implements KalmanInterface {
     this.vspeedHistory.add(this.getVelocity());
     this.vaccelHistory.add(this.getAcceleration());
   }
-  
+
   setAltitudeVarianceHistoryWindow(samples: number) {
     this.altiudeVarianceWindowSize = samples;
-    this.altiudeVarianceHistory = new WindowVariance(this.altiudeVarianceWindowSize);
+    this.altiudeVarianceHistory = new WindowVariance(
+      this.altiudeVarianceWindowSize,
+    );
   }
 
   setVspeedStdDevHistoryWindow(samples: number) {
     this.vspeedHistoryWindowSize = samples;
     this.vspeedHistory = new WindowVariance(this.vspeedHistoryWindowSize);
-
   }
   setVaccelStdDevHistoryWindow(samples: number) {
     this.vaccelHistoryWindowSize = samples;

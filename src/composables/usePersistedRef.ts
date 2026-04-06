@@ -1,6 +1,6 @@
 // src/composables/usePersistedRef.ts
-import { ref, watch, type Ref } from 'vue'; // Remove onMounted
-import { Preferences } from '@capacitor/preferences';
+import { ref, watch, type Ref } from "vue"; // Remove onMounted
+import { Preferences } from "@capacitor/preferences";
 
 /**
  * A composable that provides a reactive ref whose value is persisted
@@ -24,10 +24,10 @@ export function usePersistedRef<T>(key: string, defaultValue: T): Ref<T> {
           data.value = JSON.parse(storedValue) as T;
         } catch (e) {
           // If JSON parse fails, apply type-specific coercion based on defaultValue
-          if (typeof defaultValue === 'number') {
+          if (typeof defaultValue === "number") {
             data.value = Number(storedValue) as T;
-          } else if (typeof defaultValue === 'boolean') {
-            data.value = (storedValue === 'true') as T;
+          } else if (typeof defaultValue === "boolean") {
+            data.value = (storedValue === "true") as T;
           } else {
             // Plain string
             data.value = storedValue as T;
@@ -50,7 +50,7 @@ export function usePersistedRef<T>(key: string, defaultValue: T): Ref<T> {
   const saveData = async () => {
     try {
       let valueToStore: string;
-      if (typeof data.value === 'object' && data.value !== null) {
+      if (typeof data.value === "object" && data.value !== null) {
         valueToStore = JSON.stringify(data.value);
       } else {
         valueToStore = String(data.value);

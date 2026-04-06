@@ -20,11 +20,8 @@ http://ionicframework.com/docs/theming/ */
   --color-ion-light: var(--ion-color-light, #f4f5f8);
 
   /* Safelist dynamic class patterns for runtime-generated classes */
-  --safelist: 
-    status-success status-warning status-danger
-    status-row-success status-row-warning status-row-danger
-    metric-fresh metric-warning metric-stale
-    age-fresh age-warning age-stale age-recent age-old
-    impact-warning
-  ;
+  --safelist: status-success status-warning status-danger status-row-success
+    status-row-warning status-row-danger metric-fresh metric-warning
+    metric-stale age-fresh age-warning age-stale age-recent age-old
+    impact-warning;
 }

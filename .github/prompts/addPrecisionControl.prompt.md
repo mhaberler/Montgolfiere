@@ -3,6 +3,7 @@ name: addPrecisionControl
 description: Add per-entry decimal rounding to numeric values scaled by a factor field.
 argument-hint: The file or data structure containing numeric definitions with a scaling factor.
 ---
+
 Analyze the specified code for numeric values that are scaled by a factor (e.g., `value *= factor`) but lack rounding, causing floating-point artifacts.
 
 Implement per-entry precision control using this approach:
@@ -13,6 +14,7 @@ Implement per-entry precision control using this approach:
 4. **Add one example entry** with an explicit `decimals` override and a brief comment explaining the mechanism.
 
 Constraints:
+
 - Minimize changes to existing data entries — the auto-derivation should produce correct results for nearly all existing entries without modification.
 - Keep the rounding logic in one place, close to where the factor is applied.
 - Run a type-check after changes.

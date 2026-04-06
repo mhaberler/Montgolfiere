@@ -159,11 +159,9 @@ const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
     ],
   },
   Vario: {
-
-  primary: ["distance (m)_m", "speed_m/s", "acceleration_m/s²"],
+    primary: ["distance (m)_m", "speed_m/s", "acceleration_m/s²"],
     secondary: [],
-    hidden: [
-    ],
+    hidden: [],
   },
   Switch: {
     primary: ["reed_switch", "window"],
@@ -236,7 +234,7 @@ export const useDeviceMapping = () => {
   // Helper function to filter active sensors based on their type-specific timeouts
   const getActiveSensors = (
     sensors: UnitSensorData[],
-    now: number = Date.now()
+    now: number = Date.now(),
   ): UnitSensorData[] => {
     return sensors.filter((sensor) => {
       const timeout = getSensorTimeout(sensor.deviceType);
@@ -248,7 +246,7 @@ export const useDeviceMapping = () => {
   // Helper function to clean up very old sensors (background cleanup)
   const cleanupStaleSensors = (
     sensors: UnitSensorData[],
-    now: number = Date.now()
+    now: number = Date.now(),
   ): UnitSensorData[] => {
     return sensors.filter((sensor) => {
       const ageMs = now - sensor.lastUpdate;
@@ -286,7 +284,7 @@ export const useDeviceMapping = () => {
   const updateUnitData = (
     deviceId: string,
     decodedValue: any,
-    deviceType: string
+    deviceType: string,
   ) => {
     const unitType = deviceMappings.value[deviceId];
     if (unitType && decodedValue) {
@@ -295,7 +293,7 @@ export const useDeviceMapping = () => {
       // Background cleanup: remove very old sensors before updating
       unitSensors.value[unitType] = cleanupStaleSensors(
         unitSensors.value[unitType],
-        now
+        now,
       );
 
       // Extract metrics from decoded value
@@ -303,7 +301,7 @@ export const useDeviceMapping = () => {
         typeof decodedValue === "object" ? Object.keys(decodedValue) : [];
 
       const existingIndex = unitSensors.value[unitType].findIndex(
-        (sensor) => sensor.deviceId === deviceId
+        (sensor) => sensor.deviceId === deviceId,
       );
 
       const sensorData: UnitSensorData = {
@@ -461,10 +459,10 @@ export const useDeviceMapping = () => {
 
     // Filter available metrics based on configuration
     const primary = availableMetrics.filter((metric) =>
-      config.primary.includes(metric)
+      config.primary.includes(metric),
     );
     const secondary = availableMetrics.filter((metric) =>
-      config.secondary.includes(metric)
+      config.secondary.includes(metric),
     );
 
     // Utility metrics are available but not in primary/secondary and not hidden
@@ -472,7 +470,7 @@ export const useDeviceMapping = () => {
       (metric) =>
         !config.primary.includes(metric) &&
         !config.secondary.includes(metric) &&
-        !config.hidden.includes(metric)
+        !config.hidden.includes(metric),
     );
 
     return { primary, secondary, utility };
@@ -506,7 +504,7 @@ export const useDeviceMapping = () => {
 
   const getUnitSensors = (
     unitType: UnitType,
-    includeStale: boolean = false
+    includeStale: boolean = false,
   ): UnitSensorData[] => {
     const allSensors = unitSensors.value[unitType];
     return includeStale
@@ -527,7 +525,7 @@ export const useDeviceMapping = () => {
 
     // Return the most recently updated active sensor
     return activeSensors.reduce((latest, current) =>
-      current.lastUpdate > latest.lastUpdate ? current : latest
+      current.lastUpdate > latest.lastUpdate ? current : latest,
     );
   };
 
@@ -552,10 +550,10 @@ export const useDeviceMapping = () => {
             ageSeconds: Math.floor((Date.now() - s.lastUpdate) / 1000),
             metrics: s.sensorMetrics,
           })),
-        ])
+        ]),
       ),
       unitStatuses: Object.fromEntries(
-        unitTypes.map((unit) => [unit, getUnitStatus(unit)])
+        unitTypes.map((unit) => [unit, getUnitStatus(unit)]),
       ),
     };
 

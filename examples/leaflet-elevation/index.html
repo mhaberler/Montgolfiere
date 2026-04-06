@@ -1,248 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leaflet Elevation Lookup (Mapterhorn)</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/pmtiles@4.3.0/dist/pmtiles.js"></script>
-  <style>
-    body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; cursor: crosshair; }
-    .elevation-control {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 8px 12px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
-      min-width: 240px;
-    }
-    .elevation-control .label { color: #666; }
-    .elevation-control .value { font-weight: bold; }
-    .elevation-control .loading { color: #999; font-style: italic; }
-  </style>
-</head>
-<body>
-  <div id="map"></div>
-  <script>
-    // --- Mapterhorn PMTiles tile routing ---
-    const MAPTERHORN_BASE = 'https://download.mapterhorn.com';
-    const pmtilesProtocol = new pmtiles.Protocol({ metadata: true });
-    const pmtilesInstances = new Map();
-
-    function getPMTilesInstance(name) {
-      if (!pmtilesInstances.has(name)) {
-        const url = `${MAPTERHORN_BASE}/${name}.pmtiles`;
-        pmtilesInstances.set(name, new pmtiles.PMTiles(url));
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaflet Elevation Lookup (Mapterhorn)</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/pmtiles@4.3.0/dist/pmtiles.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
       }
-      return pmtilesInstances.get(name);
-    }
-
-    function getMapterhornFileName(z, x, y) {
-      if (z <= 12) return 'planet';
-      const rx = x >> (z - 6);
-      const ry = y >> (z - 6);
-      return `6-${rx}-${ry}`;
-    }
-
-    function getMapterhornPMTiles(z, x, y) {
-      return getPMTilesInstance(getMapterhornFileName(z, x, y));
-    }
-
-    // --- Terrarium elevation decoding ---
-    function terrariumDecode(r, g, b) {
-      return r * 256 + g + b / 256 - 32768;
-    }
-
-    // --- Tile coordinate math ---
-    function latLonToTile(lat, lon, zoom) {
-      const latRad = lat * Math.PI / 180;
-      const x = Math.floor((lon + 180) / 360 * Math.pow(2, zoom));
-      const y = Math.floor((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * Math.pow(2, zoom));
-      return { x, y };
-    }
-
-    function latLonToPixel(lat, lon, zoom, tileSize) {
-      const latRad = lat * Math.PI / 180;
-      const mapSize = tileSize * Math.pow(2, zoom);
-      const px = (lon + 180) / 360 * mapSize;
-      const py = (1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * mapSize;
-      return { x: Math.floor(px), y: Math.floor(py) };
-    }
-
-    // --- Tile cache and elevation lookup ---
-    const TILE_SIZE = 512;
-    const tileCache = new Map();
-    const MAX_CACHE = 100;
-    const MAX_ZOOM_TRY = 15; // highest zoom to attempt
-    const PLANET_ZOOM = 12;  // planet.pmtiles max zoom
-
-    // Cache negative lookups: "6-33-22" -> maxZoom found for that regional file
-    const regionalMaxZoomCache = new Map();
-
-    async function getTileImageData(z, x, y) {
-      const key = `${z}/${x}/${y}`;
-      if (tileCache.has(key)) return tileCache.get(key);
-
-      // Check negative cache: if we know this regional file tops out below z, skip
-      if (z > PLANET_ZOOM) {
-        const regionName = getMapterhornFileName(z, x, y);
-        const knownMax = regionalMaxZoomCache.get(regionName);
-        if (knownMax !== undefined && z > knownMax) return null;
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        cursor: crosshair;
       }
+      .elevation-control {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        min-width: 240px;
+      }
+      .elevation-control .label {
+        color: #666;
+      }
+      .elevation-control .value {
+        font-weight: bold;
+      }
+      .elevation-control .loading {
+        color: #999;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      // --- Mapterhorn PMTiles tile routing ---
+      const MAPTERHORN_BASE = "https://download.mapterhorn.com";
+      const pmtilesProtocol = new pmtiles.Protocol({ metadata: true });
+      const pmtilesInstances = new Map();
 
-      try {
-        const pm = getMapterhornPMTiles(z, x, y);
-        const result = await pm.getZxy(z, x, y);
-        if (!result || !result.data) return null;
-
-        const blob = new Blob([result.data]);
-        const bitmap = await createImageBitmap(blob);
-        const canvas = document.createElement('canvas');
-        canvas.width = bitmap.width;
-        canvas.height = bitmap.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(bitmap, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        bitmap.close();
-
-        // Evict oldest if cache full
-        if (tileCache.size >= MAX_CACHE) {
-          const firstKey = tileCache.keys().next().value;
-          tileCache.delete(firstKey);
+      function getPMTilesInstance(name) {
+        if (!pmtilesInstances.has(name)) {
+          const url = `${MAPTERHORN_BASE}/${name}.pmtiles`;
+          pmtilesInstances.set(name, new pmtiles.PMTiles(url));
         }
-        tileCache.set(key, imageData);
-        return imageData;
-      } catch {
+        return pmtilesInstances.get(name);
+      }
+
+      function getMapterhornFileName(z, x, y) {
+        if (z <= 12) return "planet";
+        const rx = x >> (z - 6);
+        const ry = y >> (z - 6);
+        return `6-${rx}-${ry}`;
+      }
+
+      function getMapterhornPMTiles(z, x, y) {
+        return getPMTilesInstance(getMapterhornFileName(z, x, y));
+      }
+
+      // --- Terrarium elevation decoding ---
+      function terrariumDecode(r, g, b) {
+        return r * 256 + g + b / 256 - 32768;
+      }
+
+      // --- Tile coordinate math ---
+      function latLonToTile(lat, lon, zoom) {
+        const latRad = (lat * Math.PI) / 180;
+        const x = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
+        const y = Math.floor(
+          ((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) *
+            Math.pow(2, zoom),
+        );
+        return { x, y };
+      }
+
+      function latLonToPixel(lat, lon, zoom, tileSize) {
+        const latRad = (lat * Math.PI) / 180;
+        const mapSize = tileSize * Math.pow(2, zoom);
+        const px = ((lon + 180) / 360) * mapSize;
+        const py = ((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * mapSize;
+        return { x: Math.floor(px), y: Math.floor(py) };
+      }
+
+      // --- Tile cache and elevation lookup ---
+      const TILE_SIZE = 512;
+      const tileCache = new Map();
+      const MAX_CACHE = 100;
+      const MAX_ZOOM_TRY = 15; // highest zoom to attempt
+      const PLANET_ZOOM = 12; // planet.pmtiles max zoom
+
+      // Cache negative lookups: "6-33-22" -> maxZoom found for that regional file
+      const regionalMaxZoomCache = new Map();
+
+      async function getTileImageData(z, x, y) {
+        const key = `${z}/${x}/${y}`;
+        if (tileCache.has(key)) return tileCache.get(key);
+
+        // Check negative cache: if we know this regional file tops out below z, skip
+        if (z > PLANET_ZOOM) {
+          const regionName = getMapterhornFileName(z, x, y);
+          const knownMax = regionalMaxZoomCache.get(regionName);
+          if (knownMax !== undefined && z > knownMax) return null;
+        }
+
+        try {
+          const pm = getMapterhornPMTiles(z, x, y);
+          const result = await pm.getZxy(z, x, y);
+          if (!result || !result.data) return null;
+
+          const blob = new Blob([result.data]);
+          const bitmap = await createImageBitmap(blob);
+          const canvas = document.createElement("canvas");
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(bitmap, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          bitmap.close();
+
+          // Evict oldest if cache full
+          if (tileCache.size >= MAX_CACHE) {
+            const firstKey = tileCache.keys().next().value;
+            tileCache.delete(firstKey);
+          }
+          tileCache.set(key, imageData);
+          return imageData;
+        } catch {
+          return null;
+        }
+      }
+
+      async function getElevation(lat, lon) {
+        // Try highest zoom first, fall back to planet
+        const tile12 = latLonToTile(lat, lon, PLANET_ZOOM);
+        const regionName = getMapterhornFileName(
+          PLANET_ZOOM + 1,
+          tile12.x << 1,
+          tile12.y << 1,
+        );
+
+        // Determine the highest zoom to try for this region
+        let startZoom = MAX_ZOOM_TRY;
+        const knownMax = regionalMaxZoomCache.get(regionName);
+        if (knownMax !== undefined) {
+          startZoom = knownMax;
+        }
+
+        for (let zoom = startZoom; zoom >= PLANET_ZOOM; zoom--) {
+          const tile = latLonToTile(lat, lon, zoom);
+          const imageData = await getTileImageData(zoom, tile.x, tile.y);
+
+          if (!imageData) {
+            // Cache that this regional file doesn't have this zoom
+            if (zoom > PLANET_ZOOM) {
+              const rn = getMapterhornFileName(zoom, tile.x, tile.y);
+              const prev = regionalMaxZoomCache.get(rn);
+              if (prev === undefined || zoom - 1 < prev) {
+                regionalMaxZoomCache.set(rn, zoom - 1);
+              }
+            }
+            continue;
+          }
+
+          const pixel = latLonToPixel(lat, lon, zoom, TILE_SIZE);
+          const tilePixelX = pixel.x % TILE_SIZE;
+          const tilePixelY = pixel.y % TILE_SIZE;
+          const cx = Math.max(0, Math.min(tilePixelX, imageData.width - 1));
+          const cy = Math.max(0, Math.min(tilePixelY, imageData.height - 1));
+          const idx = (cy * imageData.width + cx) * 4;
+          const r = imageData.data[idx];
+          const g = imageData.data[idx + 1];
+          const b = imageData.data[idx + 2];
+
+          const source = getMapterhornFileName(zoom, tile.x, tile.y);
+          const metersPerPixel =
+            (40075016.686 * Math.cos((lat * Math.PI) / 180)) /
+            (Math.pow(2, zoom) * TILE_SIZE);
+          return {
+            elevation: terrariumDecode(r, g, b),
+            source,
+            zoom,
+            metersPerPixel,
+          };
+        }
         return null;
       }
-    }
 
-    async function getElevation(lat, lon) {
-      // Try highest zoom first, fall back to planet
-      const tile12 = latLonToTile(lat, lon, PLANET_ZOOM);
-      const regionName = getMapterhornFileName(PLANET_ZOOM + 1,
-        tile12.x << 1, tile12.y << 1);
+      // --- Leaflet map ---
+      const map = L.map("map").setView([47.13, 15.21], 12);
 
-      // Determine the highest zoom to try for this region
-      let startZoom = MAX_ZOOM_TRY;
-      const knownMax = regionalMaxZoomCache.get(regionName);
-      if (knownMax !== undefined) {
-        startZoom = knownMax;
-      }
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+      }).addTo(map);
 
-      for (let zoom = startZoom; zoom >= PLANET_ZOOM; zoom--) {
-        const tile = latLonToTile(lat, lon, zoom);
-        const imageData = await getTileImageData(zoom, tile.x, tile.y);
+      // Elevation display control
+      const ElevationControl = L.Control.extend({
+        options: { position: "topright" },
+        onAdd: function () {
+          const div = L.DomUtil.create("div", "elevation-control");
+          div.innerHTML =
+            '<span class="loading">Move cursor over map...</span>';
+          return div;
+        },
+      });
+      const elevCtrl = new ElevationControl();
+      elevCtrl.addTo(map);
 
-        if (!imageData) {
-          // Cache that this regional file doesn't have this zoom
-          if (zoom > PLANET_ZOOM) {
-            const rn = getMapterhornFileName(zoom, tile.x, tile.y);
-            const prev = regionalMaxZoomCache.get(rn);
-            if (prev === undefined || zoom - 1 < prev) {
-              regionalMaxZoomCache.set(rn, zoom - 1);
-            }
+      // Throttled mousemove handler
+      let pendingLookup = null;
+      let lastLookupTime = 0;
+      const THROTTLE_MS = 100;
+
+      map.on("mousemove", function (e) {
+        const now = Date.now();
+        if (now - lastLookupTime < THROTTLE_MS) {
+          // Schedule a trailing lookup
+          if (pendingLookup) clearTimeout(pendingLookup);
+          pendingLookup = setTimeout(() => doLookup(e.latlng), THROTTLE_MS);
+          return;
+        }
+        lastLookupTime = now;
+        doLookup(e.latlng);
+      });
+
+      async function doLookup(latlng) {
+        const { lat, lng } = latlng;
+        const el = elevCtrl.getContainer();
+
+        try {
+          const result = await getElevation(lat, lng);
+          if (result !== null) {
+            el.innerHTML =
+              `<span class="label">Lat:</span> <span class="value">${lat.toFixed(5)}</span><br>` +
+              `<span class="label">Lon:</span> <span class="value">${lng.toFixed(5)}</span><br>` +
+              `<span class="label">Elevation:</span> <span class="value">${result.elevation.toFixed(1)} m</span><br>` +
+              `<span class="label">Zoom:</span> <span class="value">${result.zoom}</span><br>` +
+              `<span class="label">Resolution:</span> <span class="value">${result.metersPerPixel.toFixed(1)} m/px</span><br>` +
+              `<span class="label">Source:</span> <span class="value">${result.source}.pmtiles</span>`;
+          } else {
+            el.innerHTML =
+              `<span class="label">Lat:</span> <span class="value">${lat.toFixed(5)}</span><br>` +
+              `<span class="label">Lon:</span> <span class="value">${lng.toFixed(5)}</span><br>` +
+              `<span class="label">Elevation:</span> <span class="loading">no data</span>`;
           }
-          continue;
+        } catch (err) {
+          el.innerHTML = `<span class="loading">Error: ${err.message}</span>`;
         }
-
-        const pixel = latLonToPixel(lat, lon, zoom, TILE_SIZE);
-        const tilePixelX = pixel.x % TILE_SIZE;
-        const tilePixelY = pixel.y % TILE_SIZE;
-        const cx = Math.max(0, Math.min(tilePixelX, imageData.width - 1));
-        const cy = Math.max(0, Math.min(tilePixelY, imageData.height - 1));
-        const idx = (cy * imageData.width + cx) * 4;
-        const r = imageData.data[idx];
-        const g = imageData.data[idx + 1];
-        const b = imageData.data[idx + 2];
-
-        const source = getMapterhornFileName(zoom, tile.x, tile.y);
-        const metersPerPixel = 40075016.686 * Math.cos(lat * Math.PI / 180) / (Math.pow(2, zoom) * TILE_SIZE);
-        return { elevation: terrariumDecode(r, g, b), source, zoom, metersPerPixel };
       }
-      return null;
-    }
 
-    // --- Leaflet map ---
-    const map = L.map('map').setView([47.13, 15.21], 12);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19,
-    }).addTo(map);
-
-    // Elevation display control
-    const ElevationControl = L.Control.extend({
-      options: { position: 'topright' },
-      onAdd: function () {
-        const div = L.DomUtil.create('div', 'elevation-control');
-        div.innerHTML = '<span class="loading">Move cursor over map...</span>';
-        return div;
-      }
-    });
-    const elevCtrl = new ElevationControl();
-    elevCtrl.addTo(map);
-
-    // Throttled mousemove handler
-    let pendingLookup = null;
-    let lastLookupTime = 0;
-    const THROTTLE_MS = 100;
-
-    map.on('mousemove', function (e) {
-      const now = Date.now();
-      if (now - lastLookupTime < THROTTLE_MS) {
-        // Schedule a trailing lookup
-        if (pendingLookup) clearTimeout(pendingLookup);
-        pendingLookup = setTimeout(() => doLookup(e.latlng), THROTTLE_MS);
-        return;
-      }
-      lastLookupTime = now;
-      doLookup(e.latlng);
-    });
-
-    async function doLookup(latlng) {
-      const { lat, lng } = latlng;
-      const el = elevCtrl.getContainer();
-
-      try {
+      // Click to show elevation in a popup
+      map.on("click", async function (e) {
+        const { lat, lng } = e.latlng;
         const result = await getElevation(lat, lng);
-        if (result !== null) {
-          el.innerHTML =
-            `<span class="label">Lat:</span> <span class="value">${lat.toFixed(5)}</span><br>` +
-            `<span class="label">Lon:</span> <span class="value">${lng.toFixed(5)}</span><br>` +
-            `<span class="label">Elevation:</span> <span class="value">${result.elevation.toFixed(1)} m</span><br>` +
-            `<span class="label">Zoom:</span> <span class="value">${result.zoom}</span><br>` +
-            `<span class="label">Resolution:</span> <span class="value">${result.metersPerPixel.toFixed(1)} m/px</span><br>` +
-            `<span class="label">Source:</span> <span class="value">${result.source}.pmtiles</span>`;
-        } else {
-          el.innerHTML =
-            `<span class="label">Lat:</span> <span class="value">${lat.toFixed(5)}</span><br>` +
-            `<span class="label">Lon:</span> <span class="value">${lng.toFixed(5)}</span><br>` +
-            `<span class="label">Elevation:</span> <span class="loading">no data</span>`;
-        }
-      } catch (err) {
-        el.innerHTML = `<span class="loading">Error: ${err.message}</span>`;
-      }
-    }
+        const text =
+          result !== null
+            ? `Elevation: ${result.elevation.toFixed(1)} m<br>Source: ${result.source}.pmtiles`
+            : "No elevation data";
+        L.popup()
+          .setLatLng(e.latlng)
+          .setContent(`<b>${text}</b><br>${lat.toFixed(5)}, ${lng.toFixed(5)}`)
+          .openOn(map);
+      });
 
-    // Click to show elevation in a popup
-    map.on('click', async function (e) {
-      const { lat, lng } = e.latlng;
-      const result = await getElevation(lat, lng);
-      const text = result !== null
-        ? `Elevation: ${result.elevation.toFixed(1)} m<br>Source: ${result.source}.pmtiles`
-        : 'No elevation data';
-      L.popup()
-        .setLatLng(e.latlng)
-        .setContent(`<b>${text}</b><br>${lat.toFixed(5)}, ${lng.toFixed(5)}`)
-        .openOn(map);
-    });
-
-    // Regional max zoom is discovered per-location on first lookup
-  </script>
-</body>
+      // Regional max zoom is discovered per-location on first lookup
+    </script>
+  </body>
 </html>

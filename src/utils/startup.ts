@@ -1,20 +1,21 @@
 import { KeepAwake } from "@capacitor-community/keep-awake";
 import { Capacitor } from "@capacitor/core";
-import { Device } from '@capacitor/device';
+import { Device } from "@capacitor/device";
 
 import { ref, watch } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
 import { startBarometer, stopBarometer } from "../sensors/barometer";
 import { showDebugInfo } from "../composables/useAppState";
 import { useAppLifecycle } from "../composables/useAppLifecycle";
-import { initializeAndStartBLEScan, startBLEScan, cleanupBLE } from '../sensors/blesensors';
-import { startNetworkObserver, stopNetworkObserver } from '../sensors/network';
 import {
-  startTimer,
-  stopTimer,
-} from "./ticker";
-import { Share } from '@capacitor/share';
-import QRCode from 'qrcode';
+  initializeAndStartBLEScan,
+  startBLEScan,
+  cleanupBLE,
+} from "../sensors/blesensors";
+import { startNetworkObserver, stopNetworkObserver } from "../sensors/network";
+import { startTimer, stopTimer } from "./ticker";
+import { Share } from "@capacitor/share";
+import QRCode from "qrcode";
 // import { startScan } from "@/sensors/mdns";
 
 const isWeb = Capacitor.getPlatform() === "web";
@@ -33,10 +34,10 @@ const logBatteryInfo = async () => {
 const getDeviceId = async () => {
   try {
     const { identifier } = await Device.getId();
-    console.log('Device Unique ID:', identifier);
+    console.log("Device Unique ID:", identifier);
     return identifier;
   } catch (error) {
-    console.error('Error fetching device ID:', error);
+    console.error("Error fetching device ID:", error);
   }
 };
 
@@ -62,15 +63,14 @@ const cameToForeground = async () => {
     try {
       await startNetworkObserver();
     } catch (e) {
-      console.error('Failed to start startNetworkObserver in foreground:', e);
+      console.error("Failed to start startNetworkObserver in foreground:", e);
     }
     try {
       await startBLEScan();
     } catch (e) {
-      console.error('Failed to start BLE scanning in foreground:', e);
+      console.error("Failed to start BLE scanning in foreground:", e);
     }
     // startScan();
-
   }
   if (wakeLockAvailable.value) {
     if (!(await isKeptAwake())) {
@@ -90,7 +90,7 @@ const wentToBackground = async () => {
     try {
       await cleanupBLE();
     } catch (e) {
-      console.error('Failed to cleanup BLE in background:', e);
+      console.error("Failed to cleanup BLE in background:", e);
     }
     stopNetworkObserver();
   }
@@ -102,14 +102,12 @@ const wentToBackground = async () => {
   }
 };
 
-
-
 const shareData = async () => {
   await Share.share({
-    title: 'Shared Content',
-    text: 'Check this out!',
-    url: 'https://example.com',
-    dialogTitle: 'Share with',
+    title: "Shared Content",
+    text: "Check this out!",
+    url: "https://example.com",
+    dialogTitle: "Share with",
   });
 };
 
@@ -118,12 +116,12 @@ const generateQRCode = async (text: string): Promise<string> => {
   try {
     // Generate QR code as a data URL (base64-encoded PNG)
     const qrCodeDataUrl = await QRCode.toDataURL(text, {
-      errorCorrectionLevel: 'H', // High error correction
+      errorCorrectionLevel: "H", // High error correction
       width: 300, // Size of the QR code
     });
     return qrCodeDataUrl;
   } catch (error) {
-    console.error('Error generating QR code:', error);
+    console.error("Error generating QR code:", error);
     throw error;
   }
 };
@@ -133,18 +131,17 @@ const shareQRCode = async (text: string) => {
   try {
     // Generate QR code data URL
     const qrCodeDataUrl = await generateQRCode(text);
-    console.log(qrCodeDataUrl)
-
+    console.log(qrCodeDataUrl);
 
     // Share the QR code
     await Share.share({
-      title: 'My QR Code',
-      text: 'Scan this QR code',
+      title: "My QR Code",
+      text: "Scan this QR code",
       url: qrCodeDataUrl, // Data URL of the QR code image
-      dialogTitle: 'Share QR Code', // Used on Android
+      dialogTitle: "Share QR Code", // Used on Android
     });
   } catch (error) {
-    console.error('Error sharing QR code:', error);
+    console.error("Error sharing QR code:", error);
   }
 };
 const initializeApp = async () => {
@@ -182,12 +179,12 @@ const initializeApp = async () => {
     try {
       initializeAndStartBLEScan();
     } catch (e) {
-      console.error('Failed to initialize BLE scanning:', e);
+      console.error("Failed to initialize BLE scanning:", e);
     }
     try {
       await startNetworkObserver();
     } catch (e) {
-      console.error('Failed to start startNetworkObserver in foreground:', e);
+      console.error("Failed to start startNetworkObserver in foreground:", e);
     }
   }
   startTimer();
@@ -195,8 +192,4 @@ const initializeApp = async () => {
   console.log("App initialized and ready to use.");
 };
 
-export {
-  initializeApp,
-  wakeLockAvailable,
-  showDebugInfo,
-};
+export { initializeApp, wakeLockAvailable, showDebugInfo };

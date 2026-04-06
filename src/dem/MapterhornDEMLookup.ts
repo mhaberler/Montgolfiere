@@ -1,5 +1,5 @@
-import { PMTiles } from 'pmtiles';
-import { DEMLookup, ElevationResult } from './DEMLookup';
+import { PMTiles } from "pmtiles";
+import { DEMLookup, ElevationResult } from "./DEMLookup";
 
 const MAX_ZOOM_TRY = 15;
 
@@ -39,7 +39,7 @@ export class MapterhornDEMLookup extends DEMLookup {
     this.planetMaxZoom = this.demInfo.maxZoom;
 
     // Force terrarium encoding for Mapterhorn
-    this.demInfo.elevationEncoding = 'terrarium';
+    this.demInfo.elevationEncoding = "terrarium";
 
     // Set maxZoom to the highest we'll attempt — actual availability is per-location
     this.demInfo.maxZoom = MAX_ZOOM_TRY;
@@ -49,7 +49,9 @@ export class MapterhornDEMLookup extends DEMLookup {
     );
 
     if (this.debug) {
-      console.log(`Mapterhorn DEM: planet maxZoom=${this.planetMaxZoom}, will try up to z=${MAX_ZOOM_TRY}`);
+      console.log(
+        `Mapterhorn DEM: planet maxZoom=${this.planetMaxZoom}, will try up to z=${MAX_ZOOM_TRY}`,
+      );
     }
   }
 
@@ -72,7 +74,9 @@ export class MapterhornDEMLookup extends DEMLookup {
       this.pmtilesCache.set(name, instance);
 
       if (this.debug) {
-        console.log(`Created PMTiles instance for regional file: ${name}.pmtiles`);
+        console.log(
+          `Created PMTiles instance for regional file: ${name}.pmtiles`,
+        );
       }
     }
     return instance;
@@ -102,7 +106,10 @@ export class MapterhornDEMLookup extends DEMLookup {
     }
   }
 
-  override async getElevation(lat: number, lon: number): Promise<ElevationResult | null> {
+  override async getElevation(
+    lat: number,
+    lon: number,
+  ): Promise<ElevationResult | null> {
     if (!this.demInfo) {
       await this.initializeDEMInfo();
     }
@@ -114,7 +121,9 @@ export class MapterhornDEMLookup extends DEMLookup {
       const latRad = (lat * Math.PI) / 180;
       const n = Math.pow(2, zoom);
       const x = Math.floor(((lon + 180) / 360) * n);
-      const y = Math.floor(((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * n);
+      const y = Math.floor(
+        ((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * n,
+      );
 
       const tileData = await this.fetchTile(x, y, zoom);
       if (!tileData) {
@@ -136,15 +145,18 @@ export class MapterhornDEMLookup extends DEMLookup {
       // Extract pixel from tile
       const mapSize = tileSize * n;
       const pixelX = Math.floor(((lon + 180) / 360) * mapSize) % tileSize;
-      const pixelY = Math.floor(((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * mapSize) % tileSize;
+      const pixelY =
+        Math.floor(
+          ((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2) * mapSize,
+        ) % tileSize;
 
       try {
         const blob = new Blob([tileData]);
         const imageBitmap = await createImageBitmap(blob);
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = imageBitmap.width;
         canvas.height = imageBitmap.height;
-        const ctx = canvas.getContext('2d')!;
+        const ctx = canvas.getContext("2d")!;
         ctx.drawImage(imageBitmap, 0, 0);
 
         const cx = Math.max(0, Math.min(pixelX, canvas.width - 1));

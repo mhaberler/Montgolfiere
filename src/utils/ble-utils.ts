@@ -6,17 +6,25 @@
  */
 export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
   return Array.from(uint8Array)
-    .map((b: number) => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b: number) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 // Helper function to log DataView as hex
-export function logDataViewAsHex(dataView: DataView, prefix: string = 'DataView'): void {
-  const bytes = new Uint8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength);
-  const hexString = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+export function logDataViewAsHex(
+  dataView: DataView,
+  prefix: string = "DataView",
+): void {
+  const bytes = new Uint8Array(
+    dataView.buffer,
+    dataView.byteOffset,
+    dataView.byteLength,
+  );
+  const hexString = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(" ");
   console.log(`${prefix} (${dataView.byteLength} bytes): ${hexString}`);
 }
-
 
 /**
  * Serializes an object, converting any DataView attributes into a hexadecimal string
@@ -26,11 +34,23 @@ export function logDataViewAsHex(dataView: DataView, prefix: string = 'DataView'
  * @returns {string} The JSON string representation of the object.
  */
 export function serializeDataViewToHexString(obj: any): string {
-  return JSON.stringify(obj, (key: string, value: any) => {
-    if (value instanceof DataView) {
-      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      return { _type: "DataView", _encoding: "hex", data: uint8ArrayToHexString(uint8Array) };
-    }
-    return value;
-  }, 2);
+  return JSON.stringify(
+    obj,
+    (key: string, value: any) => {
+      if (value instanceof DataView) {
+        const uint8Array = new Uint8Array(
+          value.buffer,
+          value.byteOffset,
+          value.byteLength,
+        );
+        return {
+          _type: "DataView",
+          _encoding: "hex",
+          data: uint8ArrayToHexString(uint8Array),
+        };
+      }
+      return value;
+    },
+    2,
+  );
 }

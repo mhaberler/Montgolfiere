@@ -7,9 +7,11 @@ argument-hint: sensor-name manufacturer-id reference-implementation-or-spec
 Add a decoder for ${sensor-name} BLE sensors to the project.
 
 ## Reference Implementation
+
 ${Paste or describe the reference implementation, protocol specification, or data format}
 
 ## Requirements
+
 1. **Research Phase**: Examine existing decoders in the codebase to understand:
    - Binary data parsing patterns and utility functions
    - Standardized metric naming conventions
@@ -46,6 +48,7 @@ ${Paste or describe the reference implementation, protocol specification, or dat
    - Check UI displays metrics correctly
 
 ## Key Considerations
+
 - Match existing code style and patterns exactly
 - Pay attention to byte offset corrections (manufacturer data may exclude service UUID prefix)
 - Use appropriate data type methods (getUint8, getInt16, getUint32, etc.)

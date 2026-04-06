@@ -1,3 +1,76 @@
+# Virtual environments
+.venv
+venv
+env
+
+# Build artifacts
+dist
+dist.webtest
+build
+node_modules
+.gradle
+
+# Native builds
 ios
 android
+
+# Python cache and compiled
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+*.dylib
+*.jar
+*.whl
+
+# Package manager lockfiles
+bun.lock
+Gemfile.lock
+
+# Binary/media files
+*.jpeg
+*.jpg
+*.png
+*.gif
+*.webp
+*.ico
+*.icns
+*.exe
+*.zip
+*.tar
+*.gz
+
+# System
+.DS_Store
+Thumbs.db
+
+# IDE and config
+.idea
+.vscode
+.gradle
+
+# Project specific
 untracked
+fastlane/report.xml
+capacitor.config.json
+DerivedData
+
+# Config files prettier doesn't handle
+*.xml
+Gemfile
+Gemfile.lock
+Appfile
+Fastfile
+Matchfile
+Pluginfile
+.browserslistrc
+.env.sample
+.eslintignore
+.prettierignore
+.ruby-version
+VERSIONING
+*.rb
+*.py
+*.sh

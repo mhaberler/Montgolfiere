@@ -1,18 +1,18 @@
 // src/composables/useAppLifecycle.ts
-import { ref, type Ref } from 'vue'
-import { App } from '@capacitor/app'
+import { ref, type Ref } from "vue";
+import { App } from "@capacitor/app";
 
 // --- Singleton state ---
-const isActive = ref<boolean>(true)
-let listenerRegistered = false
+const isActive = ref<boolean>(true);
+let listenerRegistered = false;
 
 function registerListener() {
-  if (listenerRegistered) return
-  listenerRegistered = true
+  if (listenerRegistered) return;
+  listenerRegistered = true;
 
-  App.addListener('appStateChange', (state) => {
-    isActive.value = state.isActive
-  })
+  App.addListener("appStateChange", (state) => {
+    isActive.value = state.isActive;
+  });
 }
 
 /**
@@ -20,8 +20,8 @@ function registerListener() {
  * Uses @capacitor/app which handles native (iOS/Android) and web (Page Visibility API).
  */
 export function useAppLifecycle() {
-  registerListener()
+  registerListener();
   return {
-    isActive: isActive as Ref<boolean>
-  }
+    isActive: isActive as Ref<boolean>,
+  };
 }

@@ -3,6 +3,7 @@ name: stabilizeNumericDisplay
 description: Stabilize numeric value display so the layout doesn't shift when values change sign.
 argument-hint: The selected code containing a numeric value display element
 ---
+
 Analyze the selected code that displays a numeric value and fix layout instability caused by sign changes (e.g., positive to negative).
 
 Apply these techniques:

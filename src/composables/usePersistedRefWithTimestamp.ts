@@ -1,5 +1,5 @@
-import { ref, watch, type Ref } from 'vue';
-import { Preferences } from '@capacitor/preferences';
+import { ref, watch, type Ref } from "vue";
+import { Preferences } from "@capacitor/preferences";
 
 /**
  * A composable that provides a reactive ref whose value is persisted
@@ -16,52 +16,55 @@ import { Preferences } from '@capacitor/preferences';
 
 // Option 1: Store value and timestamp together
 export function usePersistedRefWithTimestamp<T>(
-    key: string,
-    defaultValue: T
-): { value: Ref<T>, timestamp: Ref<number> } {
-    const value = ref(defaultValue) as Ref<T>;
-    const timestamp = ref(0);
+  key: string,
+  defaultValue: T,
+): { value: Ref<T>; timestamp: Ref<number> } {
+  const value = ref(defaultValue) as Ref<T>;
+  const timestamp = ref(0);
 
-    const loadData = async () => {
+  const loadData = async () => {
+    try {
+      const { value: stored } = await Preferences.get({ key });
+      if (stored !== null) {
         try {
-            const { value: stored } = await Preferences.get({ key });
-            if (stored !== null) {
-                try {
-                    const payload = JSON.parse(stored);
-                    value.value = payload.value as T;
-                    timestamp.value = payload.timestamp ?? 0;
-                } catch (e) {
-                    console.warn(`Could not parse stored value for key "${key}". Using default.`, e);
-                    value.value = defaultValue;
-                    timestamp.value = 0;
-                }
-            }
-        } catch (error) {
-            console.error(`Error loading preference for "${key}":`, error);
-            value.value = defaultValue;
-            timestamp.value = 0;
+          const payload = JSON.parse(stored);
+          value.value = payload.value as T;
+          timestamp.value = payload.timestamp ?? 0;
+        } catch (e) {
+          console.warn(
+            `Could not parse stored value for key "${key}". Using default.`,
+            e,
+          );
+          value.value = defaultValue;
+          timestamp.value = 0;
         }
-    };
+      }
+    } catch (error) {
+      console.error(`Error loading preference for "${key}":`, error);
+      value.value = defaultValue;
+      timestamp.value = 0;
+    }
+  };
 
-    loadData();
+  loadData();
 
-    const saveData = async () => {
-        try {
-            const payload = {
-                value: value.value,
-                timestamp: Date.now(),
-            };
-            await Preferences.set({ key, value: JSON.stringify(payload) });
-            timestamp.value = payload.timestamp;
-        } catch (error) {
-            console.error(`Error saving preference for "${key}":`, error);
-        }
-    };
+  const saveData = async () => {
+    try {
+      const payload = {
+        value: value.value,
+        timestamp: Date.now(),
+      };
+      await Preferences.set({ key, value: JSON.stringify(payload) });
+      timestamp.value = payload.timestamp;
+    } catch (error) {
+      console.error(`Error saving preference for "${key}":`, error);
+    }
+  };
 
-    // Watch with deep enabled to catch nested object changes
-    watch(value, saveData, {
-        deep: true,
-    });
+  // Watch with deep enabled to catch nested object changes
+  watch(value, saveData, {
+    deep: true,
+  });
 
-    return { value, timestamp };
+  return { value, timestamp };
 }

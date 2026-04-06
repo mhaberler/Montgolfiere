@@ -1,32 +1,32 @@
 {
-    "java.configuration.updateBuildConfiguration": "disabled",
-     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "css.validate": false,
-    "editor.quickSuggestions": {
-        "strings": true
-    },
-    "tailwindCSS.includeLanguages": {
-        "vue": "html"
-    },
-    "gitingest.ignorePatterns": [
-        "**/.git/**",
-        "**/node_modules/**",
-        "**/__pycache__/**",
-        "dist/**",
-        "android/**",
-        "ios/**",
-        "untracked/**",
-        ".venv/*",
-        "tests/**",
-        ".capgo*",
-        "**ipa",
-        "python/**",
-        "scripts/**"
-    ]
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "css.validate": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "vue": "html"
+  },
+  "gitingest.ignorePatterns": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/__pycache__/**",
+    "dist/**",
+    "android/**",
+    "ios/**",
+    "untracked/**",
+    ".venv/*",
+    "tests/**",
+    ".capgo*",
+    "**ipa",
+    "python/**",
+    "scripts/**"
+  ]
 }

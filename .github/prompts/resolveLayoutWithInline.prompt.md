@@ -9,11 +9,13 @@ argument-hint: The component file path and description of the layout problem (e.
 When CSS class-based layouts aren't applying in Vue components (likely due to scoping, specificity, or Tailwind conflicts), use inline `style` attributes as a direct, high-specificity override.
 
 ## Problem Identification
+
 - Elements are stacking or misaligning despite correct CSS classes
 - Flex or grid properties don't seem to be taking effect
 - The issue persists across multiple CSS rewrite attempts
 
 ## Solution Approach
+
 1. Identify the container element that needs layout control (e.g., a row or list item)
 2. Remove problematic class-based layout utilities (e.g., `class="flex justify-between"` or `class="grid grid-cols-..."`)
 3. Apply layout directly via inline styles: `style="display: grid; grid-template-columns: 1fr auto; align-items: center;"`
@@ -21,6 +23,7 @@ When CSS class-based layouts aren't applying in Vue components (likely due to sc
 5. Test to confirm buttons/elements now appear side-by-side at proper vertical alignment
 
 ## Example Fix Pattern
+
 ```vue
 <!-- Before: CSS classes not working -->
 <div class="broker-row" :class="{ highlight: isActive }">
@@ -37,6 +40,7 @@ When CSS class-based layouts aren't applying in Vue components (likely due to sc
 ```
 
 ## Why This Works
+
 - Inline styles have the highest CSS specificity
 - They bypass scoped style limitations in Vue SFCs
 - Grid layout guarantees proper alignment without flex wrapping issues

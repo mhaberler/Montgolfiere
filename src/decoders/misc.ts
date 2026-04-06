@@ -12,7 +12,7 @@ export const volt2percent = function (voltage: number) {
 export function bytesToMacAddress(
   dataView: DataView,
   byteOffset = 0,
-  length = 6
+  length = 6,
 ) {
   // Ensure we have at least 6 bytes available
   if (dataView.byteLength - byteOffset < length) {

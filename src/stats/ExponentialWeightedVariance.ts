@@ -16,105 +16,106 @@
  * Lower alpha = smoother, more historical weight
  */
 export class ExponentialWeightedVariance {
-    private alpha: number;
-    private meanValue: number = 0;
-    private varianceValue: number = 0;
-    private count: number = 0;
+  private alpha: number;
+  private meanValue: number = 0;
+  private varianceValue: number = 0;
+  private count: number = 0;
 
-    /**
-     * Constructor for ExponentialWeightedVariance
-     * @param alpha Weight on new data (0 < alpha <= 1), defaults to 0.1
-     */
-    constructor(alpha: number = 0.1) {
-        this.alpha = alpha;
-    }
+  /**
+   * Constructor for ExponentialWeightedVariance
+   * @param alpha Weight on new data (0 < alpha <= 1), defaults to 0.1
+   */
+  constructor(alpha: number = 0.1) {
+    this.alpha = alpha;
+  }
 
-    /**
-     * Get the current alpha (weight on new data)
-     * @return The alpha value
-     */
-    getAlpha(): number {
-        return this.alpha;
-    }
+  /**
+   * Get the current alpha (weight on new data)
+   * @return The alpha value
+   */
+  getAlpha(): number {
+    return this.alpha;
+  }
 
-    /**
-     * Set the alpha (weight on new data)
-     * @param alpha Weight on new data (0 < alpha <= 1)
-     */
-    setAlpha(alpha: number): void {
-        this.alpha = alpha;
-    }
+  /**
+   * Set the alpha (weight on new data)
+   * @param alpha Weight on new data (0 < alpha <= 1)
+   */
+  setAlpha(alpha: number): void {
+    this.alpha = alpha;
+  }
 
-    /**
-     * Get the current exponentially weighted mean
-     * @return The mean value
-     */
-    mean(): number {
-        return this.meanValue;
-    }
+  /**
+   * Get the current exponentially weighted mean
+   * @return The mean value
+   */
+  mean(): number {
+    return this.meanValue;
+  }
 
-    /**
-     * Get the current exponentially weighted variance
-     * @return The variance value
-     */
-    variance(): number {
-        return this.varianceValue;
-    }
+  /**
+   * Get the current exponentially weighted variance
+   * @return The variance value
+   */
+  variance(): number {
+    return this.varianceValue;
+  }
 
-    /**
-     * Get the standard deviation
-     * @return The standard deviation (sqrt of variance)
-     */
-    standardDeviation(): number {
-        return Math.sqrt(this.varianceValue);
-    }
+  /**
+   * Get the standard deviation
+   * @return The standard deviation (sqrt of variance)
+   */
+  standardDeviation(): number {
+    return Math.sqrt(this.varianceValue);
+  }
 
-    /**
-     * Get the number of data points processed
-     * @return Number of data points
-     */
-    numDataValues(): number {
-        return this.count;
-    }
+  /**
+   * Get the number of data points processed
+   * @return Number of data points
+   */
+  numDataValues(): number {
+    return this.count;
+  }
 
-    /**
-     * Add a new data point and update the statistics
-     * @param x The new value to add
-     */
-    push(x: number): void {
-        const diff = x - this.meanValue;
-        const incr = this.alpha * diff;
-        this.meanValue += incr;
-        this.varianceValue = (1.0 - this.alpha) * (this.varianceValue + diff * incr);
-        this.count++;
-    }
+  /**
+   * Add a new data point and update the statistics
+   * @param x The new value to add
+   */
+  push(x: number): void {
+    const diff = x - this.meanValue;
+    const incr = this.alpha * diff;
+    this.meanValue += incr;
+    this.varianceValue =
+      (1.0 - this.alpha) * (this.varianceValue + diff * incr);
+    this.count++;
+  }
 
-    /**
-     * Reset all statistics to initial state
-     */
-    clear(): void {
-        this.meanValue = 0;
-        this.varianceValue = 0;
-        this.count = 0;
-    }
+  /**
+   * Reset all statistics to initial state
+   */
+  clear(): void {
+    this.meanValue = 0;
+    this.varianceValue = 0;
+    this.count = 0;
+  }
 
-    /**
-     * Check if any data has been processed
-     * @return True if at least one data point has been added
-     */
-    isInitialized(): boolean {
-        return this.count > 0;
-    }
+  /**
+   * Check if any data has been processed
+   * @return True if at least one data point has been added
+   */
+  isInitialized(): boolean {
+    return this.count > 0;
+  }
 
-    /**
-     * Clone this ExponentialWeightedVariance instance
-     * @return A new instance with the same state
-     */
-    clone(): ExponentialWeightedVariance {
-        const copy = new ExponentialWeightedVariance(this.alpha);
-        copy.meanValue = this.meanValue;
-        copy.varianceValue = this.varianceValue;
-        copy.count = this.count;
-        return copy;
-    }
+  /**
+   * Clone this ExponentialWeightedVariance instance
+   * @return A new instance with the same state
+   */
+  clone(): ExponentialWeightedVariance {
+    const copy = new ExponentialWeightedVariance(this.alpha);
+    copy.meanValue = this.meanValue;
+    copy.varianceValue = this.varianceValue;
+    copy.count = this.count;
+    return copy;
+  }
 }

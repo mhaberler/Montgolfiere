@@ -1,6 +1,5 @@
 # Montgolfiere app
 
-
 ## build
 
 - npm install
@@ -9,25 +8,22 @@
 - npx cap open android
 - npx cap open ios
 
-
 ## Debugging on-target
 
-works for the web part on-device. Requires Safari for iOS. 
+works for the web part on-device. Requires Safari for iOS.
 Chrome Canary works great for Android - suggested.
 
 For bridge/plugin problems use Xcode.
-
 
 see also: https://ionicframework.com/docs/v3/developer-resources/developer-tips/
 
 ### Suggested tools
 
-
 Using brew, install libimobiledevice - handy for iOS logging:
 `brew install libimobiledevice`
 
 Once done, connect idevice to mac and type in terminal
-    `idevicesyslog`
+`idevicesyslog`
 
 Also Xcode, Android Studio and fastlane.
 
@@ -49,15 +45,14 @@ I have several devices connect - to figure out device ids:
 NB: I found autodetection of the client can fail if interfaces with static IP are used on the host
 so it may be better to explicitely specify a host with `--host <ip-address`:
 
-- npx cap run ios --live-reload --host `<ip-address>`--port 8100  --target `<device-id>`
-- npx cap run android --live-reload --host `<ip-address>`--port 8100  --target `<device-id>`
+- npx cap run ios --live-reload --host `<ip-address>`--port 8100 --target `<device-id>`
+- npx cap run android --live-reload --host `<ip-address>`--port 8100 --target `<device-id>`
 
 The android variant above works for debugging but does not mirror the device screen.
 
 The following command mirrors the screen in DevTools; it starts its own dev server though:
 
-- ionic cap run android --livereload --external --public-host `<ip-address>`- --port=8100 --target  `<device-id>`
-
+- ionic cap run android --livereload --external --public-host `<ip-address>`- --port=8100 --target `<device-id>`
 
 ### Debug in Safari
 
