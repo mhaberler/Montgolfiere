@@ -162,9 +162,9 @@ const statusColor = computed(() => {
   const diff = Math.floor(
     (props.tick.getTime() - lastUpdated.value.getTime()) / 1000,
   );
-  if (diff < ok) return "green";
-  if (diff < warning) return "yellow";
-  if (diff < timedOut) return "orange";
+  if (diff < props.ok) return "green";
+  if (diff < props.warning) return "yellow";
+  if (diff < props.timedOut) return "orange";
   return "red";
 });
 

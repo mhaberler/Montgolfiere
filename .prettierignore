@@ -74,3 +74,4 @@ VERSIONING
 *.rb
 *.py
 *.sh
+*.tsbuildinfo
