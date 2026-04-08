@@ -1,13 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-gray-50">
-    <header class="border-b border-gray-200 bg-white">
-      <AppPageToolbar class="safe-top safe-left safe-right">
-        <template #leading>
-          <h1 class="pl-2 text-lg font-semibold text-gray-800">Flight status</h1>
-        </template>
-      </AppPageToolbar>
-    </header>
-
+  <div class="flex min-h-0 flex-1 flex-col bg-gray-50">
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
       <div class="bg-white shadow-xl rounded-xl">
@@ -246,7 +238,6 @@
 
 <script setup lang="ts">
 import AppPageContent from "@/components/layout/AppPageContent.vue";
-import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import { useRouter } from "vue-router";
 import { ref, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { metersToFeet } from "../utils/meteo-utils";

@@ -1,10 +1,8 @@
 <template>
   <div class="flex min-h-screen flex-col bg-white">
-    <router-view class="flex-1"></router-view>
-
     <nav
       id="tab-bar"
-      class="safe-bottom border-t border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/85"
+      class="safe-top sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/85"
     >
       <div class="grid gap-1 px-2 py-2" :class="showDebugInfo ? 'grid-cols-5' : 'grid-cols-3'">
         <button
@@ -16,19 +14,20 @@
           @click="navigateTo(tab.href)"
         >
           <AppTabIcon :name="tab.icon" />
-          <span class="truncate">{{ tab.label }}</span>
+          <span class="truncate text-[12px]">{{ tab.label }}</span>
         </button>
       </div>
     </nav>
+
+    <router-view class="min-h-0 flex-1"></router-view>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppTabIcon from '@/components/layout/AppTabIcon.vue'
-import { showDebugInfo } from "@/composables/useAppState";
-// import { StatusBar, Style } from '@capacitor/status-bar';
+import { showDebugInfo } from '@/composables/useAppState'
 
 type TabIconName = 'status' | 'sensors' | 'scan' | 'mqtt' | 'settings'
 
@@ -54,9 +53,6 @@ const visibleTabs = computed(() =>
   tabs.filter((tab) => !tab.debugOnly || showDebugInfo.value),
 )
 
-const INACTIVITY_TIME = 5 * 1000; // seconds
-let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
 const navigateTo = (href: string) => {
   if (route.path !== href) {
     router.push(href)
@@ -64,44 +60,4 @@ const navigateTo = (href: string) => {
 }
 
 const isActiveTab = (href: string) => route.path === href
-
-const resetTimer = () => {
-  clearTimeout(timeoutId);
-  showTabs();
-  timeoutId = setTimeout(hideTabs, INACTIVITY_TIME);
-};
-
-const hideTabs = () => {
-  const tabBar = document.querySelector("#tab-bar") as HTMLElement;
-  if (tabBar) tabBar.style.display = "none";
-  // StatusBar.hide();
-};
-
-const showTabs = () => {
-  const tabBar = document.querySelector("#tab-bar") as HTMLElement;
-  if (tabBar) tabBar.style.display = "block";
-  // StatusBar.show();
-};
-
-const setupActivityListeners = () => {
-  ["click", "mousemove", "keypress", "scroll"].forEach((event) => {
-    document.addEventListener(event, resetTimer);
-  });
-};
-
-const removeActivityListeners = () => {
-  ["click", "mousemove", "keypress", "scroll"].forEach((event) => {
-    document.removeEventListener(event, resetTimer);
-  });
-};
-
-onMounted(() => {
-  resetTimer();
-  setupActivityListeners();
-});
-
-onUnmounted(() => {
-  clearTimeout(timeoutId);
-  removeActivityListeners();
-});
 </script>

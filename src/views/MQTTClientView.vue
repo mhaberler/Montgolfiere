@@ -1,12 +1,24 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-gray-50">
-    <header class="border-b border-gray-200 bg-white">
-      <AppPageToolbar class="safe-top safe-left safe-right">
-        <template #leading>
-          <span class="ml-2 text-lg font-bold text-gray-500">MQTT test</span>
-        </template>
-
-        <template #trailing>
+  <div class="flex min-h-0 flex-1 flex-col bg-gray-50">
+    <main class="flex-1 overflow-auto w-full bg-gray-50">
+      <AppPageContent content-class="safe-bottom w-full bg-gray-50">
+        <!-- Header row: name + status dot + buttons -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 min-w-0 flex-1">
+            <div
+              :class="[
+                'w-3 h-3 rounded-full shrink-0',
+                mqttConn.isTrying.value
+                  ? 'bg-warning animate-pulse'
+                  : mqttConn.isConnected.value
+                    ? 'bg-success shadow-[0_0_6px_rgba(76,175,80,0.6)]'
+                    : 'bg-error',
+              ]"
+            ></div>
+            <div class="text-sm md:text-sm font-bold text-gray-800 truncate">
+              {{ serviceName }}>
+            </div>
+          </div>
           <button
             :class="[
               'btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 font-bold whitespace-nowrap',
@@ -31,35 +43,6 @@
                   : 'Connect'
             }}
           </button>
-          <button
-            @click="goBack"
-            class="btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold"
-          >
-            ← Back
-          </button>
-        </template>
-      </AppPageToolbar>
-    </header>
-
-    <main class="flex-1 overflow-auto w-full bg-gray-50">
-      <AppPageContent content-class="safe-bottom w-full bg-gray-50">
-        <!-- Header row: name + status dot + buttons -->
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2 min-w-0 flex-1">
-            <div
-              :class="[
-                'w-3 h-3 rounded-full shrink-0',
-                mqttConn.isTrying.value
-                  ? 'bg-warning animate-pulse'
-                  : mqttConn.isConnected.value
-                    ? 'bg-success shadow-[0_0_6px_rgba(76,175,80,0.6)]'
-                    : 'bg-error',
-              ]"
-            ></div>
-            <div class="text-sm md:text-sm font-bold text-gray-800 truncate">
-              {{ serviceName }}>
-            </div>
-          </div>
         </div>
 
         <!-- Broker URL text-[9px] md:text-[10px]-->
@@ -218,9 +201,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
-import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import {
   useMqttConnection,
 } from "../composables/useMqttConnection";
@@ -231,11 +213,9 @@ export default defineComponent({
   name: "MQTTClientView",
   components: {
     AppPageContent,
-    AppPageToolbar,
   },
   setup() {
     const route = useRoute();
-    const router = useRouter();
     const mqttConn = useMqttConnection();
 
     // Build service from query params (backward compat) or use connected broker
@@ -276,11 +256,6 @@ export default defineComponent({
       }
     };
 
-    const goBack = () => {
-      // Don't disconnect — connection persists in background
-      router.back();
-    };
-
     onMounted(() => {
       mqttConn.clearMessages();
       mqttConn.addMessage("system", `Configured for ${serviceName.value}`);
@@ -306,7 +281,6 @@ export default defineComponent({
       mqttConn,
       connectToBroker,
       publishMessageToTopic,
-      goBack,
     };
   },
 });

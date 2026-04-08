@@ -1,15 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-gray-50">
-    <header class="border-b border-gray-200 bg-white">
-      <AppPageToolbar class="safe-top safe-left safe-right">
-        <template #leading>
-          <h1 class="text-lg font-semibold text-gray-700">
-            MQTT/MQTT-WS mDNS Scanner
-          </h1>
-        </template>
-      </AppPageToolbar>
-    </header>
-
+  <div class="flex min-h-0 flex-1 flex-col bg-gray-50">
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
         <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -163,7 +153,6 @@ import { useRouter } from "vue-router";
 import { Capacitor } from "@capacitor/core";
 import { ZeroConf } from "@mhaberler/capacitor-zeroconf-nsd";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
-import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 
 function removeLeadingAndTrailingDots(str: string): string {
   // The regular expression to match leading or trailing dots

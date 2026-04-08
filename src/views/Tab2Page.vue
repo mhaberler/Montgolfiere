@@ -1,26 +1,16 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-white">
-    <header class="border-b border-gray-200 bg-white">
-      <AppPageToolbar class="safe-top safe-left safe-right">
-        <template #leading>
-          <h1 class="pl-2 text-lg font-semibold text-gray-800">BLE Scanner</h1>
-        </template>
-
-        <template #trailing>
-          <div class="flex items-center gap-2">
-            <button class="btn btn-primary text-sm" @click="clearBLEDevices">
-              Clear
-            </button>
-            <button class="btn btn-primary text-sm" @click="restartBLEScan">
-              Restart
-            </button>
-          </div>
-        </template>
-      </AppPageToolbar>
-    </header>
-
+  <div class="flex min-h-0 flex-1 flex-col bg-white">
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom" padded>
+        <div class="mb-4 flex items-center justify-end gap-2">
+          <button class="btn btn-primary text-sm" @click="clearBLEDevices">
+            Clear
+          </button>
+          <button class="btn btn-primary text-sm" @click="restartBLEScan">
+            Restart
+          </button>
+        </div>
+
         <div v-if="sortedDevices.length > 0" class="overflow-hidden rounded-lg border border-gray-200 bg-white">
           <div
             v-for="device in sortedDevices"
@@ -118,7 +108,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
-import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 
 // Import BLE state and functions directly from sensor module
 import {
