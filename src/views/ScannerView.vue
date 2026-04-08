@@ -1,18 +1,16 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <AppPageToolbar class="safe-top safe-left safe-right">
-          <template #leading>
-            <h1 class="text-lg font-semibold text-gray-700">
-              MQTT/MQTT-WS mDNS Scanner
-            </h1>
-          </template>
-        </AppPageToolbar>
-      </ion-toolbar>
-    </ion-header>
+  <div class="flex min-h-screen flex-col bg-gray-50">
+    <header class="border-b border-gray-200 bg-white">
+      <AppPageToolbar class="safe-top safe-left safe-right">
+        <template #leading>
+          <h1 class="text-lg font-semibold text-gray-700">
+            MQTT/MQTT-WS mDNS Scanner
+          </h1>
+        </template>
+      </AppPageToolbar>
+    </header>
 
-    <ion-content :fullscreen="true">
+    <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
         <ion-card>
           <ion-card-header>
@@ -155,8 +153,8 @@
           </ion-list>
         </div>
       </AppPageContent>
-    </ion-content>
-  </ion-page>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -165,9 +163,6 @@ import { useRouter } from "vue-router";
 import { Capacitor } from "@capacitor/core";
 import { ZeroConf } from "@mhaberler/capacitor-zeroconf-nsd";
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
   IonContent,
   IonCard,
   IonCardHeader,
