@@ -5,23 +5,22 @@
       class="safe-top sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/85"
     >
       <div
-        class="grid gap-1 px-2 py-2"
+        class="grid gap-2 px-3 py-2"
         :class="showDebugInfo ? 'grid-cols-5' : 'grid-cols-3'"
       >
         <button
           v-for="tab in visibleTabs"
           :key="tab.href"
           type="button"
-          class="flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium transition-colors"
+          class="min-w-0 rounded-lg px-3 py-2 text-sm font-semibold leading-none transition-colors"
           :class="
             isActiveTab(tab.href)
-              ? 'bg-sky-50 text-sky-700'
-              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'
+              ? 'bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100'
+              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
           "
           @click="navigateTo(tab.href)"
         >
-          <AppTabIcon :name="tab.icon" />
-          <span class="truncate text-[12px]">{{ tab.label }}</span>
+          <span class="block truncate">{{ tab.label }}</span>
         </button>
       </div>
     </nav>
@@ -33,15 +32,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import AppTabIcon from "@/components/layout/AppTabIcon.vue";
 import { showDebugInfo } from "@/composables/useAppState";
-
-type TabIconName = "status" | "sensors" | "scan" | "mqtt" | "settings";
 
 type TabItem = {
   href: string;
   label: string;
-  icon: TabIconName;
   debugOnly?: boolean;
 };
 
@@ -49,11 +44,11 @@ const router = useRouter();
 const route = useRoute();
 
 const tabs: TabItem[] = [
-  { href: "/tabs/tab1", label: "Status", icon: "status" },
-  { href: "/tabs/tab2", label: "Sensors", icon: "sensors" },
-  { href: "/tabs/mdns", label: "Scan", icon: "scan", debugOnly: true },
-  { href: "/tabs/mqtt", label: "MQTT", icon: "mqtt", debugOnly: true },
-  { href: "/tabs/settings", label: "Settings", icon: "settings" },
+  { href: "/tabs/tab1", label: "Status" },
+  { href: "/tabs/tab2", label: "Sensors" },
+  { href: "/tabs/mdns", label: "Scan", debugOnly: true },
+  { href: "/tabs/mqtt", label: "MQTT", debugOnly: true },
+  { href: "/tabs/settings", label: "Settings" },
 ];
 
 const visibleTabs = computed(() =>
