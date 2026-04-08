@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
   --color-primary: #2196f3;
   --color-success: #4caf50;
   --color-error: #f44336;
@@ -23,8 +27,68 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right)
-    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom)
+    var(--safe-area-left);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.safe-top {
+  padding-top: var(--safe-area-top);
+}
+
+.safe-right {
+  padding-right: var(--safe-area-right);
+}
+
+.safe-bottom {
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.safe-left {
+  padding-left: var(--safe-area-left);
+}
+
+.app-page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.app-page-toolbar__leading,
+.app-page-toolbar__trailing {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.app-page-toolbar__title {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.app-page-content {
+  min-height: 100%;
+}
+
+.app-page-content--padded {
+  padding: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .app-page-toolbar {
+    padding-inline: 1rem;
+  }
+
+  .app-page-content--padded {
+    padding: 1.5rem;
+  }
 }
 
 /* Base button reset for non-Tailwind buttons (fallback) */

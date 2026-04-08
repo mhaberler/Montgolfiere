@@ -2,46 +2,49 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <div slot="start" class="flex items-center">
-          <span class="ml-2 text-lg font-bold text-gray-500">MQTT test</span>
-        </div>
-        <div slot="end" class="flex gap-2 shrink-0 pr-2">
-          <button
-            :class="[
-              'btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 font-bold whitespace-nowrap',
-              mqttConn.isConnected.value
-                ? 'btn-danger'
-                : mqttConn.isTrying.value
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'btn-primary',
-            ]"
-            @click="
-              mqttConn.isConnected.value
-                ? mqttConn.disconnect()
-                : connectToBroker()
-            "
-            :disabled="mqttConn.isTrying.value"
-          >
-            {{
-              mqttConn.isConnected.value
-                ? "Disconnect"
-                : mqttConn.isTrying.value
-                  ? "Connecting"
-                  : "Connect"
-            }}
-          </button>
-          <button
-            @click="goBack"
-            class="btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold"
-          >
-            ← Back
-          </button>
-        </div>
+        <AppPageToolbar class="safe-top safe-left safe-right">
+          <template #leading>
+            <span class="ml-2 text-lg font-bold text-gray-500">MQTT test</span>
+          </template>
+
+          <template #trailing>
+            <button
+              :class="[
+                'btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 font-bold whitespace-nowrap',
+                mqttConn.isConnected.value
+                  ? 'btn-danger'
+                  : mqttConn.isTrying.value
+                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    : 'btn-primary',
+              ]"
+              @click="
+                mqttConn.isConnected.value
+                  ? mqttConn.disconnect()
+                  : connectToBroker()
+              "
+              :disabled="mqttConn.isTrying.value"
+            >
+              {{
+                mqttConn.isConnected.value
+                  ? 'Disconnect'
+                  : mqttConn.isTrying.value
+                    ? 'Connecting'
+                    : 'Connect'
+              }}
+            </button>
+            <button
+              @click="goBack"
+              class="btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold"
+            >
+              ← Back
+            </button>
+          </template>
+        </AppPageToolbar>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true" class="w-full min-h-screen bg-gray-50">
-      <div class="p-3 md:p-6">
+      <AppPageContent content-class="safe-bottom w-full bg-gray-50">
         <!-- Header row: name + status dot + buttons -->
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2 min-w-0 flex-1">
@@ -78,7 +81,7 @@
           </p>
           <button
             @click="mqttConn.error.value = null"
-            class="w-6 h-6 flex items-center justify-center text-error/40 hover:text-error text-lg font-bold flex-shrink-0"
+            class="w-6 h-6 flex items-center justify-center text-error/40 hover:text-error text-lg font-bold shrink-0"
           >
             ×
           </button>
@@ -127,7 +130,7 @@
 
         <!-- Messages section -->
         <div
-          class="bg-white rounded-lg shadow-sm border border-gray-100 flex flex-col min-h-[300px] md:min-h-[400px]"
+          class="bg-white rounded-lg shadow-sm border border-gray-100 flex flex-col min-h-75 md:min-h-100"
         >
           <div
             class="p-1 border-b border-gray-50 flex justify-between items-center"
@@ -190,16 +193,16 @@
               <div class="flex justify-between items-start gap-2 mb-1">
                 <span
                   v-if="message.topic !== 'system'"
-                  class="text-[9px] font-bold font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary flex-shrink-0"
+                  class="text-[9px] font-bold font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary shrink-0"
                   >{{ message.topic }}</span
                 >
                 <span
                   v-else
-                  class="text-[9px] font-bold font-mono text-gray-400 uppercase flex-shrink-0"
+                  class="text-[9px] font-bold font-mono text-gray-400 uppercase shrink-0"
                   >SYS</span
                 >
                 <span
-                  class="text-[9px] font-mono text-gray-300 ml-auto flex-shrink-0"
+                  class="text-[9px] font-mono text-gray-300 ml-auto shrink-0"
                   >{{ message.timestamp }}</span
                 >
               </div>
@@ -210,7 +213,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </AppPageContent>
     </ion-content>
   </ion-page>
 </template>
@@ -222,12 +225,12 @@ import {
   IonPage,
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonContent,
 } from "@ionic/vue";
+import AppPageContent from "@/components/layout/AppPageContent.vue";
+import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import {
   useMqttConnection,
-  buildBrokerUrl,
 } from "../composables/useMqttConnection";
 import { useAppLifecycle } from "../composables/useAppLifecycle";
 import type { ServiceEntry } from "../composables/useAppState";
@@ -238,8 +241,9 @@ export default defineComponent({
     IonPage,
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonContent,
+    AppPageContent,
+    AppPageToolbar,
   },
   setup() {
     const route = useRoute();
