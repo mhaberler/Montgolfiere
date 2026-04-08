@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-screen flex-col bg-white">
-    <ion-router-outlet class="flex-1"></ion-router-outlet>
+    <router-view class="flex-1"></router-view>
 
     <nav
       id="tab-bar"
@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { IonRouterOutlet } from '@ionic/vue'
 import AppTabIcon from '@/components/layout/AppTabIcon.vue'
 import { showDebugInfo } from "@/composables/useAppState";
 // import { StatusBar, Style } from '@capacitor/status-bar';

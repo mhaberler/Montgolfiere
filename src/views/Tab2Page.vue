@@ -1,23 +1,26 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title
-          class="[&.ios]:static [&.ios]:text-left [&.ios]:pl-4 [&.ios]:pb-2 [&.md]:pl-4"
-          >BLE Scanner</ion-title
-        >
-        <ion-buttons slot="end">
-          <ion-button fill="solid" color="primary" @click="clearBLEDevices">
-            Clear
-          </ion-button>
-          <ion-button fill="solid" color="primary" @click="restartBLEScan">
-            Restart
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content :fullscreen="true">
-      <div class="p-2 flex flex-col gap-1">
+  <div class="flex min-h-screen flex-col bg-white">
+    <header class="border-b border-gray-200 bg-white">
+      <AppPageToolbar class="safe-top safe-left safe-right">
+        <template #leading>
+          <h1 class="pl-2 text-lg font-semibold text-gray-800">BLE Scanner</h1>
+        </template>
+
+        <template #trailing>
+          <div class="flex items-center gap-2">
+            <ion-button fill="solid" color="primary" @click="clearBLEDevices">
+              Clear
+            </ion-button>
+            <ion-button fill="solid" color="primary" @click="restartBLEScan">
+              Restart
+            </ion-button>
+          </div>
+        </template>
+      </AppPageToolbar>
+    </header>
+
+    <main class="flex-1 overflow-auto">
+      <AppPageContent content-class="safe-bottom" padded>
         <ion-list v-if="sortedDevices.length > 0">
           <div
             v-for="device in sortedDevices"
@@ -118,19 +121,14 @@
         <ion-text color="danger" v-if="bleErrorMsg">
           {{ bleErrorMsg }}
         </ion-text>
-      </div>
-    </ion-content>
-  </ion-page>
+      </AppPageContent>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
   IonButton,
   IonList,
   IonItem,
@@ -142,6 +140,8 @@ import {
   IonAccordionGroup,
   IonAccordion,
 } from "@ionic/vue";
+import AppPageContent from "@/components/layout/AppPageContent.vue";
+import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 
 // Import BLE state and functions directly from sensor module
 import {

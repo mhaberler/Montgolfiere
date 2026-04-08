@@ -163,7 +163,6 @@ import { useRouter } from "vue-router";
 import { Capacitor } from "@capacitor/core";
 import { ZeroConf } from "@mhaberler/capacitor-zeroconf-nsd";
 import {
-  IonContent,
   IonCard,
   IonCardHeader,
   IonCardTitle,

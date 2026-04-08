@@ -1,11 +1,15 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Settings</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content :fullscreen="true">
+  <div class="flex min-h-screen flex-col bg-gray-50">
+    <header class="border-b border-gray-200 bg-white">
+      <AppPageToolbar class="safe-top safe-left safe-right">
+        <template #leading>
+          <h1 class="pl-2 text-lg font-semibold text-gray-800">Settings</h1>
+        </template>
+      </AppPageToolbar>
+    </header>
+
+    <main class="flex-1 overflow-auto">
+      <AppPageContent content-class="safe-bottom">
       <ion-accordion-group v-model="openAccordion">
         <ion-accordion value="config">
           <ion-item slot="header">
@@ -308,15 +312,14 @@
           </div>
         </ion-card-content>
       </ion-card>
-    </ion-content>
-  </ion-page>
+      </AppPageContent>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { watch, computed, ref, onMounted } from "vue";
 import {
-  IonPage,
-  IonContent,
   IonLabel,
   IonToggle,
   IonInput,
@@ -331,11 +334,10 @@ import {
   IonAccordion,
   IonItem,
   IonText,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
   IonCheckbox,
 } from "@ionic/vue";
+import AppPageContent from "@/components/layout/AppPageContent.vue";
+import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import { Preferences } from "@capacitor/preferences";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";

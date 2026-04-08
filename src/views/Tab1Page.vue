@@ -1,11 +1,15 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Flight status</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content :fullscreen="true">
+  <div class="flex min-h-screen flex-col bg-gray-50">
+    <header class="border-b border-gray-200 bg-white">
+      <AppPageToolbar class="safe-top safe-left safe-right">
+        <template #leading>
+          <h1 class="pl-2 text-lg font-semibold text-gray-800">Flight status</h1>
+        </template>
+      </AppPageToolbar>
+    </header>
+
+    <main class="flex-1 overflow-auto">
+      <AppPageContent content-class="safe-bottom">
       <div class="bg-white shadow-xl rounded-xl">
         <div class="grid grid-cols-4 gap-1">
           <ValueCard
@@ -224,22 +228,23 @@
           </div>
         </ion-content>
       </ion-modal>
-    </ion-content>
-  </ion-page>
+      </AppPageContent>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
 import {
-  IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonContent,
   IonModal,
   IonButton,
   IonButtons,
   IonIcon,
 } from "@ionic/vue";
+import AppPageContent from "@/components/layout/AppPageContent.vue";
+import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import { useRouter } from "vue-router";
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
