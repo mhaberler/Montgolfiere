@@ -29,7 +29,7 @@
             class="px-2 py-1 border-b border-gray-200 align-middle font-medium"
           >
             <div class="flex items-center gap-1">
-              <ion-icon :icon="unit.icon" class="text-base text-gray-500" />
+              <AppUnitIcon :name="unit.icon" class="text-base text-gray-500" />
               <span>{{ unit.label }}</span>
             </div>
           </td>
@@ -71,15 +71,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from "vue";
-import { IonIcon } from "@ionic/vue";
-import {
-  balloonOutline,
-  thermometerOutline,
-  flameOutline,
-  batteryHalfOutline,
-  paperPlaneOutline,
-  toggleOutline,
-} from "ionicons/icons";
+import AppUnitIcon from "@/components/layout/AppUnitIcon.vue";
 import { useDeviceMapping } from "@/composables/useDeviceMapping";
 import type { UnitType } from "@/types/units";
 
@@ -105,18 +97,18 @@ onUnmounted(() => {
 interface UnitConfig {
   type: UnitType;
   label: string;
-  icon: string;
+  icon: 'envelope' | 'oat' | 'tank' | 'box' | 'vario' | 'switch';
 }
 
 const unitConfigs: UnitConfig[] = [
-  { type: "Envelope", label: "Env", icon: balloonOutline },
-  { type: "OAT", label: "OAT", icon: thermometerOutline },
-  { type: "Tank1", label: "Tank1", icon: flameOutline },
-  { type: "Tank2", label: "Tank2", icon: flameOutline },
-  { type: "Tank3", label: "Tank3", icon: flameOutline },
-  { type: "Box", label: "Box", icon: batteryHalfOutline },
-  { type: "Vario", label: "Vario", icon: paperPlaneOutline },
-  { type: "Switch", label: "Switch", icon: toggleOutline },
+  { type: "Envelope", label: "Env", icon: 'envelope' },
+  { type: "OAT", label: "OAT", icon: 'oat' },
+  { type: "Tank1", label: "Tank1", icon: 'tank' },
+  { type: "Tank2", label: "Tank2", icon: 'tank' },
+  { type: "Tank3", label: "Tank3", icon: 'tank' },
+  { type: "Box", label: "Box", icon: 'box' },
+  { type: "Vario", label: "Vario", icon: 'vario' },
+  { type: "Switch", label: "Switch", icon: 'switch' },
 ];
 
 // Metric formatting functions

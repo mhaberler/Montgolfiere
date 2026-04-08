@@ -170,84 +170,85 @@
         </div>
       </div>
 
-      <!-- Modal Popup -->
-      <ion-modal ref="modal" :is-open="isModalOpen" @will-dismiss="closeModal">
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>{{ modalData?.name || "Sensor Data" }}</ion-title>
-            <ion-buttons slot="end">
-              <ion-button @click="closeModal">
-                <ion-icon :icon="closeOutline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <div v-if="modalData" class="text-center space-y-6">
-            <!-- Current Value Display -->
-            <div class="bg-gray-100 rounded-lg p-6">
-              <h2 class="text-lg font-semibold text-gray-700 mb-2">
-                Current {{ modalData.name }}
-              </h2>
-              <div class="text-4xl font-bold text-blue-600">
-                {{ modalData.value }} {{ modalData.unit }}
+      <Teleport to="body">
+        <div
+          v-if="isModalOpen"
+          class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          @click.self="closeModal"
+        >
+          <div
+            v-if="modalData"
+            class="safe-bottom w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+            role="dialog"
+            aria-modal="true"
+            :aria-label="modalData.name || 'Sensor Data'"
+          >
+            <div class="border-b border-gray-200 px-4 py-3">
+              <div class="flex items-center justify-between gap-4">
+                <h2 class="text-lg font-semibold text-gray-900">
+                  {{ modalData.name || "Sensor Data" }}
+                </h2>
+                <button
+                  ref="modalCloseButton"
+                  type="button"
+                  class="rounded-md px-2 py-1 text-xl leading-none text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
+                  @click="closeModal"
+                >
+                  ×
+                </button>
               </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="space-y-4">
-              <ion-button
-                expand="block"
-                color="success"
-                size="large"
-                @click="setOnGround"
-              >
-                <ion-icon :icon="checkmarkOutline" slot="start"></ion-icon>
-                Set as Ground Level
-              </ion-button>
+            <div class="space-y-6 p-4">
+              <div class="rounded-lg bg-gray-100 p-6 text-center">
+                <h3 class="mb-2 text-lg font-semibold text-gray-700">
+                  Current {{ modalData.name }}
+                </h3>
+                <div class="text-4xl font-bold text-blue-600">
+                  {{ modalData.value }} {{ modalData.unit }}
+                </div>
+              </div>
 
-              <ion-button
-                expand="block"
-                color="medium"
-                fill="outline"
-                @click="closeModal"
-              >
-                Cancel
-              </ion-button>
-            </div>
+              <div class="space-y-4">
+                <button
+                  type="button"
+                  class="btn btn-success w-full py-3 text-base"
+                  @click="setOnGround"
+                >
+                  Set as Ground Level
+                </button>
 
-            <!-- Info Text -->
-            <div class="text-sm text-gray-600 mt-4">
-              <p>
-                This will set the current {{ modalData.name }} value ({{
-                  modalData.value
-                }}
-                {{ modalData.unit }}) as the ground reference level.
-              </p>
+                <button
+                  type="button"
+                  class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-50"
+                  @click="closeModal"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <div class="mt-4 text-sm text-gray-600">
+                <p>
+                  This will set the current {{ modalData.name }} value ({{
+                    modalData.value
+                  }}
+                  {{ modalData.unit }}) as the ground reference level.
+                </p>
+              </div>
             </div>
           </div>
-        </ion-content>
-      </ion-modal>
+        </div>
+      </Teleport>
       </AppPageContent>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonModal,
-  IonButton,
-  IonButtons,
-  IonIcon,
-} from "@ionic/vue";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
 import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import { useRouter } from "vue-router";
-import { ref, watch, onMounted, onUnmounted } from "vue";
-import { closeOutline, checkmarkOutline } from "ionicons/icons";
+import { ref, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { metersToFeet } from "../utils/meteo-utils";
 
 import { currentQNH, currentQNHsource } from "../process/qnh";
@@ -283,6 +284,7 @@ onUnmounted(() => {
   if (timeUpdateInterval !== undefined) {
     clearInterval(timeUpdateInterval);
   }
+  document.body.style.overflow = "";
 });
 
 // Modal state
@@ -290,7 +292,16 @@ const isModalOpen = ref(false);
 const modalData = ref<{ name: string; value: number; unit: string } | null>(
   null,
 );
-const modal = ref();
+const modalCloseButton = ref<HTMLButtonElement | null>(null);
+
+watch(isModalOpen, async (open) => {
+  document.body.style.overflow = open ? "hidden" : "";
+
+  if (open) {
+    await nextTick();
+    modalCloseButton.value?.focus();
+  }
+});
 
 // Import flight telemetry refs from centralized app state (with timestamps)
 // usePersistedRefWithTimestamp returns { value: Ref<T>, timestamp: Ref<number> }

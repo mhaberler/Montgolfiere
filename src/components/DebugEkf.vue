@@ -1,13 +1,15 @@
 <template>
   <div>
-    <ion-card
+    <div
       v-if="showDebugInfo"
       class="w-full border-2 rounded-md p-3 bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300 relative overflow-hidden dark:bg-slate-800 dark:border-gray-700"
     >
-      <ion-card-header>
-        <ion-card-subtitle>EKF & pressure</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
+      <div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700">
+        <div class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300">
+          EKF & pressure
+        </div>
+      </div>
+      <div>
         <p class="text-sm text-gray-700 dark:text-gray-200 mb-2">
           raw Altitude ISA: {{ rawAltitudeISA.toFixed(1) }}
         </p>
@@ -46,31 +48,20 @@
           <span class="text-sm text-gray-600"
             >BLE scan timeouts: {{ bleScanTimeouts }}</span
           >
-          <ion-button
+          <button
             v-if="bleScanTimeouts > 0"
-            fill="outline"
-            size="small"
-            color="warning"
             @click="resetbleScanTimeouts"
-            class="ml-auto h-6 px-2"
+            class="ml-auto rounded border border-amber-300 px-2 py-1 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-50"
           >
             Reset
-          </ion-button>
+          </button>
         </div>
-      </ion-card-content>
-    </ion-card>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonButton,
-} from "@ionic/vue";
-
 import {
   ekfAltitudeISA,
   ekfAltitudeQNH,

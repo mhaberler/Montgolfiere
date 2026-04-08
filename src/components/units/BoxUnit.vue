@@ -1,27 +1,27 @@
 <template>
-  <ion-card
-    class="border-l-4 border-ion-medium transition-colors duration-300"
+  <div
+    class="rounded-xl border border-gray-200 border-l-4 bg-white shadow-sm transition-colors duration-300"
     :class="{
-      'border-l-ion-success': status.color === 'success',
-      'border-l-ion-warning': status.color === 'warning',
-      'border-l-ion-danger': status.color === 'danger',
+      'border-l-emerald-500': status.color === 'success',
+      'border-l-amber-500': status.color === 'warning',
+      'border-l-red-500': status.color === 'danger',
     }"
   >
-    <ion-card-header>
-      <ion-card-title class="flex justify-between items-center">
+    <div class="border-b border-gray-100 px-4 py-3">
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <ion-icon :icon="batteryHalfOutline" />
+          <AppUnitIcon name="box" class="text-gray-500" />
           <span>Box</span>
         </div>
         <div class="flex flex-col items-end gap-1">
-          <ion-badge :color="status.color">
+          <AppStatusBadge :color="status.color">
             {{ status.status.toUpperCase() }}
-          </ion-badge>
+          </AppStatusBadge>
         </div>
-      </ion-card-title>
-    </ion-card-header>
+      </div>
+    </div>
 
-    <ion-card-content>
+    <div class="px-4 py-3">
       <div v-if="Object.keys(groupedSensors).length > 0">
         <div class="mb-4">
           <div
@@ -40,21 +40,21 @@
                 <div
                   v-for="reading in getMetricReadings(metric)"
                   :key="reading.deviceId"
-                  class="flex justify-between items-center px-2 py-1 rounded bg-white"
+                  class="flex items-center justify-between rounded bg-white px-2 py-1"
                   :class="{
-                    'border-l-[3px] border-l-ion-success':
+                    'border-l-[3px] border-l-emerald-500':
                       getMetricAgeClass(reading.lastUpdate) === 'metric-fresh',
-                    'border-l-[3px] border-l-ion-warning':
+                    'border-l-[3px] border-l-amber-500':
                       getMetricAgeClass(reading.lastUpdate) ===
                       'metric-warning',
-                    'border-l-[3px] border-l-ion-danger':
+                    'border-l-[3px] border-l-red-500':
                       getMetricAgeClass(reading.lastUpdate) === 'metric-stale',
                   }"
                 >
-                  <span class="font-bold text-[1.1em] text-ion-primary">{{
+                  <span class="font-bold text-[1.1em] text-sky-600">{{
                     formatMetricValue(metric, reading.value)
                   }}</span>
-                  <span class="text-[0.8em] text-ion-medium"
+                  <span class="text-[0.8em] text-gray-500"
                     >{{ reading.deviceType }} ({{
                       reading.deviceId.slice(-4)
                     }})</span
@@ -65,23 +65,14 @@
           </div>
         </div>
       </div>
-    </ion-card-content>
-  </ion-card>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from "vue";
-import {
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonIcon,
-  IonBadge,
-  IonText,
-  IonButton,
-} from "@ionic/vue";
-import { batteryHalfOutline } from "ionicons/icons";
+import AppStatusBadge from "@/components/layout/AppStatusBadge.vue";
+import AppUnitIcon from "@/components/layout/AppUnitIcon.vue";
 import { useDeviceMapping } from "@/composables/useDeviceMapping";
 
 const { getUnitStatus, getGroupedSensors, getFilteredMetrics } =

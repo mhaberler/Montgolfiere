@@ -4,7 +4,6 @@ import {
   ScanResult,
   ScanMode,
 } from "@capacitor-community/bluetooth-le";
-// import { toastController } from "@ionic/vue";
 import { parseRuuvi } from "@/decoders/ruuvi";
 import { parseOtodata } from "@/decoders/otodata";
 import { parseMystery } from "@/decoders/mystery";

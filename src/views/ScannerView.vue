@@ -12,74 +12,71 @@
 
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Controls</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div class="border-b border-gray-100 px-4 py-3">
+            <h2 class="text-base font-semibold text-gray-800">Controls</h2>
+          </div>
+          <div class="px-4 py-3">
             <div class="controls-grid">
-              <ion-input
-                v-model="manualHost"
-                placeholder="Enter MQTT broker IP"
-                fill="outline"
-                label="Host"
-                label-placement="stacked"
-              ></ion-input>
+              <label class="flex flex-col gap-1 text-sm font-medium text-gray-700">
+                <span>Host</span>
+                <input
+                  v-model="manualHost"
+                  placeholder="Enter MQTT broker IP"
+                  class="rounded-md border border-gray-300 px-3 py-2 text-sm font-normal text-gray-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                />
+              </label>
 
-              <ion-input
-                v-model="manualPort"
-                placeholder="Port (1883)"
-                type="number"
-                fill="outline"
-                label="Port"
-                label-placement="stacked"
-              ></ion-input>
+              <label class="flex flex-col gap-1 text-sm font-medium text-gray-700">
+                <span>Port</span>
+                <input
+                  v-model="manualPort"
+                  placeholder="Port (1883)"
+                  type="number"
+                  class="rounded-md border border-gray-300 px-3 py-2 text-sm font-normal text-gray-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                />
+              </label>
 
-              <ion-select
-                v-model="selectedType"
-                fill="outline"
-                label="Type"
-                label-placement="stacked"
-                interface="popover"
-              >
-                <ion-select-option value="_mqtt-ws._tcp.">
-                  MQTT WebSocket
-                </ion-select-option>
-                <ion-select-option value="_mqtt-wss._tcp.">
-                  MQTT WSS
-                </ion-select-option>
-              </ion-select>
+              <label class="flex flex-col gap-1 text-sm font-medium text-gray-700">
+                <span>Type</span>
+                <select
+                  v-model="selectedType"
+                  class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-normal text-gray-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                >
+                  <option value="_mqtt-ws._tcp.">MQTT WebSocket</option>
+                  <option value="_mqtt-wss._tcp.">MQTT WSS</option>
+                </select>
+              </label>
 
               <div class="button-group">
-                <ion-button @click="addManualService" expand="block" color="success">
+                <button class="btn btn-success text-sm" @click="addManualService">
                   Add Manual
-                </ion-button>
+                </button>
 
-                <ion-button
+                <button
                   @click="toggleScan"
-                  expand="block"
-                  :color="isScanning ? 'danger' : 'primary'"
                   :disabled="!isCapacitorApp"
+                  class="btn text-sm"
+                  :class="isScanning ? 'btn-danger' : 'btn-primary'"
                 >
                   {{ isScanning ? "Stop Scan" : "Start Scan" }}
-                </ion-button>
+                </button>
               </div>
             </div>
 
-            <ion-text v-if="!isCapacitorApp" color="warning" class="warning-text">
+            <div v-if="!isCapacitorApp" class="warning-text text-amber-800">
               <p>mDNS scanning is only available in the Capacitor app</p>
-            </ion-text>
+            </div>
 
-            <ion-text v-if="scanError" color="danger" class="error-text">
+            <div v-if="scanError" class="error-text text-red-700">
               <p>{{ scanError }}</p>
-            </ion-text>
-          </ion-card-content>
-        </ion-card>
+            </div>
+          </div>
+        </div>
 
         <div class="services-container">
-          <ion-text
+          <div
             v-if="Object.keys(services).length === 0"
-            color="medium"
             class="empty-state"
           >
             <div class="empty-content">
@@ -87,8 +84,8 @@
                 No services found. Click "Start Scan" to discover MQTT brokers on
                 your network, or add a manual broker above.
               </p>
-              <p v-else-if="isCapacitorApp && isScanning">
-                <ion-spinner name="circles"></ion-spinner>
+              <p v-else-if="isCapacitorApp && isScanning" class="inline-flex items-center gap-2">
+                <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent"></span>
                 Scanning for MQTT services... This may take a few moments.
               </p>
               <p v-else>
@@ -98,32 +95,37 @@
                 Common ports: 1883 (MQTT), 8883 (MQTTS), 9001 (WebSocket)
               </p>
             </div>
-          </ion-text>
+          </div>
 
-          <ion-list v-if="Object.keys(services).length > 0">
-            <ion-item
+          <div v-if="Object.keys(services).length > 0" class="space-y-3">
+            <div
               v-for="(service, key) in services"
               :key="key"
-              button
               @click="handleServicePress(service)"
+              role="button"
+              tabindex="0"
               :class="{
                 discovered: service.discovered,
                 resolved: service.resolved,
               }"
+              class="service-item rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-sky-300 hover:shadow"
+              @keydown.enter.prevent="handleServicePress(service)"
+              @keydown.space.prevent="handleServicePress(service)"
             >
-              <ion-label>
+              <div class="flex items-start justify-between gap-4">
+                <div>
                 <h2>{{ service.name }}</h2>
                 <p>Type: {{ service.type }}</p>
                 <p>Host: {{ service.host }}</p>
                 <p>Port: {{ service.port }}</p>
 
-                <ion-chip
+                <span
                   v-if="service.discovered"
-                  :color="service.resolved ? 'primary' : 'medium'"
-                  size="small"
+                  class="mt-2 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold"
+                  :class="service.resolved ? 'bg-sky-100 text-sky-700' : 'bg-gray-100 text-gray-600'"
                 >
                   {{ service.resolved ? "Resolved via mDNS" : "Resolving..." }}
-                </ion-chip>
+                </span>
 
                 <p
                   v-if="service.txtRecord && Object.keys(service.txtRecord).length > 0"
@@ -133,24 +135,22 @@
                 </p>
 
                 <p class="tap-hint">Tap to connect</p>
-              </ion-label>
+                </div>
 
-              <ion-button
-                slot="end"
-                fill="clear"
-                color="danger"
-                size="small"
+                <button
                 @click.stop="removeService(key)"
                 :title="
                   service.discovered
                     ? 'Remove discovered service'
                     : 'Remove manual service'
                 "
+                class="rounded-md px-2 py-1 text-sm font-semibold text-red-600 transition hover:bg-red-50"
               >
-                <ion-icon :icon="closeOutline"></ion-icon>
-              </ion-button>
-            </ion-item>
-          </ion-list>
+                ×
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </AppPageContent>
     </main>
@@ -162,26 +162,8 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { Capacitor } from "@capacitor/core";
 import { ZeroConf } from "@mhaberler/capacitor-zeroconf-nsd";
-import {
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-  IonButton,
-  IonText,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonChip,
-  IonIcon,
-  IonSpinner,
-} from "@ionic/vue";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
 import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
-import { closeOutline } from "ionicons/icons";
 
 function removeLeadingAndTrailingDots(str: string): string {
   // The regular expression to match leading or trailing dots
@@ -448,13 +430,13 @@ onUnmounted(() => {
 }
 
 .warning-text {
-  background-color: var(--ion-color-warning-tint);
-  border: 1px solid var(--ion-color-warning);
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
 }
 
 .error-text {
-  background-color: var(--ion-color-danger-tint);
-  border: 1px solid var(--ion-color-danger);
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
 }
 
 .services-container {
@@ -486,7 +468,7 @@ onUnmounted(() => {
 }
 
 .txt-record {
-  color: var(--ion-color-medium) !important;
+  color: #6b7280 !important;
   font-size: 0.75em;
   font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
   word-break: break-all;
@@ -494,29 +476,22 @@ onUnmounted(() => {
 }
 
 .tap-hint {
-  color: var(--ion-color-success) !important;
+  color: #059669 !important;
   font-weight: 500;
   font-size: 0.85em;
   margin-top: 12px !important;
 }
 
 /* Custom styling for discovered services */
-ion-item.discovered {
-  border-left: 4px solid var(--ion-color-primary);
+.service-item.discovered {
+  border-left: 4px solid #0ea5e9;
 }
 
-ion-item.discovered:not(.resolved) {
+.service-item.discovered:not(.resolved) {
   opacity: 0.7;
 }
 
-ion-item.discovered.resolved {
+.service-item.discovered.resolved {
   opacity: 1;
-}
-
-/* Spinner styling for scanning state */
-ion-spinner {
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
 }
 </style>

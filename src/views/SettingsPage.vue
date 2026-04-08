@@ -10,55 +10,65 @@
 
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
-      <ion-accordion-group v-model="openAccordion">
-        <ion-accordion value="config">
-          <ion-item slot="header">
-            <ion-label>Configuration</ion-label>
-          </ion-item>
-          <div slot="content">
+      <div class="space-y-3">
+        <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+            @click="toggleAccordion('config')"
+          >
+            <span>Configuration</span>
+            <span class="text-gray-400">{{ openAccordion === 'config' ? '−' : '+' }}</span>
+          </button>
+          <div v-if="openAccordion === 'config'" class="border-t border-gray-100">
             <div class="grid grid-cols-2 gap-1 p-4">
               <div>
-                <ion-label>Transition alt (ft)</ion-label>
+                <label class="text-sm font-medium text-gray-700">Transition alt (ft)</label>
               </div>
               <div>
-                <ion-input
+                <input
+                  class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                   type="number"
                   min="0"
                   max="12000"
                   step="1000"
                   v-model.number="transitionAltitude"
-                ></ion-input>
+                />
               </div>
               <div>
-                <ion-label>Variance samples</ion-label>
+                <label class="text-sm font-medium text-gray-700">Variance samples</label>
               </div>
               <div>
-                <ion-input
+                <input
+                  class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                   type="number"
                   min="5"
                   max="100"
                   v-model.number="historySamples"
-                  @ionBlur="
+                  @blur="
                     () => {
                       if (historySamples < 5) historySamples = 5;
                       if (historySamples > 500) historySamples = 500;
                     }
                   "
-                ></ion-input>
+                />
               </div>
 
               <div v-if="isAndroid">
-                <ion-label>Decimate EKF samples</ion-label>
+                <label class="text-sm font-medium text-gray-700">Decimate EKF samples</label>
               </div>
               <div v-if="isAndroid">
-                <ion-select v-model="decimateEKFSamples" interface="popover">
-                  <ion-select-option value="1">1</ion-select-option>
-                  <ion-select-option value="2">2</ion-select-option>
-                  <ion-select-option value="3">3</ion-select-option>
-                  <ion-select-option value="4">4</ion-select-option>
-                  <ion-select-option value="5">5</ion-select-option>
-                  <ion-select-option value="10">10</ion-select-option>
-                </ion-select>
+                <select
+                  v-model.number="decimateEKFSamples"
+                  class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                >
+                  <option :value="1">1</option>
+                  <option :value="2">2</option>
+                  <option :value="3">3</option>
+                  <option :value="4">4</option>
+                  <option :value="5">5</option>
+                  <option :value="10">10</option>
+                </select>
               </div>
 
               <div class="mt-4 space-y-2 p-4">
@@ -147,37 +157,40 @@
               </div>
 
               <div class="mt-4 p-4">
-                <ion-button
-                  expand="block"
-                  color="warning"
-                  @click="clearAllPreferences"
-                >
+                <button class="btn btn-warning w-full text-sm" @click="clearAllPreferences">
                   Reset preferences to defaults
-                </ion-button>
+                </button>
               </div>
             </div>
           </div>
-        </ion-accordion>
-        <ion-accordion value="airport-qnh">
-          <ion-item slot="header">
-            <ion-label>QNH setting</ion-label>
-          </ion-item>
-          <div slot="content">
+        </section>
+
+        <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+            @click="toggleAccordion('airport-qnh')"
+          >
+            <span>QNH setting</span>
+            <span class="text-gray-400">{{ openAccordion === 'airport-qnh' ? '−' : '+' }}</span>
+          </button>
+          <div v-if="openAccordion === 'airport-qnh'" class="border-t border-gray-100">
             <div class="grid grid-cols-2 gap-1 p-4">
               <div>
-                <ion-label>Auto</ion-label>
+                <label class="text-sm font-medium text-gray-700">Auto</label>
               </div>
               <div>
-                <ion-checkbox v-model="autoQNHflag"></ion-checkbox>
+                <input v-model="autoQNHflag" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-sky-600" />
               </div>
 
               <div>
-                <ion-label :class="{ 'opacity-50': autoQNHflag }"
-                  >manual QNH (hPa)</ion-label
+                <label class="text-sm font-medium text-gray-700" :class="{ 'opacity-50': autoQNHflag }"
+                  >manual QNH (hPa)</label
                 >
               </div>
               <div>
-                <ion-input
+                <input
+                  class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                   type="number"
                   min="800"
                   max="1100"
@@ -185,12 +198,11 @@
                   v-model.number="manualQNHvalue"
                   :disabled="autoQNHflag"
                   :class="{ 'opacity-50': autoQNHflag }"
-                ></ion-input>
+                />
               </div>
             </div>
 
-            <ion-card>
-              <ion-card-content>
+            <div class="mx-4 mb-4 rounded-lg border border-gray-200 bg-white p-4">
                 <div v-if="airportQnhData.length > 0" class="space-y-2">
                   <div
                     v-for="airport in airportQnhData"
@@ -211,44 +223,58 @@
                     </div>
                   </div>
                 </div>
-                <ion-button
-                  class="mt-4"
-                  expand="block"
+                <button
+                  class="btn btn-primary mt-4 w-full text-sm"
                   @click="handleUpdateQnh"
                   :disabled="loadingQnh"
                 >
                   {{ loadingQnh ? "Updating..." : "Update QNH from Location" }}
-                </ion-button>
+                </button>
                 <div v-if="qnhError" class="mt-2 text-red-500">
                   {{ qnhError }}
                 </div>
-              </ion-card-content>
-            </ion-card>
+            </div>
           </div>
-        </ion-accordion>
-        <ion-accordion value="debug">
-          <ion-item slot="header">
-            <ion-label>Debug</ion-label>
-          </ion-item>
-          <div slot="content">
+        </section>
+
+        <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+            @click="toggleAccordion('debug')"
+          >
+            <span>Debug</span>
+            <span class="text-gray-400">{{ openAccordion === 'debug' ? '−' : '+' }}</span>
+          </button>
+          <div v-if="openAccordion === 'debug'" class="border-t border-gray-100 p-4">
             <DebugEkf />
           </div>
-        </ion-accordion>
+        </section>
 
-        <ion-accordion value="mqtt">
-          <ion-item slot="header">
-            <ion-label>MQTT</ion-label>
-          </ion-item>
-          <div slot="content">
+        <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+            @click="toggleAccordion('mqtt')"
+          >
+            <span>MQTT</span>
+            <span class="text-gray-400">{{ openAccordion === 'mqtt' ? '−' : '+' }}</span>
+          </button>
+          <div v-if="openAccordion === 'mqtt'" class="border-t border-gray-100 p-4">
             <ScannerView />
           </div>
-        </ion-accordion>
+        </section>
 
-        <ion-accordion value="build-info">
-          <ion-item slot="header">
-            <ion-label>Build Information</ion-label>
-          </ion-item>
-          <div slot="content">
+        <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+            @click="toggleAccordion('build-info')"
+          >
+            <span>Build Information</span>
+            <span class="text-gray-400">{{ openAccordion === 'build-info' ? '−' : '+' }}</span>
+          </button>
+          <div v-if="openAccordion === 'build-info'" class="border-t border-gray-100">
             <div class="space-y-2 p-4">
               <div class="grid grid-cols-2 gap-2 text-sm">
                 <div class="font-medium">App Version:</div>
@@ -278,40 +304,35 @@
               </div>
             </div>
           </div>
-        </ion-accordion>
-      </ion-accordion-group>
+        </section>
 
-      <ion-card v-if="false">
-        <ion-card-header>
-          <ion-card-title>MQTT Broker Settings</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
+      <div v-if="false" class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div class="mb-3 text-base font-semibold text-gray-800">MQTT Broker Settings</div>
           <div class="config-grid">
             <div class="config-item">
-              <ion-label>Broker URL</ion-label>
-              <ion-input v-model="mqttBrokerUrl"></ion-input>
+              <label class="text-sm font-medium text-gray-700">Broker URL</label>
+              <input v-model="mqttBrokerUrl" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
             </div>
             <div class="config-item">
-              <ion-label>User</ion-label>
-              <ion-input v-model="mqttUser"></ion-input>
+              <label class="text-sm font-medium text-gray-700">User</label>
+              <input v-model="mqttUser" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
             </div>
             <div class="config-item">
-              <ion-label>Password</ion-label>
-              <ion-input type="password" v-model="mqttPassword"></ion-input>
+              <label class="text-sm font-medium text-gray-700">Password</label>
+              <input type="password" v-model="mqttPassword" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
             </div>
             <div class="config-item">
-              <ion-label>Connection Status</ion-label>
-              <!-- [color]="mqttStatusColor" -->
-              <ion-text>{{ mqttStatusMsg }}</ion-text>
+              <label class="text-sm font-medium text-gray-700">Connection Status</label>
+              <div>{{ mqttStatusMsg }}</div>
             </div>
             <div class="config-item">
-              <ion-button expand="full" @click="checkMqttConnection">
+              <button class="btn btn-primary w-full text-sm" @click="checkMqttConnection">
                 Check Connection
-              </ion-button>
+              </button>
             </div>
           </div>
-        </ion-card-content>
-      </ion-card>
+      </div>
+      </div>
       </AppPageContent>
     </main>
   </div>
@@ -319,23 +340,6 @@
 
 <script setup lang="ts">
 import { watch, computed, ref, onMounted } from "vue";
-import {
-  IonLabel,
-  IonToggle,
-  IonInput,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonButton,
-  IonSelect,
-  IonSelectOption,
-  IonAccordionGroup,
-  IonAccordion,
-  IonItem,
-  IonText,
-  IonCheckbox,
-} from "@ionic/vue";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
 import AppPageToolbar from "@/components/layout/AppPageToolbar.vue";
 import { Preferences } from "@capacitor/preferences";
@@ -368,6 +372,10 @@ const openAccordion = ref("");
 watch(openAccordion, (val) => {
   showDebugInfo.value = val === "debug";
 });
+
+const toggleAccordion = (value: string) => {
+  openAccordion.value = openAccordion.value === value ? "" : value;
+};
 
 const isAndroid = computed(() => Capacitor.getPlatform() === "android");
 
