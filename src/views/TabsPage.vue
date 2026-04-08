@@ -52,7 +52,6 @@ const route = useRoute();
 
 const tabs: TabItem[] = [
   { href: "/tabs/tab1", label: "Status" },
-  { href: "/tabs/tab2", label: "Sensors" },
   { href: "/tabs/mdns", label: "Scan", debugOnly: true },
   { href: "/tabs/mqtt", label: "MQTT", debugOnly: true },
   { href: "/tabs/settings", label: "Settings" },

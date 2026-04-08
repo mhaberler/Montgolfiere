@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "tab2",
-        component: () => import("@/views/Tab2Page.vue"),
+        redirect: "/tabs/settings",
       },
       {
         path: "mdns",
