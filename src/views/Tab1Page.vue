@@ -2,235 +2,242 @@
   <div class="flex min-h-0 flex-1 flex-col bg-gray-50">
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
-      <div class="bg-white shadow-xl rounded-xl">
-        <div class="grid grid-cols-4 gap-1">
-          <ValueCard
-            name="GPS"
-            :value="location?.coords?.altitude"
-            unit="m"
-            :decimals="0"
-          />
+        <div class="bg-white shadow-xl rounded-xl">
+          <div class="grid grid-cols-4 gap-1">
+            <ValueCard
+              name="GPS"
+              :value="location?.coords?.altitude"
+              unit="m"
+              :decimals="0"
+            />
 
-          <ValueCard
-            :value="
-              useFlightLevel
-                ? `FL${flightLevel.toString().padStart(3, '0')}`
-                : ekfAltitudeQNH
-            "
-            :name="useFlightLevel ? 'Flightlevel' : 'MSL'"
-            :decimals="useFlightLevel ? 0 : 0"
-            :unit="useFlightLevel ? '' : 'm'"
-          />
+            <ValueCard
+              :value="
+                useFlightLevel
+                  ? `FL${flightLevel.toString().padStart(3, '0')}`
+                  : ekfAltitudeQNH
+              "
+              :name="useFlightLevel ? 'Flightlevel' : 'MSL'"
+              :decimals="useFlightLevel ? 0 : 0"
+              :unit="useFlightLevel ? '' : 'm'"
+            />
 
-          <ValueCard
-            name="speed"
-            :value="formatSpeed(location?.coords?.speed)"
-            :decimals="0"
-            unit="km/h"
-          />
-          <ValueCard
-            name="heading"
-            :value="
-              formatHeading(location?.coords?.speed, location?.coords?.heading)
-            "
-            :decimals="0"
-            unit="°"
-          />
+            <ValueCard
+              name="speed"
+              :value="formatSpeed(location?.coords?.speed)"
+              :decimals="0"
+              unit="km/h"
+            />
+            <ValueCard
+              name="heading"
+              :value="
+                formatHeading(
+                  location?.coords?.speed,
+                  location?.coords?.heading,
+                )
+              "
+              :decimals="0"
+              unit="°"
+            />
 
-          <ValueCard
-            :value="ekfVelocity"
-            name="vSpeed"
-            :decimals="1"
-            unit="m/s"
-          />
-          <ValueCard
-            :value="ekfAcceleration"
-            name="vAccel"
-            :decimals="3"
-            :unit="'m/s\u00B2'"
-          />
-
-          <ValueCard
-            :value="heightOverGround"
-            name="AGL"
-            :decimals="0"
-            unit="m"
-          />
-          <ValueCard
-            v-on-long-press="
-              () => {
-                if (
-                  elevation !== null &&
-                  elevation !== undefined &&
-                  !isNaN(elevation)
-                ) {
-                  showPopup({ name: 'elevation', value: elevation, unit: 'm' });
-                } else {
-                  console.warn(
-                    'Cannot show popup for elevation: invalid value',
-                    elevation,
-                  );
-                }
-              }
-            "
-            :value="elevation"
-            name="elevation"
-            :decimals="0"
-            unit="m"
-            :frameClass="
-              elevation &&
-              (!elevationAtTakeoff.value.value ||
-                Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000 >
-                  maxElevationAtTakeoffAge)
-                ? '!bg-red-200'
-                : ''
-            "
-          />
-
-          <div class="row-span-3 col-span-1 text-xs w-full h-50">
-            <LinearScale
+            <ValueCard
               :value="ekfVelocity"
-              orientation="vertical"
-              :scalePadding="15"
-              :indicatorSize="20"
-              :confidenceBoxCrossDimension="10"
-              :confidenceLower="vspeedCI95.lower"
-              :confidenceUpper="vspeedCI95.upper"
-              :transitionDuration="0.95"
-              :majorTicks="vsiMajorTicks"
-              :minorTicks="vsiMinorTicks"
-              :intermediateTicks="vsiIntermediateTicks"
-              :weights="vsiWeights"
-              :majorTickTextOffset="vsiMajorTickTextOffset"
-              :indicatorDistancePercent="22"
-              :confidenceColor="confidenceColor"
-              :confidenceOpacity="0.8"
-              :scaleLinePercent="30"
+              name="vSpeed"
+              :decimals="1"
+              unit="m/s"
             />
-          </div>
-          <div class="row-span-3 col-span-1 text-xs w-full h-50">
-            <LinearScale
+            <ValueCard
               :value="ekfAcceleration"
-              orientation="vertical"
-              :scalePadding="15"
-              :indicatorSize="20"
-              :confidenceBoxCrossDimension="10"
-              :transitionDuration="0.95"
-              :majorTicks="vaccMajorTicks"
-              :minorTicks="vaccMinorTicks"
-              :intermediateTicks="vaccIntermediateTicks"
-              :weights="vaccWeights"
-              :majorTickTextOffset="vaccMajorTickTextOffset"
-              :indicatorDistancePercent="22"
-              :confidenceLower="vaccelCI95.lower"
-              :confidenceUpper="vaccelCI95.upper"
-              :confidenceColor="confidenceColor"
-              :confidenceOpacity="0.8"
-              :scaleLinePercent="30"
+              name="vAccel"
+              :decimals="3"
+              :unit="'m/s\u00B2'"
             />
-          </div>
 
-          <ValueCard
-            :value="apexLevelRelative"
-            name="ApexRel"
-            :decimals="0"
-            unit="m"
-            :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'"
-          />
-          <ValueCard
-            :value="ekfTimeToZeroSpeed"
-            name="TTA"
-            :decimals="0"
-            unit="s"
-            :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'"
-          />
+            <ValueCard
+              :value="heightOverGround"
+              name="AGL"
+              :decimals="0"
+              unit="m"
+            />
+            <ValueCard
+              v-on-long-press="
+                () => {
+                  if (
+                    elevation !== null &&
+                    elevation !== undefined &&
+                    !isNaN(elevation)
+                  ) {
+                    showPopup({
+                      name: 'elevation',
+                      value: elevation,
+                      unit: 'm',
+                    });
+                  } else {
+                    console.warn(
+                      'Cannot show popup for elevation: invalid value',
+                      elevation,
+                    );
+                  }
+                }
+              "
+              :value="elevation"
+              name="elevation"
+              :decimals="0"
+              unit="m"
+              :frameClass="
+                elevation &&
+                (!elevationAtTakeoff.value.value ||
+                  Date.now() / 1000 - elevationAtTakeoffTimestamp / 1000 >
+                    maxElevationAtTakeoffAge)
+                  ? '!bg-red-200'
+                  : ''
+              "
+            />
 
-          <ValueCard :value="BCMT" name="BCMT" unit="UTC" />
-          <ValueCard :value="ECET" name="ECET" unit="UTC" />
-
-          <ValueCard
-            :value="currentQNH"
-            name="QNH"
-            :decimals="0"
-            :unit="currentQNHsource"
-            :forceCentered="true"
-          />
-          <ValueCard :value="currentTimeUTC" name="TIME" unit="UTC" />
-        </div>
-        <div class="overflow-y-auto overflow-x-hidden p-2">
-          <UnitsTable />
-        </div>
-      </div>
-
-      <Teleport to="body">
-        <div
-          v-if="isModalOpen"
-          class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-          @click.self="closeModal"
-        >
-          <div
-            v-if="modalData"
-            class="safe-bottom w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
-            role="dialog"
-            aria-modal="true"
-            :aria-label="modalData.name || 'Sensor Data'"
-          >
-            <div class="border-b border-gray-200 px-4 py-3">
-              <div class="flex items-center justify-between gap-4">
-                <h2 class="text-lg font-semibold text-gray-900">
-                  {{ modalData.name || "Sensor Data" }}
-                </h2>
-                <button
-                  ref="modalCloseButton"
-                  type="button"
-                  class="rounded-md px-2 py-1 text-xl leading-none text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
-                  @click="closeModal"
-                >
-                  ×
-                </button>
-              </div>
+            <div class="row-span-3 col-span-1 text-xs w-full h-50">
+              <LinearScale
+                :value="ekfVelocity"
+                orientation="vertical"
+                :scalePadding="15"
+                :indicatorSize="20"
+                :confidenceBoxCrossDimension="10"
+                :confidenceLower="vspeedCI95.lower"
+                :confidenceUpper="vspeedCI95.upper"
+                :transitionDuration="0.95"
+                :majorTicks="vsiMajorTicks"
+                :minorTicks="vsiMinorTicks"
+                :intermediateTicks="vsiIntermediateTicks"
+                :weights="vsiWeights"
+                :majorTickTextOffset="vsiMajorTickTextOffset"
+                :indicatorDistancePercent="22"
+                :confidenceColor="confidenceColor"
+                :confidenceOpacity="0.8"
+                :scaleLinePercent="30"
+              />
+            </div>
+            <div class="row-span-3 col-span-1 text-xs w-full h-50">
+              <LinearScale
+                :value="ekfAcceleration"
+                orientation="vertical"
+                :scalePadding="15"
+                :indicatorSize="20"
+                :confidenceBoxCrossDimension="10"
+                :transitionDuration="0.95"
+                :majorTicks="vaccMajorTicks"
+                :minorTicks="vaccMinorTicks"
+                :intermediateTicks="vaccIntermediateTicks"
+                :weights="vaccWeights"
+                :majorTickTextOffset="vaccMajorTickTextOffset"
+                :indicatorDistancePercent="22"
+                :confidenceLower="vaccelCI95.lower"
+                :confidenceUpper="vaccelCI95.upper"
+                :confidenceColor="confidenceColor"
+                :confidenceOpacity="0.8"
+                :scaleLinePercent="30"
+              />
             </div>
 
-            <div class="space-y-6 p-4">
-              <div class="rounded-lg bg-gray-100 p-6 text-center">
-                <h3 class="mb-2 text-lg font-semibold text-gray-700">
-                  Current {{ modalData.name }}
-                </h3>
-                <div class="text-4xl font-bold text-blue-600">
-                  {{ modalData.value }} {{ modalData.unit }}
+            <ValueCard
+              :value="apexLevelRelative"
+              name="ApexRel"
+              :decimals="0"
+              unit="m"
+              :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'"
+            />
+            <ValueCard
+              :value="ekfTimeToZeroSpeed"
+              name="TTA"
+              :decimals="0"
+              unit="s"
+              :frameClass="willImpactGround ? '!bg-red-200' : 'bg-white'"
+            />
+
+            <ValueCard :value="BCMT" name="BCMT" unit="UTC" />
+            <ValueCard :value="ECET" name="ECET" unit="UTC" />
+
+            <ValueCard
+              :value="currentQNH"
+              name="QNH"
+              :decimals="0"
+              :unit="currentQNHsource"
+              :forceCentered="true"
+            />
+            <ValueCard :value="currentTimeUTC" name="TIME" unit="UTC" />
+          </div>
+          <div class="overflow-y-auto overflow-x-hidden p-2">
+            <UnitsTable />
+          </div>
+        </div>
+
+        <Teleport to="body">
+          <div
+            v-if="isModalOpen"
+            class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+            @click.self="closeModal"
+          >
+            <div
+              v-if="modalData"
+              class="safe-bottom w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              :aria-label="modalData.name || 'Sensor Data'"
+            >
+              <div class="border-b border-gray-200 px-4 py-3">
+                <div class="flex items-center justify-between gap-4">
+                  <h2 class="text-lg font-semibold text-gray-900">
+                    {{ modalData.name || "Sensor Data" }}
+                  </h2>
+                  <button
+                    ref="modalCloseButton"
+                    type="button"
+                    class="rounded-md px-2 py-1 text-xl leading-none text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
+                    @click="closeModal"
+                  >
+                    ×
+                  </button>
                 </div>
               </div>
 
-              <div class="space-y-4">
-                <button
-                  type="button"
-                  class="btn btn-success w-full py-3 text-base"
-                  @click="setOnGround"
-                >
-                  Set as Ground Level
-                </button>
+              <div class="space-y-6 p-4">
+                <div class="rounded-lg bg-gray-100 p-6 text-center">
+                  <h3 class="mb-2 text-lg font-semibold text-gray-700">
+                    Current {{ modalData.name }}
+                  </h3>
+                  <div class="text-4xl font-bold text-blue-600">
+                    {{ modalData.value }} {{ modalData.unit }}
+                  </div>
+                </div>
 
-                <button
-                  type="button"
-                  class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-50"
-                  @click="closeModal"
-                >
-                  Cancel
-                </button>
-              </div>
+                <div class="space-y-4">
+                  <button
+                    type="button"
+                    class="btn btn-success w-full py-3 text-base"
+                    @click="setOnGround"
+                  >
+                    Set as Ground Level
+                  </button>
 
-              <div class="mt-4 text-sm text-gray-600">
-                <p>
-                  This will set the current {{ modalData.name }} value ({{
-                    modalData.value
-                  }}
-                  {{ modalData.unit }}) as the ground reference level.
-                </p>
+                  <button
+                    type="button"
+                    class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-50"
+                    @click="closeModal"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                <div class="mt-4 text-sm text-gray-600">
+                  <p>
+                    This will set the current {{ modalData.name }} value ({{
+                      modalData.value
+                    }}
+                    {{ modalData.unit }}) as the ground reference level.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Teleport>
+        </Teleport>
       </AppPageContent>
     </main>
   </div>

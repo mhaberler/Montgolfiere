@@ -8,7 +8,9 @@
           </div>
           <div class="px-4 py-3">
             <div class="controls-grid">
-              <label class="flex flex-col gap-1 text-sm font-medium text-gray-700">
+              <label
+                class="flex flex-col gap-1 text-sm font-medium text-gray-700"
+              >
                 <span>Host</span>
                 <input
                   v-model="manualHost"
@@ -17,7 +19,9 @@
                 />
               </label>
 
-              <label class="flex flex-col gap-1 text-sm font-medium text-gray-700">
+              <label
+                class="flex flex-col gap-1 text-sm font-medium text-gray-700"
+              >
                 <span>Port</span>
                 <input
                   v-model="manualPort"
@@ -27,7 +31,9 @@
                 />
               </label>
 
-              <label class="flex flex-col gap-1 text-sm font-medium text-gray-700">
+              <label
+                class="flex flex-col gap-1 text-sm font-medium text-gray-700"
+              >
                 <span>Type</span>
                 <select
                   v-model="selectedType"
@@ -39,7 +45,10 @@
               </label>
 
               <div class="button-group">
-                <button class="btn btn-success text-sm" @click="addManualService">
+                <button
+                  class="btn btn-success text-sm"
+                  @click="addManualService"
+                >
                   Add Manual
                 </button>
 
@@ -65,17 +74,19 @@
         </div>
 
         <div class="services-container">
-          <div
-            v-if="Object.keys(services).length === 0"
-            class="empty-state"
-          >
+          <div v-if="Object.keys(services).length === 0" class="empty-state">
             <div class="empty-content">
               <p v-if="isCapacitorApp && !isScanning">
-                No services found. Click "Start Scan" to discover MQTT brokers on
-                your network, or add a manual broker above.
+                No services found. Click "Start Scan" to discover MQTT brokers
+                on your network, or add a manual broker above.
               </p>
-              <p v-else-if="isCapacitorApp && isScanning" class="inline-flex items-center gap-2">
-                <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent"></span>
+              <p
+                v-else-if="isCapacitorApp && isScanning"
+                class="inline-flex items-center gap-2"
+              >
+                <span
+                  class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent"
+                ></span>
                 Scanning for MQTT services... This may take a few moments.
               </p>
               <p v-else>
@@ -104,39 +115,48 @@
             >
               <div class="flex items-start justify-between gap-4">
                 <div>
-                <h2>{{ service.name }}</h2>
-                <p>Type: {{ service.type }}</p>
-                <p>Host: {{ service.host }}</p>
-                <p>Port: {{ service.port }}</p>
+                  <h2>{{ service.name }}</h2>
+                  <p>Type: {{ service.type }}</p>
+                  <p>Host: {{ service.host }}</p>
+                  <p>Port: {{ service.port }}</p>
 
-                <span
-                  v-if="service.discovered"
-                  class="mt-2 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold"
-                  :class="service.resolved ? 'bg-sky-100 text-sky-700' : 'bg-gray-100 text-gray-600'"
-                >
-                  {{ service.resolved ? "Resolved via mDNS" : "Resolving..." }}
-                </span>
+                  <span
+                    v-if="service.discovered"
+                    class="mt-2 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold"
+                    :class="
+                      service.resolved
+                        ? 'bg-sky-100 text-sky-700'
+                        : 'bg-gray-100 text-gray-600'
+                    "
+                  >
+                    {{
+                      service.resolved ? "Resolved via mDNS" : "Resolving..."
+                    }}
+                  </span>
 
-                <p
-                  v-if="service.txtRecord && Object.keys(service.txtRecord).length > 0"
-                  class="txt-record"
-                >
-                  TXT: {{ JSON.stringify(service.txtRecord) }}
-                </p>
+                  <p
+                    v-if="
+                      service.txtRecord &&
+                      Object.keys(service.txtRecord).length > 0
+                    "
+                    class="txt-record"
+                  >
+                    TXT: {{ JSON.stringify(service.txtRecord) }}
+                  </p>
 
-                <p class="tap-hint">Tap to connect</p>
+                  <p class="tap-hint">Tap to connect</p>
                 </div>
 
                 <button
-                @click.stop="removeService(key)"
-                :title="
-                  service.discovered
-                    ? 'Remove discovered service'
-                    : 'Remove manual service'
-                "
-                class="rounded-md px-2 py-1 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-              >
-                ×
+                  @click.stop="removeService(key)"
+                  :title="
+                    service.discovered
+                      ? 'Remove discovered service'
+                      : 'Remove manual service'
+                  "
+                  class="rounded-md px-2 py-1 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                >
+                  ×
                 </button>
               </div>
             </div>

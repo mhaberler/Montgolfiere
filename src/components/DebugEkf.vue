@@ -5,7 +5,9 @@
       class="w-full border-2 rounded-md p-3 bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300 relative overflow-hidden dark:bg-slate-800 dark:border-gray-700"
     >
       <div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700">
-        <div class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300">
+        <div
+          class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-300"
+        >
           EKF & pressure
         </div>
       </div>

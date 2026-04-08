@@ -51,10 +51,10 @@
                       getMetricAgeClass(reading.lastUpdate) === 'metric-stale',
                   }"
                 >
-                    <span class="font-bold text-[1.1em] text-sky-600">{{
+                  <span class="font-bold text-[1.1em] text-sky-600">{{
                     formatMetricValue(metric, reading.value)
                   }}</span>
-                    <span class="text-[0.8em] text-gray-500"
+                  <span class="text-[0.8em] text-gray-500"
                     >{{ reading.deviceType }} ({{
                       reading.deviceId.slice(-4)
                     }})</span

@@ -11,7 +11,10 @@
           </button>
         </div>
 
-        <div v-if="sortedDevices.length > 0" class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+        <div
+          v-if="sortedDevices.length > 0"
+          class="overflow-hidden rounded-lg border border-gray-200 bg-white"
+        >
           <div
             v-for="device in sortedDevices"
             :key="device.scanResult.device.deviceId"
@@ -41,7 +44,9 @@
             <div class="flex flex-col gap-2">
               <div class="flex-1 flex items-center justify-end">
                 <select
-                  :value="getDeviceUnit(device.scanResult.device.deviceId) ?? ''"
+                  :value="
+                    getDeviceUnit(device.scanResult.device.deviceId) ?? ''
+                  "
                   @change="
                     assignDevice(
                       device.scanResult.device.deviceId,
@@ -64,24 +69,28 @@
                 class="flex-1 flex items-center justify-center"
                 v-if="device.decoded.value"
               >
-                <details class="w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
-                  <summary class="cursor-pointer list-none px-3 py-2 text-sm font-medium text-gray-700">
+                <details
+                  class="w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50"
+                >
+                  <summary
+                    class="cursor-pointer list-none px-3 py-2 text-sm font-medium text-gray-700"
+                  >
                     {{ Object.keys(device.decoded.value).length }} metrics
                   </summary>
                   <div class="p-2">
-                      <div
-                        v-for="(value, key) in device.decoded.value"
-                        :key="key"
-                        class="flex justify-between items-center py-1 border-b border-gray-200 last:border-b-0"
+                    <div
+                      v-for="(value, key) in device.decoded.value"
+                      :key="key"
+                      class="flex justify-between items-center py-1 border-b border-gray-200 last:border-b-0"
+                    >
+                      <span class="text-sm text-gray-500 font-medium"
+                        >{{ key }}:</span
                       >
-                        <span class="text-sm text-gray-500 font-medium"
-                          >{{ key }}:</span
-                        >
-                        <span
-                          class="text-sm font-semibold text-gray-900 tabular-nums"
-                          >{{ value }}</span
-                        >
-                      </div>
+                      <span
+                        class="text-sm font-semibold text-gray-900 tabular-nums"
+                        >{{ value }}</span
+                      >
+                    </div>
                   </div>
                 </details>
               </div>
@@ -94,7 +103,9 @@
         </p>
 
         <div v-if="isScanning" class="flex justify-center py-5">
-          <div class="h-6 w-6 animate-spin rounded-full border-2 border-sky-500 border-t-transparent"></div>
+          <div
+            class="h-6 w-6 animate-spin rounded-full border-2 border-sky-500 border-t-transparent"
+          ></div>
         </div>
 
         <p class="text-sm text-red-600" v-if="bleErrorMsg">

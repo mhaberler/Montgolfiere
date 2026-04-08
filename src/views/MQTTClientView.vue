@@ -37,10 +37,10 @@
           >
             {{
               mqttConn.isConnected.value
-                ? 'Disconnect'
+                ? "Disconnect"
                 : mqttConn.isTrying.value
-                  ? 'Connecting'
-                  : 'Connect'
+                  ? "Connecting"
+                  : "Connect"
             }}
           </button>
         </div>
@@ -203,9 +203,7 @@
 import { defineComponent, ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
-import {
-  useMqttConnection,
-} from "../composables/useMqttConnection";
+import { useMqttConnection } from "../composables/useMqttConnection";
 import { useAppLifecycle } from "../composables/useAppLifecycle";
 import type { ServiceEntry } from "../composables/useAppState";
 

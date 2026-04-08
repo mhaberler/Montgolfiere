@@ -97,18 +97,18 @@ onUnmounted(() => {
 interface UnitConfig {
   type: UnitType;
   label: string;
-  icon: 'envelope' | 'oat' | 'tank' | 'box' | 'vario' | 'switch';
+  icon: "envelope" | "oat" | "tank" | "box" | "vario" | "switch";
 }
 
 const unitConfigs: UnitConfig[] = [
-  { type: "Envelope", label: "Env", icon: 'envelope' },
-  { type: "OAT", label: "OAT", icon: 'oat' },
-  { type: "Tank1", label: "Tank1", icon: 'tank' },
-  { type: "Tank2", label: "Tank2", icon: 'tank' },
-  { type: "Tank3", label: "Tank3", icon: 'tank' },
-  { type: "Box", label: "Box", icon: 'box' },
-  { type: "Vario", label: "Vario", icon: 'vario' },
-  { type: "Switch", label: "Switch", icon: 'switch' },
+  { type: "Envelope", label: "Env", icon: "envelope" },
+  { type: "OAT", label: "OAT", icon: "oat" },
+  { type: "Tank1", label: "Tank1", icon: "tank" },
+  { type: "Tank2", label: "Tank2", icon: "tank" },
+  { type: "Tank3", label: "Tank3", icon: "tank" },
+  { type: "Box", label: "Box", icon: "box" },
+  { type: "Vario", label: "Vario", icon: "vario" },
+  { type: "Switch", label: "Switch", icon: "switch" },
 ];
 
 // Metric formatting functions
