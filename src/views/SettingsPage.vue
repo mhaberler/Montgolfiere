@@ -185,7 +185,10 @@
                 >
                   <span>Sensors</span>
                 </button>
-                <div class="flex shrink-0 items-center gap-2">
+                <div
+                  v-if="openAccordion === 'sensors'"
+                  class="flex shrink-0 items-center gap-2"
+                >
                   <button
                     type="button"
                     class="btn btn-primary text-sm"
