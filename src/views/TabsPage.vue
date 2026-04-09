@@ -4,9 +4,7 @@
       id="tab-bar"
       class="safe-top sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/85"
     >
-      <div
-        class="grid grid-cols-3 gap-2 px-3 py-2"
-      >
+      <div class="grid grid-cols-3 gap-2 px-3 py-2">
         <button
           v-for="tab in visibleTabs"
           :key="tab.href"
@@ -115,9 +113,7 @@ const onTouchEnd = (event: TouchEvent) => {
     return;
   }
 
-  const currentIndex = visibleTabs.findIndex(
-    (tab) => tab.href === route.path,
-  );
+  const currentIndex = visibleTabs.findIndex((tab) => tab.href === route.path);
   if (currentIndex === -1) {
     resetSwipe();
     return;
