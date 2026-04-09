@@ -75,6 +75,7 @@ type MapCenter = [number, number];
 type OverlayKey = "ofm" | "openaip";
 type BaseLayerKey = "osm" | "topo" | "ortho";
 type FeatureLike = { properties?: Record<string, any> };
+type PopupOpts = NonNullable<Parameters<Marker["bindPopup"]>[1]>;
 
 const fallbackCenter: MapCenter = [47.1284, 15.211];
 const airportRefetchThresholdM = AIRPORT_FETCH_RADIUS_M / 2;
@@ -89,6 +90,13 @@ const openFlightMapsOverlay = {
   opacity: 0.9,
   zIndex: 2,
 } as const;
+
+const leafletIconDefault = Icon.Default as unknown as {
+  imagePath?: string;
+  prototype: { _getIconUrl?: unknown };
+};
+delete leafletIconDefault.prototype._getIconUrl;
+leafletIconDefault.imagePath = "";
 
 Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2xUrl,
@@ -143,10 +151,52 @@ const overlayLayerState: {
   layers: {} as Record<OverlayKey, TileLayer>,
 };
 
-const airspacePopupOptions = {
+const airspacePopupOptions: PopupOpts = {
   className: "airspace-popup",
   minWidth: 280,
   maxWidth: 420,
+};
+
+const getSideControlPadding = (side: "left" | "right"): number => {
+  const mapEl = mapContainerRef.value;
+  if (!mapEl) {
+    return 16;
+  }
+
+  const controls = Array.from(
+    mapEl.querySelectorAll<HTMLElement>(`.leaflet-${side} .leaflet-control`),
+  ).filter(
+    (control) =>
+      !control.classList.contains("leaflet-control-attribution") &&
+      !control.classList.contains("leaflet-control-scale"),
+  );
+  if (controls.length === 0) {
+    return 16;
+  }
+
+  const mapRect = mapEl.getBoundingClientRect();
+  let occupied = 0;
+
+  controls.forEach((control) => {
+    const rect = control.getBoundingClientRect();
+    const extent =
+      side === "left" ? rect.right - mapRect.left : mapRect.right - rect.left;
+    occupied = Math.max(occupied, extent);
+  });
+
+  return Math.max(16, Math.ceil(occupied) + 16);
+};
+
+const getPopupOptions = (overrides: PopupOpts = {}): PopupOpts => {
+  const leftPaddingPx = getSideControlPadding("left");
+  const rightPaddingPx = getSideControlPadding("right");
+
+  return {
+    autoPan: true,
+    autoPanPaddingTopLeft: [leftPaddingPx, 16],
+    autoPanPaddingBottomRight: [rightPaddingPx, 16],
+    ...overrides,
+  };
 };
 
 const syncMapHeight = () => {
@@ -365,7 +415,10 @@ const refreshAirports = async (targetCenter?: LatLngExpression) => {
           fillOpacity: 0.55,
         });
         existing.setRadius(7);
-        existing.bindPopup(airportPopupHtml(airport), { maxWidth: 320 });
+        existing.bindPopup(
+          airportPopupHtml(airport),
+          getPopupOptions(airspacePopupOptions),
+        );
         existing.bindTooltip(
           `${airport.icaoCode ? `${airport.icaoCode} · ` : ""}${airport.name} (${airportTypeName(airport.type)})`,
           { sticky: true },
@@ -380,7 +433,10 @@ const refreshAirports = async (targetCenter?: LatLngExpression) => {
         fillColor: color,
         fillOpacity: 0.55,
       });
-      marker.bindPopup(airportPopupHtml(airport), { maxWidth: 320 });
+      marker.bindPopup(
+        airportPopupHtml(airport),
+        getPopupOptions(airspacePopupOptions),
+      );
       marker.bindTooltip(
         `${airport.icaoCode ? `${airport.icaoCode} · ` : ""}${airport.name} (${airportTypeName(airport.type)})`,
         { sticky: true },
@@ -417,7 +473,9 @@ const onMapClick = async (event: LeafletMouseEvent) => {
   }
 
   const { popupText, geojson } = await lookupAirspaces(lat, lng);
-  currentMarker.bindPopup(popupText, airspacePopupOptions).openPopup();
+  currentMarker
+    .bindPopup(popupText, getPopupOptions(airspacePopupOptions))
+    .openPopup();
 
   resetHighlight();
   currentGeojsonLayer?.remove();
@@ -446,7 +504,7 @@ const onMapClick = async (event: LeafletMouseEvent) => {
         const flagsHtml = flags.length ? `<br>${flags.join(", ")}` : "";
         layer.bindPopup(
           `<b>${name}</b> (${type}, ${cls}${activity})<br>${lower} – ${upper}<br>${status}${flagsHtml}`,
-          airspacePopupOptions,
+          getPopupOptions(airspacePopupOptions),
         );
       },
     }).addTo(map);

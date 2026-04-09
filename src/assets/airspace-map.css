@@ -15,7 +15,7 @@
 }
 
 .airspace-map .leaflet-popup-pane {
-  z-index: 850;
+  z-index: 1200;
 }
 
 .airspace-map .airspace-popup .leaflet-popup-content {
