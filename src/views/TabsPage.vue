@@ -5,8 +5,7 @@
       class="safe-top sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/85"
     >
       <div
-        class="grid gap-2 px-3 py-2"
-        :class="showDebugInfo ? 'grid-cols-5' : 'grid-cols-3'"
+        class="grid grid-cols-3 gap-2 px-3 py-2"
       >
         <button
           v-for="tab in visibleTabs"
@@ -26,7 +25,7 @@
     </nav>
 
     <div
-      class="min-h-0 flex-1"
+      class="flex min-h-0 flex-1 flex-col"
       @touchstart.passive="onTouchStart"
       @touchend.passive="onTouchEnd"
       @touchcancel.passive="resetSwipe"
@@ -37,14 +36,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { showDebugInfo } from "@/composables/useAppState";
 
 type TabItem = {
   href: string;
   label: string;
-  debugOnly?: boolean;
 };
 
 const router = useRouter();
@@ -52,14 +49,11 @@ const route = useRoute();
 
 const tabs: TabItem[] = [
   { href: "/tabs/tab1", label: "Status" },
-  { href: "/tabs/mdns", label: "Scan", debugOnly: true },
-  { href: "/tabs/mqtt", label: "MQTT", debugOnly: true },
+  { href: "/tabs/map", label: "Map" },
   { href: "/tabs/settings", label: "Settings" },
 ];
 
-const visibleTabs = computed(() =>
-  tabs.filter((tab) => !tab.debugOnly || showDebugInfo.value),
-);
+const visibleTabs = tabs;
 
 const SWIPE_MIN_DISTANCE = 72;
 const SWIPE_MAX_OFF_AXIS = 56;
@@ -121,7 +115,7 @@ const onTouchEnd = (event: TouchEvent) => {
     return;
   }
 
-  const currentIndex = visibleTabs.value.findIndex(
+  const currentIndex = visibleTabs.findIndex(
     (tab) => tab.href === route.path,
   );
   if (currentIndex === -1) {
@@ -130,7 +124,7 @@ const onTouchEnd = (event: TouchEvent) => {
   }
 
   const nextIndex = deltaX < 0 ? currentIndex + 1 : currentIndex - 1;
-  const nextTab = visibleTabs.value[nextIndex];
+  const nextTab = visibleTabs[nextIndex];
 
   if (nextTab) {
     navigateTo(nextTab.href);

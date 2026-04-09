@@ -23,6 +23,10 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/Tab1Page.vue"),
       },
       {
+        path: "map",
+        component: () => import("@/views/MapPage.vue"),
+      },
+      {
         path: "tab2",
         redirect: "/tabs/settings",
       },

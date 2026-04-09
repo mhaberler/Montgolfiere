@@ -52,7 +52,7 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# Build outputs  
+# Build outputs
 dist/
 build/
 www/
@@ -96,3 +96,4 @@ android/app/src/main/res/values/strings.xml
 *.log
 .env.local
 .env.*.local
+.vscode/settings.json
