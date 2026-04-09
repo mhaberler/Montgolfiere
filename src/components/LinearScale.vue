@@ -24,10 +24,6 @@ const props = defineProps({
     type: Number,
     default: 1.0,
   },
-  indicatorDistancePercent: {
-    type: Number,
-    default: 5,
-  },
   // Removed: confidenceRangePercent
   confidenceLower: {
     // New prop for lower bound of confidence range
@@ -320,8 +316,6 @@ function drawScale() {
   let scaleLinePos; // Position of the scale line within the SVG
   let indicatorPoints;
 
-  const caretDistancePercent =
-    props.caretDistancePercent ?? props.indicatorDistancePercent;
   const indicatorSize = props.indicatorSize;
   const indicatorColor = props.indicatorColor;
   const indicatorOpacity = props.indicatorOpacity;
@@ -329,7 +323,7 @@ function drawScale() {
   const confidenceColor = props.confidenceColor;
   const confidenceBoxCrossDimension = props.confidenceBoxCrossDimension;
   const transitionDuration = props.transitionDuration;
-  const caretOffsetPx = (caretDistancePercent / 100) * MAJOR_TICK_LENGTH;
+  const caretOffsetPx = (props.caretDistancePercent / 100) * MAJOR_TICK_LENGTH;
 
   // Set viewBox to match current dimensions (CSS owns actual sizing via w-full/h-full)
   d3svg.attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
@@ -544,7 +538,6 @@ watch(
     () => props.weights,
     () => props.indicatorSize,
     () => props.caretDistancePercent,
-    () => props.indicatorDistancePercent,
     () => props.majorTickTextOffset,
     () => props.scaleLinePercent,
   ],
