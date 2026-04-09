@@ -14,6 +14,10 @@
   line-height: 1.45;
 }
 
+.airspace-map .leaflet-popup-pane {
+  z-index: 850;
+}
+
 .airspace-map .airspace-popup .leaflet-popup-content {
   min-width: min(18rem, calc(100vw - 6rem));
 }

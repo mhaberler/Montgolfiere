@@ -177,6 +177,7 @@ export class AirspaceStackControl extends L.Control {
   private readonly onWindowResize = (): void => {
     this.syncWidth(Math.max(1, new Set(this.columnOf).size));
   };
+  private readonly activeDragCleanups: Array<() => void> = [];
 
   constructor(opts?: {
     onBlockClicked?: (entry: AirspaceEntry, index: number) => void;
@@ -231,31 +232,11 @@ export class AirspaceStackControl extends L.Control {
       "airspace-stack-resize-handle left",
       this.container,
     ) as HTMLDivElement;
-    let leftResizing = false;
-    leftHandle.addEventListener("pointerdown", (event: PointerEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-      leftResizing = true;
-      leftHandle.setPointerCapture(event.pointerId);
-      this.container.classList.add("resizing");
-    });
-    leftHandle.addEventListener("pointermove", (event: PointerEvent) => {
-      if (!leftResizing) {
-        return;
-      }
-
-      event.preventDefault();
+    this.bindResizeHandle(leftHandle, ({ clientX }) => {
       const rect = this.container.getBoundingClientRect();
-      const newWidth = Math.max(
-        this.getMinWidthPx(),
-        rect.right - event.clientX,
-      );
+      const newWidth = Math.max(this.getMinWidthPx(), rect.right - clientX);
       this.manualWidthPx = newWidth;
       this.syncWidth(Math.max(1, new Set(this.columnOf).size));
-    });
-    leftHandle.addEventListener("pointerup", () => {
-      leftResizing = false;
-      this.container.classList.remove("resizing");
     });
 
     const topHandle = L.DomUtil.create(
@@ -263,28 +244,11 @@ export class AirspaceStackControl extends L.Control {
       "airspace-stack-resize-handle top",
       this.container,
     ) as HTMLDivElement;
-    let topResizing = false;
-    topHandle.addEventListener("pointerdown", (event: PointerEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-      topResizing = true;
-      topHandle.setPointerCapture(event.pointerId);
-      this.container.classList.add("resizing");
-    });
-    topHandle.addEventListener("pointermove", (event: PointerEvent) => {
-      if (!topResizing) {
-        return;
-      }
-
-      event.preventDefault();
+    this.bindResizeHandle(topHandle, ({ clientY }) => {
       const rect = this.container.getBoundingClientRect();
-      const newHeight = Math.max(100, rect.bottom - event.clientY);
+      const newHeight = Math.max(100, rect.bottom - clientY);
       this.container.style.height = `${newHeight}px`;
       this.stackArea.style.height = `${newHeight - 35}px`;
-    });
-    topHandle.addEventListener("pointerup", () => {
-      topResizing = false;
-      this.container.classList.remove("resizing");
     });
 
     const cornerHandle = L.DomUtil.create(
@@ -292,34 +256,14 @@ export class AirspaceStackControl extends L.Control {
       "airspace-stack-resize-handle corner",
       this.container,
     ) as HTMLDivElement;
-    let cornerResizing = false;
-    cornerHandle.addEventListener("pointerdown", (event: PointerEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-      cornerResizing = true;
-      cornerHandle.setPointerCapture(event.pointerId);
-      this.container.classList.add("resizing");
-    });
-    cornerHandle.addEventListener("pointermove", (event: PointerEvent) => {
-      if (!cornerResizing) {
-        return;
-      }
-
-      event.preventDefault();
+    this.bindResizeHandle(cornerHandle, ({ clientX, clientY }) => {
       const rect = this.container.getBoundingClientRect();
-      const newWidth = Math.max(
-        this.getMinWidthPx(),
-        rect.right - event.clientX,
-      );
-      const newHeight = Math.max(100, rect.bottom - event.clientY);
+      const newWidth = Math.max(this.getMinWidthPx(), rect.right - clientX);
+      const newHeight = Math.max(100, rect.bottom - clientY);
       this.manualWidthPx = newWidth;
       this.syncWidth(Math.max(1, new Set(this.columnOf).size));
       this.container.style.height = `${newHeight}px`;
       this.stackArea.style.height = `${newHeight - 35}px`;
-    });
-    cornerHandle.addEventListener("pointerup", () => {
-      cornerResizing = false;
-      this.container.classList.remove("resizing");
     });
 
     this.stackArea.addEventListener("click", (event: MouseEvent) => {
@@ -343,7 +287,132 @@ export class AirspaceStackControl extends L.Control {
   }
 
   onRemove(_map: LeafletMap): void {
+    this.clearActiveDragCleanups();
     window.removeEventListener("resize", this.onWindowResize);
+  }
+
+  private clearActiveDragCleanups(): void {
+    while (this.activeDragCleanups.length > 0) {
+      this.activeDragCleanups.pop()?.();
+    }
+  }
+
+  private getTouchClientPoint(event: TouchEvent): {
+    clientX: number;
+    clientY: number;
+  } | null {
+    const touch = event.touches[0] ?? event.changedTouches[0];
+    if (!touch) {
+      return null;
+    }
+
+    return {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+    };
+  }
+
+  private bindResizeHandle(
+    handle: HTMLDivElement,
+    onDrag: (point: { clientX: number; clientY: number }) => void,
+  ): void {
+    let dragging = false;
+
+    const stopDragging = () => {
+      if (!dragging) {
+        return;
+      }
+
+      dragging = false;
+      this.container.classList.remove("resizing");
+      this.clearActiveDragCleanups();
+    };
+
+    const startDragging = () => {
+      dragging = true;
+      this.container.classList.add("resizing");
+      this.clearActiveDragCleanups();
+
+      const pointerMove = (event: PointerEvent) => {
+        if (!dragging) {
+          return;
+        }
+
+        event.preventDefault();
+        onDrag({ clientX: event.clientX, clientY: event.clientY });
+      };
+
+      const pointerUp = () => {
+        stopDragging();
+      };
+
+      const touchMove = (event: TouchEvent) => {
+        if (!dragging) {
+          return;
+        }
+
+        const point = this.getTouchClientPoint(event);
+        if (!point) {
+          return;
+        }
+
+        event.preventDefault();
+        onDrag(point);
+      };
+
+      const touchEnd = () => {
+        stopDragging();
+      };
+
+      window.addEventListener("pointermove", pointerMove, { passive: false });
+      window.addEventListener("pointerup", pointerUp);
+      window.addEventListener("pointercancel", pointerUp);
+      window.addEventListener("touchmove", touchMove, { passive: false });
+      window.addEventListener("touchend", touchEnd);
+      window.addEventListener("touchcancel", touchEnd);
+
+      this.activeDragCleanups.push(() =>
+        window.removeEventListener("pointermove", pointerMove),
+      );
+      this.activeDragCleanups.push(() =>
+        window.removeEventListener("pointerup", pointerUp),
+      );
+      this.activeDragCleanups.push(() =>
+        window.removeEventListener("pointercancel", pointerUp),
+      );
+      this.activeDragCleanups.push(() =>
+        window.removeEventListener("touchmove", touchMove),
+      );
+      this.activeDragCleanups.push(() =>
+        window.removeEventListener("touchend", touchEnd),
+      );
+      this.activeDragCleanups.push(() =>
+        window.removeEventListener("touchcancel", touchEnd),
+      );
+    };
+
+    handle.addEventListener("pointerdown", (event: PointerEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      startDragging();
+      onDrag({ clientX: event.clientX, clientY: event.clientY });
+    });
+
+    handle.addEventListener(
+      "touchstart",
+      (event: TouchEvent) => {
+        const point = this.getTouchClientPoint(event);
+        if (!point) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        startDragging();
+        onDrag(point);
+      },
+      { passive: false },
+    );
   }
 
   private getMinWidthPx(): number {
