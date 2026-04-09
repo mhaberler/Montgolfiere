@@ -87,7 +87,11 @@ const onTouchStart = (event: TouchEvent) => {
   }
 
   const target = event.target as HTMLElement | null;
-  if (target?.closest('input, textarea, select, button, a, summary, [role="button"]')) {
+  if (
+    target?.closest(
+      'input, textarea, select, button, a, summary, [role="button"]',
+    )
+  ) {
     resetSwipe();
     return;
   }
@@ -97,7 +101,11 @@ const onTouchStart = (event: TouchEvent) => {
 };
 
 const onTouchEnd = (event: TouchEvent) => {
-  if (touchStartX.value === null || touchStartY.value === null || event.changedTouches.length !== 1) {
+  if (
+    touchStartX.value === null ||
+    touchStartY.value === null ||
+    event.changedTouches.length !== 1
+  ) {
     resetSwipe();
     return;
   }
@@ -105,12 +113,17 @@ const onTouchEnd = (event: TouchEvent) => {
   const deltaX = event.changedTouches[0].clientX - touchStartX.value;
   const deltaY = event.changedTouches[0].clientY - touchStartY.value;
 
-  if (Math.abs(deltaX) < SWIPE_MIN_DISTANCE || Math.abs(deltaY) > SWIPE_MAX_OFF_AXIS) {
+  if (
+    Math.abs(deltaX) < SWIPE_MIN_DISTANCE ||
+    Math.abs(deltaY) > SWIPE_MAX_OFF_AXIS
+  ) {
     resetSwipe();
     return;
   }
 
-  const currentIndex = visibleTabs.value.findIndex((tab) => tab.href === route.path);
+  const currentIndex = visibleTabs.value.findIndex(
+    (tab) => tab.href === route.path,
+  );
   if (currentIndex === -1) {
     resetSwipe();
     return;
