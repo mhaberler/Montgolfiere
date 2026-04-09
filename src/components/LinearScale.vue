@@ -8,6 +8,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  caretDistancePercent: {
+    type: Number,
+    default: undefined,
+  },
   indicatorSize: {
     type: Number,
     default: 20,
@@ -104,6 +108,10 @@ const svgRef = ref(null);
 // Reactive dimensions for the SVG, will be updated by ResizeObserver
 const svgWidth = ref(900);
 const svgHeight = ref(200);
+
+const MAJOR_TICK_LENGTH = 20;
+const INTERMEDIATE_TICK_LENGTH = 10;
+const MINOR_TICK_LENGTH = 5;
 
 let scale; // D3 scale instance
 let resizeObserver; // To observe container resizing
@@ -312,14 +320,16 @@ function drawScale() {
   let scaleLinePos; // Position of the scale line within the SVG
   let indicatorPoints;
 
+  const caretDistancePercent =
+    props.caretDistancePercent ?? props.indicatorDistancePercent;
   const indicatorSize = props.indicatorSize;
   const indicatorColor = props.indicatorColor;
   const indicatorOpacity = props.indicatorOpacity;
-  const indicatorDistancePercent = props.indicatorDistancePercent;
   const confidenceOpacity = props.confidenceOpacity;
   const confidenceColor = props.confidenceColor;
   const confidenceBoxCrossDimension = props.confidenceBoxCrossDimension;
   const transitionDuration = props.transitionDuration;
+  const caretOffsetPx = (caretDistancePercent / 100) * MAJOR_TICK_LENGTH;
 
   // Set viewBox to match current dimensions (CSS owns actual sizing via w-full/h-full)
   d3svg.attr("viewBox", `0 0 ${svgWidth.value} ${svgHeight.value}`);
@@ -336,8 +346,7 @@ function drawScale() {
     scaleLinePos = svgHeight.value * (props.scaleLinePercent / 100);
 
     // Indicator points DOWN towards the scale line (from above)
-    const indicatorVerticalOffset =
-      (indicatorDistancePercent / 100) * svgHeight.value; // Still relative to full SVG height
+    const indicatorVerticalOffset = caretOffsetPx;
     indicatorPoints = `0,${scaleLinePos - indicatorVerticalOffset + indicatorSize} -${indicatorSize / 2},${scaleLinePos - indicatorVerticalOffset} ${indicatorSize / 2},${scaleLinePos - indicatorVerticalOffset}`;
   } else {
     // vertical
@@ -351,8 +360,7 @@ function drawScale() {
     scaleLinePos = svgWidth.value * (props.scaleLinePercent / 100);
 
     // Indicator points LEFT towards the scale line (from right)
-    const indicatorHorizontalOffset =
-      (indicatorDistancePercent / 100) * svgWidth.value; // Still relative to full SVG width
+    const indicatorHorizontalOffset = caretOffsetPx;
     indicatorPoints = `${scaleLinePos - indicatorHorizontalOffset + indicatorSize},0 ${scaleLinePos - indicatorHorizontalOffset}, -${indicatorSize / 2} ${scaleLinePos - indicatorHorizontalOffset},${indicatorSize / 2}`;
   }
 
@@ -403,21 +411,21 @@ function drawScale() {
       let showText = false;
 
       if (props.majorTicks.includes(d)) {
-        tickLength = 20;
+        tickLength = MAJOR_TICK_LENGTH;
         strokeColor = "#333";
         textWeight = "bold";
         showText = true;
         g.classed("major-tick", true);
       } else if (props.intermediateTicks.includes(d)) {
-        tickLength = 10;
+        tickLength = INTERMEDIATE_TICK_LENGTH;
         strokeColor = "#666";
         textWeight = "normal";
       } else if (props.minorTicks.includes(d)) {
-        tickLength = 5;
+        tickLength = MINOR_TICK_LENGTH;
         strokeColor = "#666";
         textWeight = "normal";
       } else {
-        tickLength = 5;
+        tickLength = MINOR_TICK_LENGTH;
         strokeColor = "#ccc";
         textWeight = "normal";
       }
@@ -535,6 +543,7 @@ watch(
     () => props.intermediateTicks,
     () => props.weights,
     () => props.indicatorSize,
+    () => props.caretDistancePercent,
     () => props.indicatorDistancePercent,
     () => props.majorTickTextOffset,
     () => props.scaleLinePercent,
