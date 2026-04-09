@@ -97,3 +97,4 @@ android/app/src/main/res/values/strings.xml
 .env.local
 .env.*.local
 .vscode/settings.json
+.vscode/settings.json

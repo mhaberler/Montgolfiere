@@ -45,7 +45,7 @@ import { Icon } from 'leaflet'
 import { LMap, LMarker, LTileLayer } from '@maxel01/vue-leaflet'
 
 import AppPageContent from '@/components/layout/AppPageContent.vue'
-import { location, locationAvailable, locationError } from '@/sensors/location'
+import { location } from '@/sensors/location'
 
 type MapCenter = [number, number]
 type LeafletMapHandle = {
@@ -65,12 +65,19 @@ Icon.Default.mergeOptions({
 const zoom = ref(13)
 const mapRef = ref<LeafletMapHandle | null>(null)
 const mapPageRef = ref<HTMLElement | null>(null)
-const mapHeight = ref('320px')
+const mapHeight = ref('100dvh')
 let resizeObserver: ResizeObserver | null = null
 
 const syncMapHeight = () => {
-  const nextHeight = Math.max(mapPageRef.value?.clientHeight ?? 0, 320)
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+  const mapTop = mapPageRef.value?.getBoundingClientRect().top ?? 0
+  const nextHeight = Math.max(viewportHeight - mapTop, 0)
+
   mapHeight.value = `${nextHeight}px`
+
+  nextTick(() => {
+    invalidateMapSize()
+  })
 }
 
 const invalidateMapSize = () => {
@@ -78,24 +85,22 @@ const invalidateMapSize = () => {
 }
 
 onMounted(async () => {
+  await nextTick()
   syncMapHeight()
-  invalidateMapSize()
 
-  // if (typeof ResizeObserver !== 'undefined' && mapPageRef.value) {
-  //   resizeObserver = new ResizeObserver(() => {
-  //     syncMapHeight()
-  //     invalidateMapSize()
-  //   })
-  //   resizeObserver.observe(mapPageRef.value)
-  // }
+  if (typeof ResizeObserver !== 'undefined' && mapPageRef.value) {
+    resizeObserver = new ResizeObserver(syncMapHeight)
+    resizeObserver.observe(mapPageRef.value)
+  }
 
-  // await nextTick()
-  // syncMapHeight()
-  // invalidateMapSize()
+  window.addEventListener('resize', syncMapHeight)
+  window.visualViewport?.addEventListener('resize', syncMapHeight)
 })
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
+  window.removeEventListener('resize', syncMapHeight)
+  window.visualViewport?.removeEventListener('resize', syncMapHeight)
 })
 
 const hasLocation = computed(
@@ -110,34 +115,6 @@ const mapCenter = computed<MapCenter>(() => {
   }
 
   return [location.value.coords.latitude, location.value.coords.longitude]
-})
-
-const locationStatus = computed(() => {
-  if (hasLocation.value) {
-    return 'Live position'
-  }
-
-  if (locationError.value) {
-    return 'Location unavailable'
-  }
-
-  if (locationAvailable.value) {
-    return 'Waiting for first GPS fix'
-  }
-
-  return 'Location not started'
-})
-
-const locationDetails = computed(() => {
-  if (hasLocation.value && location.value) {
-    return `${location.value.coords.latitude.toFixed(5)}, ${location.value.coords.longitude.toFixed(5)}`
-  }
-
-  if (locationError.value) {
-    return locationError.value
-  }
-
-  return 'The map will center on the device once coordinates are available.'
 })
 </script>
 
