@@ -2,15 +2,18 @@
 
 ## Project Overview
 
-Montgolfiere is an Ionic/Vue 3/Capacitor mobile application for iOS and Android that provides real-time monitoring of hot air balloon systems during flight. The app collects telemetry from Bluetooth Low Energy (BLE) sensors and displays critical flight information including GPS position, altitude, vertical speed, and equipment status.
+Montgolfiere is a Vue 3/Capacitor mobile application for iOS and Android that provides real-time monitoring of hot air balloon systems during flight. The app collects telemetry from Bluetooth Low Energy (BLE) sensors and displays critical flight information including GPS position, altitude, vertical speed, and equipment status.
+
+The Ionic UI/runtime layer has been removed. Capacitor remains the native shell, while the app UI now uses standard Vue Router, native HTML elements, and Tailwind-based shared components.
 
 **Tech Stack:**
 
-- **Framework:** Ionic Framework with Vue 3 Composition API
+- **Framework:** Vue 3 Composition API
 - **Platform:** Capacitor (iOS & Android)
 - **Language:** TypeScript
 - **Build Tool:** Vite
 - **State Management:** Vue Composition API + Composables
+- **Styling/UI:** Tailwind CSS + native Vue components
 - **BLE:** @capacitor-community/bluetooth-le
 
 ## Architecture
@@ -32,6 +35,8 @@ BLE Sensors → Capacitor BLE Plugin → Decoders → Device Mapping → State M
 ```
 src/
 ├── components/          # Reusable UI components
+│   ├── layout/         # Shared app shell primitives (page content, badges, icons)
+│   ├── settings/       # Settings-specific panels such as sensor assignment UI
 │   ├── units/          # Unit-specific display components (EnvelopeUnit, TankUnit, etc.)
 │   └── ...
 ├── composables/        # Vue composables for shared logic
@@ -51,10 +56,12 @@ src/
 │   ├── pressure.ts    # Kalman filter for altitude/velocity
 │   ├── qnh.ts         # QNH pressure corrections
 │   └── sun.ts         # Sunrise/sunset calculations
-├── views/              # Page components
+├── views/              # Route-level page components
+│   ├── TabsPage.vue   # Shared top navigation shell and swipe handling
 │   ├── Tab1Page.vue   # Main flight status display
-│   ├── Tab2Page.vue   # BLE scanner and device assignment
-│   └── Tab3Page.vue   # Settings and configuration
+│   ├── SettingsPage.vue # Settings, sensors, QNH, debug, build info
+│   ├── ScannerView.vue # mDNS / network scanning tools
+│   └── MQTTClientView.vue # MQTT diagnostics/configuration
 ├── types/              # TypeScript type definitions
 ├── utils/              # Utility functions
 │   ├── state.ts       # Centralized state exports
@@ -62,6 +69,13 @@ src/
 │   └── ble-utils.ts   # BLE helper functions
 └── router/             # Vue Router configuration
 ```
+
+### UI Shell And Navigation
+
+- The app shell is implemented in `src/views/TabsPage.vue` using standard Vue Router, not Ionic tabs.
+- Navigation is a sticky top tab bar with text labels for better readability on mobile.
+- Left/right swipe gestures switch between visible top-level tabs on touch devices.
+- The Sensors screen is no longer a top-level tab. Sensor assignment and BLE scan controls live inside the Settings page as their own accordion section.
 
 ## Key Components
 
@@ -278,14 +292,14 @@ const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 
 **BLE Testing:**
 
-- Use Tab2 (BLE Scanner) to view raw sensor data
+- Use Settings > Sensors to view discovered BLE devices and assign them to balloon units
 - Check decoded values match expected format
 - Verify device appears with correct type and priority
 - Test assignment to units
 
 **Debug Info:**
 
-- Enable via Settings (Tab3)
+- Enable via Settings
 - Shows EKF state, confidence intervals, BLE statistics
 - Watchdog timeout counter for scan health
 
@@ -403,7 +417,7 @@ bun run sync             # Sync web assets to native platforms
 **BLE Scanning Stops:**
 
 - Check watchdog counter in Debug Info
-- Manually restart scan from Tab2
+- Manually restart scan from Settings > Sensors
 - Verify device Bluetooth is enabled
 - Check for Capacitor plugin issues
 
@@ -448,7 +462,6 @@ bun run sync             # Sync web assets to native platforms
 
 ## Resources
 
-- [Ionic Framework Documentation](https://ionicframework.com/docs)
 - [Vue 3 Composition API](https://vuejs.org/guide/extras/composition-api-faq.html)
 - [Capacitor Documentation](https://capacitorjs.com/docs)
 - [Capacitor BLE Plugin](https://github.com/capacitor-community/bluetooth-le)
@@ -462,9 +475,9 @@ For questions or issues, refer to the project repository documentation or contac
 
 ---
 
-**Last Updated:** April 6, 2026
+**Last Updated:** April 9, 2026
 **Version:** 1.1.0
-**Latest Changes:** Completed ESLint 9 flat config migration; added comprehensive code quality scripts (type-check, lint, prettier); resolved 275 linting errors to 0.
+**Latest Changes:** Removed the Ionic UI/runtime layer while keeping Capacitor; migrated routing and app shell to standard Vue Router; replaced Ionic components with native Vue/Tailwind UI; moved navigation to a sticky top tab bar with swipe support on mobile; moved BLE sensor assignment into Settings as a standalone Sensors accordion section with header-level Clear/Restart controls.
 
 # CLAUDE.md
 
