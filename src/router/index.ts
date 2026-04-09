@@ -27,15 +27,6 @@ const routes: Array<RouteRecordRaw> = [
         redirect: "/tabs/settings",
       },
       {
-        path: "mdns",
-        component: () => import("@/views/ScannerView.vue"),
-      },
-      {
-        path: "mqtt",
-        name: "MQTTClient",
-        component: () => import("@/views/MQTTClientView.vue"),
-      },
-      {
         path: "settings",
         component: () => import("@/views/SettingsPage.vue"),
       },
