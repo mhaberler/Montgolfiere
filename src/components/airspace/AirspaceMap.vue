@@ -34,6 +34,7 @@ import {
 import markerIcon2xUrl from "leaflet/dist/images/marker-icon-2x.png";
 import markerIconUrl from "leaflet/dist/images/marker-icon.png";
 import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
+import type { Position } from "@capacitor/geolocation";
 import L from "leaflet";
 import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
 import {
@@ -49,6 +50,11 @@ import {
   airportTypeName,
 } from "@/composables/airspace/useOpenAIP";
 import { useOpenAIP } from "@/composables/airspace/useOpenAIP";
+import {
+  location as sharedLocation,
+  locationAvailable,
+  locationError,
+} from "@/sensors/location";
 
 interface Props {
   mode: "track" | "what-if";
@@ -58,8 +64,6 @@ interface Props {
   showStack: boolean;
   showAirports: boolean;
   home?: boolean;
-  link?: boolean;
-  github?: string | false;
   initialCenter?: [number, number];
   initialZoom?: number;
   initialBaseLayer?: string;
@@ -68,8 +72,6 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   home: true,
-  link: true,
-  github: false,
   initialCenter: () => [47, 15],
   initialZoom: 12,
   initialBaseLayer: "osm",
@@ -79,10 +81,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   "update:mode": [mode: "track" | "what-if"];
   "update:altitude": [altitude: number];
-  "update:viewport": [viewport: { lat: number; lng: number; zoom: number }];
   "update:position": [pos: { lat: number; lng: number }];
-  "update:baseLayer": [key: string];
-  "update:overlays": [keys: string[]];
   error: [message: string];
 }>();
 
@@ -98,19 +97,6 @@ type AirspaceFeatureProps = {
   flags?: string[];
   activeReason?: string;
   active?: boolean;
-};
-
-type BrowserGeolocationPosition = {
-  coords: {
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-    altitude: number | null;
-  };
-};
-
-type BrowserGeolocationPositionError = {
-  message: string;
 };
 
 type FeatureLike = Feature<Geometry, AirspaceFeatureProps>;
@@ -182,10 +168,11 @@ let highlightedLayer: Path | null = null;
 const airportMarkerById = new Map<string, CircleMarker>();
 let stackHostControl: Control | null = null;
 let stackAttached = true;
+let homeControl: Control | null = null;
+let homeAttached = false;
 let baseLayers: Record<string, TileLayer> = {};
 let overlayLayers: Record<string, TileLayer> = {};
 
-let watchId: number | null = null;
 let trackMarker: CircleMarker | null = null;
 let accuracyCircle: any = null;
 let firstFix = true;
@@ -457,7 +444,7 @@ async function loadAirspaceAt(latlng: LatLng): Promise<void> {
   renderGeojson(geojson);
 }
 
-function onFix(position: BrowserGeolocationPosition): void {
+function syncTrackPosition(position: Position): void {
   if (!map) {
     return;
   }
@@ -517,34 +504,18 @@ function onFix(position: BrowserGeolocationPosition): void {
   }
 }
 
-function onGeoError(error: BrowserGeolocationPositionError): void {
-  console.warn("Geolocation error:", error.message);
-  emit("error", `Location unavailable: ${error.message}`);
-  emit("update:mode", "what-if");
-}
-
 function startTracking(): void {
-  if (watchId !== null) {
-    return;
-  }
-
   firstFix = true;
   openAIP.resetAirspaceCenter();
   currentMarker?.remove();
   currentMarker = null;
 
-  watchId = navigator.geolocation.watchPosition(onFix, onGeoError, {
-    enableHighAccuracy: true,
-    timeout: 20_000,
-    maximumAge: 1_000,
-  });
+  if (locationAvailable.value && sharedLocation.value) {
+    syncTrackPosition(sharedLocation.value);
+  }
 }
 
 function stopTracking(): void {
-  if (watchId !== null) {
-    navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-  }
   trackMarker?.remove();
   trackMarker = null;
   accuracyCircle?.remove();
@@ -628,6 +599,24 @@ function applyShowAirports(): void {
   openAIP.resetAirportCenter();
 }
 
+function applyHomeControl(): void {
+  if (!map || !homeControl) {
+    return;
+  }
+
+  const shouldShow = props.home && props.mode === "what-if";
+  if (shouldShow && !homeAttached) {
+    homeControl.addTo(map);
+    homeAttached = true;
+    return;
+  }
+
+  if (!shouldShow && homeAttached) {
+    (homeControl as Control & { remove(): void }).remove();
+    homeAttached = false;
+  }
+}
+
 function shouldIgnoreMapClick(event: LeafletMouseEvent): boolean {
   const target = (event.originalEvent?.target as HTMLElement | null) ?? null;
   if (!target) {
@@ -639,43 +628,6 @@ function shouldIgnoreMapClick(event: LeafletMouseEvent): boolean {
     ),
   );
 }
-
-function copyText(text: string): Promise<boolean> {
-  if (navigator.clipboard?.writeText) {
-    return navigator.clipboard
-      .writeText(text)
-      .then(() => true)
-      .catch(() => false);
-  }
-
-  try {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
-    textarea.style.top = "0";
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(textarea);
-    return Promise.resolve(ok);
-  } catch {
-    return Promise.resolve(false);
-  }
-}
-
-function triggerClickAt(latlng: { lat: number; lng: number }): void {
-  if (!map) {
-    return;
-  }
-  map.fireEvent("click", {
-    latlng: new LatLng(latlng.lat, latlng.lng),
-  } as LeafletMouseEvent);
-}
-
-defineExpose({ triggerClickAt });
 
 onMounted(() => {
   if (!mapContainerRef.value) {
@@ -764,89 +716,44 @@ onMounted(() => {
   ).addTo(map);
   new leaflet.Control.Scale({ imperial: false, maxWidth: 300 }).addTo(map);
 
-  if (props.home) {
-    const HomeControl = Control.extend({
-      options: { position: "topleft" },
-      onAdd(controlMap: LeafletMapWithExtras) {
-        const btn = DomUtil.create(
-          "div",
-          "leaflet-bar home-control",
-        ) as HTMLDivElement;
-        const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
-        link.href = "#";
-        link.title = "Go to my location";
-        link.innerHTML = "&#x2302;";
-        link.role = "button";
-        DomEvent.disableClickPropagation(btn);
-        DomEvent.on(link, "click", (event: Event) => {
-          DomEvent.preventDefault(event);
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const latlng = new LatLng(
-                position.coords.latitude,
-                position.coords.longitude,
-              );
-              controlMap.setView(latlng, 12);
-              controlMap.fireEvent("click", { latlng } as LeafletMouseEvent);
-              emit(
-                "update:altitude",
-                position.coords.altitude != null
-                  ? Math.round(position.coords.altitude * 3.28084)
-                  : 0,
-              );
-            },
-            (error) => console.warn("Geolocation error:", error.message),
-            { enableHighAccuracy: true, timeout: 10_000 },
-          );
-        });
-        return btn;
-      },
-    }) as LeafletControlCtor;
-    new HomeControl().addTo(map);
-  }
+  const HomeControl = Control.extend({
+    options: { position: "topleft" },
+    onAdd(controlMap: LeafletMapWithExtras) {
+      const btn = DomUtil.create(
+        "div",
+        "leaflet-bar home-control",
+      ) as HTMLDivElement;
+      const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
+      link.href = "#";
+      link.title = "Go to my location";
+      link.innerHTML = "&#x2302;";
+      link.role = "button";
+      DomEvent.disableClickPropagation(btn);
+      DomEvent.on(link, "click", (event: Event) => {
+        DomEvent.preventDefault(event);
+        if (!locationAvailable.value || !sharedLocation.value) {
+          emit("error", locationError.value ?? "Location unavailable");
+          return;
+        }
 
-  if (props.link) {
-    const ShareControl = Control.extend({
-      options: { position: "topleft" },
-      onAdd(controlMap: LeafletMapWithExtras) {
-        const btn = DomUtil.create(
-          "div",
-          "leaflet-bar share-control",
-        ) as HTMLDivElement;
-        const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
-        link.href = "#";
-        link.title = "Copy link to this location";
-        link.innerHTML = "&#x1F517;";
-        link.role = "button";
-        DomEvent.disableClickPropagation(btn);
-        DomEvent.on(link, "click", (event: Event) => {
-          DomEvent.preventDefault(event);
-          const pos = currentMarker
-            ? currentMarker.getLatLng()
-            : controlMap.getCenter();
-          const zoom = controlMap.getZoom();
-          const altitude = props.altitude;
-          const url = `${location.origin}${location.pathname}?lat=${pos.lat.toFixed(6)}&lng=${pos.lng.toFixed(6)}&z=${zoom}&alt=${altitude}`;
-          copyText(url).then((ok) => {
-            if (!ok) {
-              console.warn(
-                "Copy failed: Clipboard API unavailable in this context",
-              );
-              return;
-            }
-            btn.classList.add("copied");
-            link.innerHTML = "&#x2713;";
-            setTimeout(() => {
-              btn.classList.remove("copied");
-              link.innerHTML = "&#x1F517;";
-            }, 2000);
-          });
-        });
-        return btn;
-      },
-    }) as LeafletControlCtor;
-    new ShareControl().addTo(map);
-  }
+        const latlng = new LatLng(
+          sharedLocation.value.coords.latitude,
+          sharedLocation.value.coords.longitude,
+        );
+        controlMap.setView(latlng, 12);
+        controlMap.fireEvent("click", { latlng } as LeafletMouseEvent);
+        if (sharedLocation.value.coords.altitude != null) {
+          emit(
+            "update:altitude",
+            Math.round(sharedLocation.value.coords.altitude * 3.28084),
+          );
+        }
+      });
+      return btn;
+    },
+  }) as LeafletControlCtor;
+  homeControl = new HomeControl();
+  applyHomeControl();
 
   const StackHostControl = Control.extend({
     options: { position: "bottomright" },
@@ -881,40 +788,8 @@ onMounted(() => {
     if (!map) {
       return;
     }
-    const pos = currentMarker
-      ? currentMarker.getLatLng()
-      : trackMarker
-        ? (trackMarker as unknown as Marker).getLatLng()
-        : map.getCenter();
-    emit("update:viewport", {
-      lat: pos.lat,
-      lng: pos.lng,
-      zoom: map.getZoom(),
-    });
     scheduleRefreshAirports();
   });
-  map.on("baselayerchange", () => {
-    if (!map) {
-      return;
-    }
-    const key = Object.entries(baseLayers).find(([, layer]) =>
-      map?.hasLayer(layer),
-    )?.[0];
-    if (key) {
-      emit("update:baseLayer", key);
-    }
-  });
-  const emitOverlays = () => {
-    if (!map) {
-      return;
-    }
-    const keys = Object.entries(overlayLayers)
-      .filter(([, layer]) => map?.hasLayer(layer))
-      .map(([key]) => key);
-    emit("update:overlays", keys);
-  };
-  map.on("overlayadd", emitOverlays);
-  map.on("overlayremove", emitOverlays);
 
   if (!props.showStack) {
     (stackHostControl as Control & { remove(): void }).remove();
@@ -946,8 +821,21 @@ watch(
     } else {
       stopTracking();
     }
+    applyHomeControl();
   },
 );
+watch([locationAvailable, sharedLocation], ([available, position]) => {
+  if (props.mode !== "track") {
+    return;
+  }
+
+  if (!available || !position) {
+    stopTracking();
+    return;
+  }
+
+  syncTrackPosition(position);
+});
 watch(
   () => props.showAirspace,
   () => applyShowAirspace(),
