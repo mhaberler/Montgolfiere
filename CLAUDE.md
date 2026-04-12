@@ -34,12 +34,15 @@ BLE Sensors → Capacitor BLE Plugin → Decoders → Device Mapping → State M
 
 ```
 src/
+├── airspace/           # Airspace naming, popup, and stack layout helpers
 ├── components/          # Reusable UI components
+│   ├── airspace/       # Airspace map route controls and stack UI
 │   ├── layout/         # Shared app shell primitives (page content, badges, icons)
 │   ├── settings/       # Settings-specific panels such as sensor assignment UI
 │   ├── units/          # Unit-specific display components (EnvelopeUnit, TankUnit, etc.)
 │   └── ...
 ├── composables/        # Vue composables for shared logic
+│   ├── airspace/       # OpenAIP fetch/refetch logic for the map route
 │   ├── useDeviceMapping.ts    # BLE device to balloon unit mapping
 │   └── usePersistedRef.ts     # Persistent state management
 ├── decoders/           # BLE protocol decoders
@@ -59,6 +62,7 @@ src/
 ├── views/              # Route-level page components
 │   ├── TabsPage.vue   # Shared top navigation shell and swipe handling
 │   ├── Tab1Page.vue   # Main flight status display
+│   ├── MapPage.vue    # Airspace lookup map, tracking, and stack display
 │   ├── SettingsPage.vue # Settings, sensors, QNH, debug, build info
 │   ├── ScannerView.vue # mDNS / network scanning tools
 │   └── MQTTClientView.vue # MQTT diagnostics/configuration
@@ -75,6 +79,7 @@ src/
 - The app shell is implemented in `src/views/TabsPage.vue` using standard Vue Router, not Ionic tabs.
 - Navigation is a sticky top tab bar with text labels for better readability on mobile.
 - Left/right swipe gestures switch between visible top-level tabs on touch devices.
+- The Map tab is implemented by `src/views/MapPage.vue` and hosts the imported airspace-lookup flow.
 - The Sensors screen is no longer a top-level tab. Sensor assignment and BLE scan controls live inside the Settings page as their own accordion section.
 
 ## Key Components
@@ -232,6 +237,29 @@ Extended Kalman Filter (EKF) for smooth altitude and velocity estimation:
 - Filtered acceleration
 - Time to zero velocity (apex prediction)
 - Apex altitude prediction
+
+### 7. Airspace Map (`src/views/MapPage.vue`)
+
+**Responsibilities:**
+
+- Host the interactive `/tabs/map` route and keep map state mirrored into the URL
+- Render the imported `airspace-lookup` experience via `src/components/airspace/AirspaceMap.vue`
+- Fetch nearby airspaces and airports through `src/composables/airspace/useOpenAIP.ts`
+- Show the altitude stack and airspace detail popups from `src/components/airspace/AirspaceStack.vue`
+
+**Key Modules:**
+
+- `src/views/MapPage.vue` - Route shell, URL param sync, mode/show toggles
+- `src/components/airspace/AirspaceMap.vue` - Leaflet map, overlays, tracking, airport markers
+- `src/components/airspace/AirspaceStack.vue` - Altitude stack, resize handles, airspace detail popup
+- `src/airspace/airspaceStack.ts` - Airspace names, colors, stack layout helpers
+- `src/airspace/markerCallback.ts` - Airport popup markup and airspace activity helpers
+- `src/assets/airspace-import.css` - Imported map-specific styling overrides
+
+**Replacement Note:**
+
+- The previous `src/map/*` airspace implementation has been removed from the live source tree.
+- Recovery, if ever needed, should come from git history or `legacy/airspace/README.md`, not by recreating `src/map`.
 
 ## Development Guidelines
 
