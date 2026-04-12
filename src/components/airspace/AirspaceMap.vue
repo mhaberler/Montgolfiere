@@ -119,7 +119,7 @@ type LeafletControlFactory = {
 };
 
 type LeafletRuntime = typeof L & {
-  circle: (latlng: LatLngExpression, options?: Record<string, unknown>) => any;
+  Circle: new (latlng: LatLngExpression, options?: Record<string, unknown>) => any;
   control?: LeafletControlFactory;
   Control: typeof Control & {
     Layers: new (
@@ -464,8 +464,7 @@ function syncTrackPosition(position: Position): void {
       fillColor: "#1a73e8",
       fillOpacity: 1,
     }).addTo(activeMap);
-    accuracyCircle = leaflet
-      .circle(latlng, {
+    accuracyCircle = new leaflet.Circle(latlng, {
         radius: accuracy,
         color: "#1a73e8",
         weight: 1,

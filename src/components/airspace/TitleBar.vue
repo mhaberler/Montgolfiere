@@ -31,7 +31,7 @@
           $emit('update:follow', ($event.target as HTMLInputElement).checked)
         "
       />
-      <span>Follow</span>
+      <span>auto pan</span>
     </label>
 
     <label class="flex cursor-pointer items-center gap-1">
