@@ -14,18 +14,22 @@
       :aria-label="`Switch to ${nextModeLabel}`"
       @click="$emit('update:mode', mode === 'track' ? 'what-if' : 'track')"
     >
-      {{ mode === 'track' ? 'Track' : 'What-if' }}
+      {{ mode === "track" ? "Track" : "What-if" }}
     </button>
 
     <label
       class="flex items-center gap-1"
-      :class="mode === 'track' ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'"
+      :class="
+        mode === 'track' ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'
+      "
     >
       <input
         type="checkbox"
         :checked="follow"
         :disabled="mode !== 'track'"
-        @change="$emit('update:follow', ($event.target as HTMLInputElement).checked)"
+        @change="
+          $emit('update:follow', ($event.target as HTMLInputElement).checked)
+        "
       />
       <span>Follow</span>
     </label>
@@ -34,7 +38,12 @@
       <input
         type="checkbox"
         :checked="showAirspace"
-        @change="$emit('update:showAirspace', ($event.target as HTMLInputElement).checked)"
+        @change="
+          $emit(
+            'update:showAirspace',
+            ($event.target as HTMLInputElement).checked,
+          )
+        "
       />
       <span>Airspace</span>
     </label>
@@ -42,7 +51,9 @@
       <input
         type="checkbox"
         :checked="showStack"
-        @change="$emit('update:showStack', ($event.target as HTMLInputElement).checked)"
+        @change="
+          $emit('update:showStack', ($event.target as HTMLInputElement).checked)
+        "
       />
       <span>Stack</span>
     </label>
@@ -50,7 +61,12 @@
       <input
         type="checkbox"
         :checked="showAirports"
-        @change="$emit('update:showAirports', ($event.target as HTMLInputElement).checked)"
+        @change="
+          $emit(
+            'update:showAirports',
+            ($event.target as HTMLInputElement).checked,
+          )
+        "
       />
       <span>Airports</span>
     </label>
@@ -58,26 +74,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from 'vue'
+import { computed, toRef } from "vue";
 
 const props = defineProps<{
-  mode: 'track' | 'what-if'
-  follow: boolean
-  showAirspace: boolean
-  showStack: boolean
-  showAirports: boolean
-}>()
+  mode: "track" | "what-if";
+  follow: boolean;
+  showAirspace: boolean;
+  showStack: boolean;
+  showAirports: boolean;
+}>();
 
-const mode = toRef(props, 'mode')
-const nextModeLabel = computed(() => (mode.value === 'track' ? 'What-if' : 'Track'))
+const mode = toRef(props, "mode");
+const nextModeLabel = computed(() =>
+  mode.value === "track" ? "What-if" : "Track",
+);
 
 defineEmits<{
-  (e: 'update:mode', value: 'track' | 'what-if'): void
-  (e: 'update:follow', value: boolean): void
-  (e: 'update:showAirspace', value: boolean): void
-  (e: 'update:showStack', value: boolean): void
-  (e: 'update:showAirports', value: boolean): void
-}>()
+  (e: "update:mode", value: "track" | "what-if"): void;
+  (e: "update:follow", value: boolean): void;
+  (e: "update:showAirspace", value: boolean): void;
+  (e: "update:showStack", value: boolean): void;
+  (e: "update:showAirports", value: boolean): void;
+}>();
 </script>
 
 <style scoped>

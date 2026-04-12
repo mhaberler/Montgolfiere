@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Feature, FeatureCollection, Geometry } from "geojson";
 import {
   CircleMarker,
   Control,
@@ -29,31 +30,40 @@ import {
   type Path,
   type PathOptions,
   TileLayer,
-} from 'leaflet'
-import markerIcon2xUrl from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIconUrl from 'leaflet/dist/images/marker-icon.png'
-import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png'
-import L from 'leaflet'
-import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
-import { type AirspaceEntry, activityName, airspaceColor, airspaceTypeName, icaoClassName } from '@/airspace/airspaceStack'
-import AirspaceStack from '@/components/airspace/AirspaceStack.vue'
-import { airportPopupHtml, airportTypeName } from '@/composables/airspace/useOpenAIP'
-import { useOpenAIP } from '@/composables/airspace/useOpenAIP'
+} from "leaflet";
+import markerIcon2xUrl from "leaflet/dist/images/marker-icon-2x.png";
+import markerIconUrl from "leaflet/dist/images/marker-icon.png";
+import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
+import L from "leaflet";
+import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import {
+  type AirspaceEntry,
+  activityName,
+  airspaceColor,
+  airspaceTypeName,
+  icaoClassName,
+} from "@/airspace/airspaceStack";
+import AirspaceStack from "@/components/airspace/AirspaceStack.vue";
+import {
+  airportPopupHtml,
+  airportTypeName,
+} from "@/composables/airspace/useOpenAIP";
+import { useOpenAIP } from "@/composables/airspace/useOpenAIP";
 
 interface Props {
-  mode: 'track' | 'what-if'
-  altitude: number
-  follow: boolean
-  showAirspace: boolean
-  showStack: boolean
-  showAirports: boolean
-  home?: boolean
-  link?: boolean
-  github?: string | false
-  initialCenter?: [number, number]
-  initialZoom?: number
-  initialBaseLayer?: string
-  initialOverlays?: string[]
+  mode: "track" | "what-if";
+  altitude: number;
+  follow: boolean;
+  showAirspace: boolean;
+  showStack: boolean;
+  showAirports: boolean;
+  home?: boolean;
+  link?: boolean;
+  github?: string | false;
+  initialCenter?: [number, number];
+  initialZoom?: number;
+  initialBaseLayer?: string;
+  initialOverlays?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -62,301 +72,344 @@ const props = withDefaults(defineProps<Props>(), {
   github: false,
   initialCenter: () => [47, 15],
   initialZoom: 12,
-  initialBaseLayer: 'osm',
-  initialOverlays: () => ['openaip'],
-})
+  initialBaseLayer: "osm",
+  initialOverlays: () => ["openaip"],
+});
 
 const emit = defineEmits<{
-  'update:mode': [mode: 'track' | 'what-if']
-  'update:altitude': [altitude: number]
-  'update:viewport': [viewport: { lat: number; lng: number; zoom: number }]
-  'update:position': [pos: { lat: number; lng: number }]
-  'update:baseLayer': [key: string]
-  'update:overlays': [keys: string[]]
-  error: [message: string]
-}>()
+  "update:mode": [mode: "track" | "what-if"];
+  "update:altitude": [altitude: number];
+  "update:viewport": [viewport: { lat: number; lng: number; zoom: number }];
+  "update:position": [pos: { lat: number; lng: number }];
+  "update:baseLayer": [key: string];
+  "update:overlays": [keys: string[]];
+  error: [message: string];
+}>();
 
-type FeatureLike = GeoJSON.Feature<GeoJSON.Geometry, Record<string, any>>
+type AirspaceFeatureProps = {
+  name?: string;
+  type?: number;
+  icaoClass?: number;
+  lowerFt?: number;
+  upperFt?: number;
+  lowerLabel?: string;
+  upperLabel?: string;
+  activity?: number;
+  flags?: string[];
+  activeReason?: string;
+  active?: boolean;
+};
 
-type GeoJsonLayer = LeafletGeoJSON & { feature?: FeatureLike }
+type BrowserGeolocationPosition = {
+  coords: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    altitude: number | null;
+  };
+};
+
+type BrowserGeolocationPositionError = {
+  message: string;
+};
+
+type FeatureLike = Feature<Geometry, AirspaceFeatureProps>;
+
+type GeoJsonLayer = LeafletGeoJSON & { feature?: FeatureLike };
 type LeafletMapWithExtras = LeafletMap & {
-  getBounds(): { contains(latlng: LatLng): boolean }
-  panTo(latlng: LatLngExpression): LeafletMap
-  fireEvent(type: string, event: unknown): LeafletMap
-}
+  getBounds(): { contains(latlng: LatLng): boolean };
+  panTo(latlng: LatLngExpression): LeafletMap;
+  fireEvent(type: string, event: unknown): LeafletMap;
+};
 
-type LeafletControlCtor = new () => Control
+type LeafletControlCtor = new () => Control;
 
 type LeafletControlFactory = {
   layers: (
     baseLayers: Record<string, Layer>,
     overlays?: Record<string, Layer>,
-  ) => Control
-  scale: (options?: Record<string, unknown>) => Control
-}
+  ) => Control;
+  scale: (options?: Record<string, unknown>) => Control;
+};
 
 type LeafletRuntime = typeof L & {
-  circle: (latlng: LatLngExpression, options?: Record<string, unknown>) => any
-  control?: LeafletControlFactory
+  circle: (latlng: LatLngExpression, options?: Record<string, unknown>) => any;
+  control?: LeafletControlFactory;
   Control: typeof Control & {
     Layers: new (
       baseLayers: Record<string, Layer>,
       overlays?: Record<string, Layer>,
       options?: Record<string, unknown>,
-    ) => Control
-    Scale: new (options?: Record<string, unknown>) => Control
-  }
-}
+    ) => Control;
+    Scale: new (options?: Record<string, unknown>) => Control;
+  };
+};
 
-const leaflet = L as LeafletRuntime
+const leaflet = L as LeafletRuntime;
 const iconDefault = Icon.Default as {
-  imagePath?: string
-  prototype?: { _getIconUrl?: unknown }
+  imagePath?: string;
+  prototype?: { _getIconUrl?: unknown };
   mergeOptions(options: {
-    iconRetinaUrl?: string
-    iconUrl?: string
-    shadowUrl?: string
-  }): void
-}
+    iconRetinaUrl?: string;
+    iconUrl?: string;
+    shadowUrl?: string;
+  }): void;
+};
 
 const AIRSPACE_POPUP_OPTIONS = {
-  className: 'airspace-popup',
+  className: "airspace-popup",
   minWidth: 420,
   maxWidth: 520,
-} as const
+} as const;
 
 const AIRPORT_POPUP_OPTIONS = {
-  className: 'airport-popup',
+  className: "airport-popup",
   minWidth: 380,
   maxWidth: 520,
-} as const
+} as const;
 
-const mapContainerRef = ref<HTMLDivElement | null>(null)
-const stackTarget = ref<HTMLElement | null>(null)
-const stackFeatures = shallowRef<GeoJSON.Feature[]>([])
+const mapContainerRef = ref<HTMLDivElement | null>(null);
+const stackTarget = ref<HTMLElement | null>(null);
+const stackFeatures = shallowRef<Feature[]>([]);
 
-const openAIP = useOpenAIP()
+const openAIP = useOpenAIP();
 
-let map: LeafletMapWithExtras | null = null
-let currentMarker: Marker | null = null
-let currentGeojsonLayer: LeafletGeoJSON | null = null
-let lastGeojsonFeatures: GeoJSON.FeatureCollection | null = null
-let highlightedLayer: Path | null = null
-const airportMarkerById = new Map<string, CircleMarker>()
-let stackHostControl: Control | null = null
-let stackAttached = true
-let baseLayers: Record<string, TileLayer> = {}
-let overlayLayers: Record<string, TileLayer> = {}
+let map: LeafletMapWithExtras | null = null;
+let currentMarker: Marker | null = null;
+let currentGeojsonLayer: LeafletGeoJSON | null = null;
+let lastGeojsonFeatures: FeatureCollection | null = null;
+let highlightedLayer: Path | null = null;
+const airportMarkerById = new Map<string, CircleMarker>();
+let stackHostControl: Control | null = null;
+let stackAttached = true;
+let baseLayers: Record<string, TileLayer> = {};
+let overlayLayers: Record<string, TileLayer> = {};
 
-let watchId: number | null = null
-let trackMarker: CircleMarker | null = null
-let accuracyCircle: any = null
-let firstFix = true
-let refreshTimer: ReturnType<typeof setTimeout> | null = null
+let watchId: number | null = null;
+let trackMarker: CircleMarker | null = null;
+let accuracyCircle: any = null;
+let firstFix = true;
+let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
 const AIRPORT_DEBUG =
-  import.meta.env.DEV && new URLSearchParams(location.search).get('debugAirports') === '1'
+  import.meta.env.DEV &&
+  new URLSearchParams(location.search).get("debugAirports") === "1";
 
-function logAirportRefresh(event: string, details: Record<string, unknown>): void {
+function logAirportRefresh(
+  event: string,
+  details: Record<string, unknown>,
+): void {
   if (!AIRPORT_DEBUG) {
-    return
+    return;
   }
-  console.debug(`[airports] ${event}`, details)
+  console.debug(`[airports] ${event}`, details);
 }
 
 const AIRPORT_ICON_COLOR: Record<number, string> = {
-  3: '#1565C0',
-  4: '#00838F',
-  5: '#6A1B9A',
-  7: '#00838F',
-}
+  3: "#1565C0",
+  4: "#00838F",
+  5: "#6A1B9A",
+  7: "#00838F",
+};
 
 function airportColor(type: number): string {
-  return AIRPORT_ICON_COLOR[type] ?? '#2E7D32'
+  return AIRPORT_ICON_COLOR[type] ?? "#2E7D32";
 }
 
-function createLatLng(latlng: LatLngExpression | { lat: number; lng: number }): LatLng {
+function createLatLng(
+  latlng: LatLngExpression | { lat: number; lng: number },
+): LatLng {
   if (latlng instanceof LatLng) {
-    return latlng
+    return latlng;
   }
   if (Array.isArray(latlng)) {
-    return new LatLng(latlng[0], latlng[1])
+    return new LatLng(latlng[0], latlng[1]);
   }
-  return new LatLng(latlng.lat, latlng.lng)
+  return new LatLng(latlng.lat, latlng.lng);
 }
 
-function featureStyle(properties: Record<string, any> | null | undefined): PathOptions {
-  const active = properties?.active ?? true
+function featureStyle(
+  properties: Record<string, any> | null | undefined,
+): PathOptions {
+  const active = properties?.active ?? true;
   const hex = airspaceColor({
     type: properties?.type ?? 0,
     icaoClass: properties?.icaoClass ?? 7,
     activity: properties?.activity ?? 0,
-  })
+  });
   return {
-    color: active ? hex : '#888888',
+    color: active ? hex : "#888888",
     weight: 2,
     fillOpacity: active ? 0.2 : 0.08,
-    dashArray: active ? undefined : '5, 5',
-  }
+    dashArray: active ? undefined : "5, 5",
+  };
 }
 
 function resetHighlight(): void {
   if (!highlightedLayer) {
-    return
+    return;
   }
-  const feature = (highlightedLayer as Path & { feature?: FeatureLike }).feature
-  highlightedLayer.setStyle(featureStyle(feature?.properties))
-  highlightedLayer = null
+  const feature = (highlightedLayer as Path & { feature?: FeatureLike })
+    .feature;
+  highlightedLayer.setStyle(featureStyle(feature?.properties));
+  highlightedLayer = null;
 }
 
 function highlightAirspaceOnMap(entry: AirspaceEntry): void {
-  resetHighlight()
+  resetHighlight();
   if (!currentGeojsonLayer) {
-    return
+    return;
   }
 
   currentGeojsonLayer.eachLayer((layer: Layer) => {
-    const feature = (layer as GeoJsonLayer).feature
+    const feature = (layer as GeoJsonLayer).feature;
     if (!feature?.properties) {
-      return
+      return;
     }
-    const props = feature.properties
-    if (props.name === entry.name && props.lowerFt === entry.lowerFt && props.upperFt === entry.upperFt) {
-      const path = layer as Path
+    const props = feature.properties;
+    if (
+      props.name === entry.name &&
+      props.lowerFt === entry.lowerFt &&
+      props.upperFt === entry.upperFt
+    ) {
+      const path = layer as Path;
       path.setStyle({
-        color: '#f1c40f',
+        color: "#f1c40f",
         weight: 4,
         fillOpacity: 0.35,
-      })
-      path.bringToFront()
-      highlightedLayer = path
+      });
+      path.bringToFront();
+      highlightedLayer = path;
     }
-  })
+  });
 }
 
-function onStackBlockClick(payload: { entry: AirspaceEntry; index: number }): void {
-  highlightAirspaceOnMap(payload.entry)
+function onStackBlockClick(payload: {
+  entry: AirspaceEntry;
+  index: number;
+}): void {
+  highlightAirspaceOnMap(payload.entry);
 }
 
 function onAltitudeEmit(feet: number): void {
-  emit('update:altitude', feet)
+  emit("update:altitude", feet);
 }
 
-function renderGeojson(geojson: GeoJSON.FeatureCollection | null): void {
-  resetHighlight()
-  currentGeojsonLayer?.remove()
-  currentGeojsonLayer = null
-  lastGeojsonFeatures = geojson
+function renderGeojson(geojson: FeatureCollection | null): void {
+  resetHighlight();
+  currentGeojsonLayer?.remove();
+  currentGeojsonLayer = null;
+  lastGeojsonFeatures = geojson;
 
   if (geojson && props.showAirspace && map) {
     currentGeojsonLayer = new LeafletGeoJSON(geojson, {
       style: (feature?: FeatureLike) => featureStyle(feature?.properties),
       onEachFeature: (feature: FeatureLike, layer: Layer) => {
-        const name = feature.properties?.name ?? 'Airspace'
-        const lower = feature.properties?.lowerLabel ?? '?'
-        const upper = feature.properties?.upperLabel ?? '?'
-        const active = feature.properties?.active ?? true
-        const reason = feature.properties?.activeReason ?? '24h'
+        const name = feature.properties?.name ?? "Airspace";
+        const lower = feature.properties?.lowerLabel ?? "?";
+        const upper = feature.properties?.upperLabel ?? "?";
+        const active = feature.properties?.active ?? true;
+        const reason = feature.properties?.activeReason ?? "24h";
         const status = active
           ? `<span style="color:green">ACTIVE</span> (${reason})`
-          : `<span style="color:grey">INACTIVE</span> (${reason})`
-        const cls = icaoClassName(feature.properties?.icaoClass ?? 7)
-        const typ = airspaceTypeName(feature.properties?.type ?? 0)
+          : `<span style="color:grey">INACTIVE</span> (${reason})`;
+        const cls = icaoClassName(feature.properties?.icaoClass ?? 7);
+        const typ = airspaceTypeName(feature.properties?.type ?? 0);
         const act = feature.properties?.activity
           ? ` – ${activityName(feature.properties.activity)}`
-          : ''
-        const flags: string[] = feature.properties?.flags ?? []
-        const flagsHtml = flags.length ? `<br>${flags.join(', ')}` : ''
+          : "";
+        const flags: string[] = feature.properties?.flags ?? [];
+        const flagsHtml = flags.length ? `<br>${flags.join(", ")}` : "";
         layer.bindPopup(
           `<b>${name}</b> (${typ}, ${cls}${act})<br>${lower} – ${upper}<br>${status}${flagsHtml}`,
           AIRSPACE_POPUP_OPTIONS,
-        )
+        );
       },
-    }).addTo(map)
+    }).addTo(map);
   }
 
   if (props.showStack) {
-    stackFeatures.value = geojson ? geojson.features : []
+    stackFeatures.value = geojson ? geojson.features : [];
   } else {
-    stackFeatures.value = []
+    stackFeatures.value = [];
   }
 
   for (const marker of airportMarkerById.values()) {
-    marker.bringToFront()
+    marker.bringToFront();
   }
 }
 
 async function onMapClick(event: LeafletMouseEvent): Promise<void> {
-  if (props.mode !== 'what-if' || !map) {
-    return
+  if (props.mode !== "what-if" || !map) {
+    return;
   }
 
-  const { lat, lng } = event.latlng
+  const { lat, lng } = event.latlng;
   if (currentMarker) {
-    currentMarker.setLatLng(event.latlng)
+    currentMarker.setLatLng(event.latlng);
   } else {
-    currentMarker = new Marker(event.latlng).addTo(map)
+    currentMarker = new Marker(event.latlng).addTo(map);
   }
 
-  emit('update:position', { lat, lng })
+  emit("update:position", { lat, lng });
 
   if (props.showAirspace || props.showStack) {
-    const { popupText, geojson } = await openAIP.fetchAirspaceAt(lat, lng)
+    const { popupText, geojson } = await openAIP.fetchAirspaceAt(lat, lng);
     if (props.showAirspace) {
-      currentMarker.bindPopup(popupText, AIRSPACE_POPUP_OPTIONS).openPopup()
+      currentMarker.bindPopup(popupText, AIRSPACE_POPUP_OPTIONS).openPopup();
     } else {
-      currentMarker.remove()
-      currentMarker = new Marker(event.latlng).addTo(map)
+      currentMarker.remove();
+      currentMarker = new Marker(event.latlng).addTo(map);
     }
-    renderGeojson(geojson)
+    renderGeojson(geojson);
   } else {
-    renderGeojson(null)
+    renderGeojson(null);
   }
 }
 
 function clearAll(): void {
-  currentMarker?.remove()
-  currentMarker = null
-  resetHighlight()
-  currentGeojsonLayer?.remove()
-  currentGeojsonLayer = null
-  lastGeojsonFeatures = null
-  stackFeatures.value = []
+  currentMarker?.remove();
+  currentMarker = null;
+  resetHighlight();
+  currentGeojsonLayer?.remove();
+  currentGeojsonLayer = null;
+  lastGeojsonFeatures = null;
+  stackFeatures.value = [];
 }
 
 async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
   if (!props.showAirports || !map) {
-    return
+    return;
   }
 
-  const activeMap = map
-  const center = targetCenter ? createLatLng(targetCenter) : map.getCenter()
-  logAirportRefresh('refresh-request', { center: center.toString() })
+  const activeMap = map;
+  const center = targetCenter ? createLatLng(targetCenter) : map.getCenter();
+  logAirportRefresh("refresh-request", { center: center.toString() });
 
   await openAIP.refetchAirportsIfNeeded(center, (airports) => {
-    let added = 0
-    let updated = 0
+    let added = 0;
+    let updated = 0;
 
     for (const airport of airports) {
-      const [lng, lat] = airport.geometry.coordinates
-      const color = airportColor(airport.type)
-      const existing = airportMarkerById.get(airport._id)
+      const [lng, lat] = airport.geometry.coordinates;
+      const color = airportColor(airport.type);
+      const existing = airportMarkerById.get(airport._id);
       if (existing) {
-        existing.setLatLng([lat, lng])
+        existing.setLatLng([lat, lng]);
         existing.setStyle({
           color,
           weight: 2,
           fillColor: color,
           fillOpacity: 0.55,
-        })
-        existing.setRadius(7)
-        existing.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS)
+        });
+        existing.setRadius(7);
+        existing.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS);
         existing.bindTooltip(
-          `${airport.icaoCode ? `${airport.icaoCode} · ` : ''}${airport.name} (${airportTypeName(airport.type)})`,
+          `${airport.icaoCode ? `${airport.icaoCode} · ` : ""}${airport.name} (${airportTypeName(airport.type)})`,
           { sticky: true },
-        )
-        updated += 1
-        continue
+        );
+        updated += 1;
+        continue;
       }
 
       const marker = new CircleMarker([lat, lng], {
@@ -365,297 +418,313 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
         weight: 2,
         fillColor: color,
         fillOpacity: 0.55,
-      }).addTo(activeMap)
-      marker.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS)
+      }).addTo(activeMap);
+      marker.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS);
       marker.bindTooltip(
-        `${airport.icaoCode ? `${airport.icaoCode} · ` : ''}${airport.name} (${airportTypeName(airport.type)})`,
+        `${airport.icaoCode ? `${airport.icaoCode} · ` : ""}${airport.name} (${airportTypeName(airport.type)})`,
         { sticky: true },
-      )
-      airportMarkerById.set(airport._id, marker)
-      added += 1
+      );
+      airportMarkerById.set(airport._id, marker);
+      added += 1;
     }
 
     for (const marker of airportMarkerById.values()) {
-      marker.bringToFront()
+      marker.bringToFront();
     }
 
-    logAirportRefresh('fetch-done', {
+    logAirportRefresh("fetch-done", {
       fetched: airports.length,
       added,
       updated,
       retained: airportMarkerById.size,
       center: center.toString(),
-    })
-  })
+    });
+  });
 }
 
 function scheduleRefreshAirports(): void {
   if (refreshTimer !== null) {
-    clearTimeout(refreshTimer)
+    clearTimeout(refreshTimer);
   }
   refreshTimer = setTimeout(() => {
-    refreshTimer = null
-    void refreshAirports()
-  }, 500)
+    refreshTimer = null;
+    void refreshAirports();
+  }, 500);
 }
 
 async function loadAirspaceAt(latlng: LatLng): Promise<void> {
-  const { geojson } = await openAIP.fetchAirspaceAt(latlng.lat, latlng.lng)
-  renderGeojson(geojson)
+  const { geojson } = await openAIP.fetchAirspaceAt(latlng.lat, latlng.lng);
+  renderGeojson(geojson);
 }
 
-function onFix(position: GeolocationPosition): void {
+function onFix(position: BrowserGeolocationPosition): void {
   if (!map) {
-    return
+    return;
   }
-  const activeMap = map
+  const activeMap = map;
 
-  const latlng = new LatLng(position.coords.latitude, position.coords.longitude)
-  const accuracy = position.coords.accuracy
+  const latlng = new LatLng(
+    position.coords.latitude,
+    position.coords.longitude,
+  );
+  const accuracy = position.coords.accuracy;
 
   if (!trackMarker) {
     trackMarker = new CircleMarker(latlng, {
       radius: 8,
-      color: '#ffffff',
+      color: "#ffffff",
       weight: 2,
-      fillColor: '#1a73e8',
+      fillColor: "#1a73e8",
       fillOpacity: 1,
-    }).addTo(activeMap)
-    accuracyCircle = leaflet.circle(latlng, {
-      radius: accuracy,
-      color: '#1a73e8',
-      weight: 1,
-      fillColor: '#1a73e8',
-      fillOpacity: 0.1,
-    }).addTo(activeMap)
+    }).addTo(activeMap);
+    accuracyCircle = leaflet
+      .circle(latlng, {
+        radius: accuracy,
+        color: "#1a73e8",
+        weight: 1,
+        fillColor: "#1a73e8",
+        fillOpacity: 0.1,
+      })
+      .addTo(activeMap);
   } else {
-    trackMarker.setLatLng(latlng)
-    accuracyCircle?.setLatLng(latlng)
-    accuracyCircle?.setRadius(accuracy)
+    trackMarker.setLatLng(latlng);
+    accuracyCircle?.setLatLng(latlng);
+    accuracyCircle?.setRadius(accuracy);
   }
 
   if (firstFix) {
-    activeMap.setView(latlng, activeMap.getZoom())
-    firstFix = false
+    activeMap.setView(latlng, activeMap.getZoom());
+    firstFix = false;
   } else if (props.follow && !activeMap.getBounds().contains(latlng)) {
-    activeMap.panTo(latlng)
+    activeMap.panTo(latlng);
   }
 
-  emit('update:position', { lat: latlng.lat, lng: latlng.lng })
+  emit("update:position", { lat: latlng.lat, lng: latlng.lng });
 
   if (position.coords.altitude != null && props.showStack) {
-    emit('update:altitude', Math.round(position.coords.altitude * 3.28084))
+    emit("update:altitude", Math.round(position.coords.altitude * 3.28084));
   }
 
-  if ((props.showAirspace || props.showStack) && openAIP.needsAirspaceRefetch(latlng)) {
-    void loadAirspaceAt(latlng)
+  if (
+    (props.showAirspace || props.showStack) &&
+    openAIP.needsAirspaceRefetch(latlng)
+  ) {
+    void loadAirspaceAt(latlng);
   }
 
   if (props.showAirports) {
-    void refreshAirports(latlng)
+    void refreshAirports(latlng);
   }
 }
 
-function onGeoError(error: GeolocationPositionError): void {
-  console.warn('Geolocation error:', error.message)
-  emit('error', `Location unavailable: ${error.message}`)
-  emit('update:mode', 'what-if')
+function onGeoError(error: BrowserGeolocationPositionError): void {
+  console.warn("Geolocation error:", error.message);
+  emit("error", `Location unavailable: ${error.message}`);
+  emit("update:mode", "what-if");
 }
 
 function startTracking(): void {
   if (watchId !== null) {
-    return
+    return;
   }
 
-  firstFix = true
-  openAIP.resetAirspaceCenter()
-  currentMarker?.remove()
-  currentMarker = null
+  firstFix = true;
+  openAIP.resetAirspaceCenter();
+  currentMarker?.remove();
+  currentMarker = null;
 
   watchId = navigator.geolocation.watchPosition(onFix, onGeoError, {
     enableHighAccuracy: true,
     timeout: 20_000,
     maximumAge: 1_000,
-  })
+  });
 }
 
 function stopTracking(): void {
   if (watchId !== null) {
-    navigator.geolocation.clearWatch(watchId)
-    watchId = null
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
   }
-  trackMarker?.remove()
-  trackMarker = null
-  accuracyCircle?.remove()
-  accuracyCircle = null
-  openAIP.resetAirspaceCenter()
-  firstFix = true
+  trackMarker?.remove();
+  trackMarker = null;
+  accuracyCircle?.remove();
+  accuracyCircle = null;
+  openAIP.resetAirspaceCenter();
+  firstFix = true;
 }
 
 function applyShowAirspace(): void {
   if (props.showAirspace) {
     if (lastGeojsonFeatures) {
-      renderGeojson(lastGeojsonFeatures)
-      return
+      renderGeojson(lastGeojsonFeatures);
+      return;
     }
     const anchor =
-      props.mode === 'track' && trackMarker
-        ? ((trackMarker as unknown as Marker).getLatLng())
+      props.mode === "track" && trackMarker
+        ? (trackMarker as unknown as Marker).getLatLng()
         : currentMarker
           ? currentMarker.getLatLng()
-          : null
+          : null;
     if (anchor) {
-      void loadAirspaceAt(anchor)
+      void loadAirspaceAt(anchor);
     }
-    return
+    return;
   }
 
-  currentGeojsonLayer?.remove()
-  currentGeojsonLayer = null
-  resetHighlight()
+  currentGeojsonLayer?.remove();
+  currentGeojsonLayer = null;
+  resetHighlight();
 }
 
 function applyShowStack(): void {
   if (!stackHostControl || !map) {
-    return
+    return;
   }
 
   if (props.showStack && !stackAttached) {
-    stackHostControl.addTo(map)
-    stackAttached = true
+    stackHostControl.addTo(map);
+    stackAttached = true;
     if (lastGeojsonFeatures) {
-      stackFeatures.value = lastGeojsonFeatures.features
-      return
+      stackFeatures.value = lastGeojsonFeatures.features;
+      return;
     }
     const anchor =
-      props.mode === 'track' && trackMarker
+      props.mode === "track" && trackMarker
         ? (trackMarker as unknown as Marker).getLatLng()
         : currentMarker
           ? currentMarker.getLatLng()
-          : null
+          : null;
     if (anchor) {
-      void loadAirspaceAt(anchor)
+      void loadAirspaceAt(anchor);
     }
   } else if (!props.showStack && stackAttached) {
-    stackAttached = false
-    ;(stackHostControl as Control & { remove(): void }).remove()
-    stackFeatures.value = []
+    stackAttached = false;
+    (stackHostControl as Control & { remove(): void }).remove();
+    stackFeatures.value = [];
   }
 }
 
 function applyShowAirports(): void {
   if (!map) {
-    return
+    return;
   }
 
   if (props.showAirports) {
     for (const marker of airportMarkerById.values()) {
-      marker.addTo(map)
+      marker.addTo(map);
     }
-    openAIP.resetAirportCenter()
+    openAIP.resetAirportCenter();
     const center =
-      props.mode === 'track' && trackMarker
+      props.mode === "track" && trackMarker
         ? (trackMarker as unknown as Marker).getLatLng()
-        : map.getCenter()
-    void refreshAirports(center)
-    return
+        : map.getCenter();
+    void refreshAirports(center);
+    return;
   }
 
   for (const marker of airportMarkerById.values()) {
-    marker.remove()
+    marker.remove();
   }
-  openAIP.resetAirportCenter()
+  openAIP.resetAirportCenter();
 }
 
 function shouldIgnoreMapClick(event: LeafletMouseEvent): boolean {
-  const target = (event.originalEvent?.target as HTMLElement | null) ?? null
+  const target = (event.originalEvent?.target as HTMLElement | null) ?? null;
   if (!target) {
-    return false
+    return false;
   }
   return Boolean(
-    target.closest('.leaflet-popup, .airspace-stack-control, .airspace-detail-popup'),
-  )
+    target.closest(
+      ".leaflet-popup, .airspace-stack-control, .airspace-detail-popup",
+    ),
+  );
 }
 
 function copyText(text: string): Promise<boolean> {
   if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text).then(() => true).catch(() => false)
+    return navigator.clipboard
+      .writeText(text)
+      .then(() => true)
+      .catch(() => false);
   }
 
   try {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    textarea.setAttribute('readonly', '')
-    textarea.style.position = 'fixed'
-    textarea.style.left = '-9999px'
-    textarea.style.top = '0'
-    document.body.appendChild(textarea)
-    textarea.focus()
-    textarea.select()
-    const ok = document.execCommand('copy')
-    document.body.removeChild(textarea)
-    return Promise.resolve(ok)
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.top = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return Promise.resolve(ok);
   } catch {
-    return Promise.resolve(false)
+    return Promise.resolve(false);
   }
 }
 
 function triggerClickAt(latlng: { lat: number; lng: number }): void {
   if (!map) {
-    return
+    return;
   }
-  map.fireEvent('click', {
+  map.fireEvent("click", {
     latlng: new LatLng(latlng.lat, latlng.lng),
-  } as LeafletMouseEvent)
+  } as LeafletMouseEvent);
 }
 
-defineExpose({ triggerClickAt })
+defineExpose({ triggerClickAt });
 
 onMounted(() => {
   if (!mapContainerRef.value) {
-    return
+    return;
   }
 
   if (iconDefault.prototype?._getIconUrl) {
-    delete iconDefault.prototype._getIconUrl
+    delete iconDefault.prototype._getIconUrl;
   }
-  iconDefault.imagePath = ''
+  iconDefault.imagePath = "";
   iconDefault.mergeOptions({
     iconRetinaUrl: markerIcon2xUrl,
     iconUrl: markerIconUrl,
     shadowUrl: markerShadowUrl,
-  })
+  });
 
   const openFlightMapsOverlay = {
-    name: 'OpenFlightMaps',
-    url: 'https://nwy-tiles-api.prod.newaydata.com/tiles/{z}/{x}/{y}.png?path=latest/aero/latest',
+    name: "OpenFlightMaps",
+    url: "https://nwy-tiles-api.prod.newaydata.com/tiles/{z}/{x}/{y}.png?path=latest/aero/latest",
     attribution:
       '(c) <a href="https://openflightmaps.org/" target="_blank" rel="noopener noreferrer">Open Flightmaps association</a>, (c) OpenStreetMap contributors, NASA elevation data',
     maxZoom: 16,
     opacity: 0.9,
     zIndex: 2,
-  } as const
+  } as const;
 
-  const mono = new TileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-  })
-  const topo = new TileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenTopoMap contributors',
-    maxZoom: 17,
-  })
-  const ortho = new TileLayer(
-    'https://mapsneu.wien.gv.at/basemap/bmaporthofoto30cm/normal/google3857/{z}/{y}/{x}.jpeg',
+  const mono = new TileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+  });
+  const topo = new TileLayer(
+    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
     {
-      attribution: '&copy; basemap.at',
+      attribution: "&copy; OpenTopoMap contributors",
+      maxZoom: 17,
+    },
+  );
+  const ortho = new TileLayer(
+    "https://mapsneu.wien.gv.at/basemap/bmaporthofoto30cm/normal/google3857/{z}/{y}/{x}.jpeg",
+    {
+      attribution: "&copy; basemap.at",
       maxZoom: 18,
     },
-  )
+  );
   const openFlightMapsLayer = new TileLayer(openFlightMapsOverlay.url, {
     attribution: openFlightMapsOverlay.attribution,
     maxZoom: openFlightMapsOverlay.maxZoom,
     opacity: openFlightMapsOverlay.opacity,
     zIndex: openFlightMapsOverlay.zIndex,
-  })
+  });
   const openAipLayer = new TileLayer(
     `https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png?apiKey=${encodeURIComponent(import.meta.env.VITE_OPENAIP_KEY as string)}`,
     {
@@ -665,201 +734,232 @@ onMounted(() => {
       opacity: 0.8,
       zIndex: 4,
     },
-  )
+  );
 
-  baseLayers = { osm: mono, topo, ortho }
-  overlayLayers = { ofm: openFlightMapsLayer, openaip: openAipLayer }
+  baseLayers = { osm: mono, topo, ortho };
+  overlayLayers = { ofm: openFlightMapsLayer, openaip: openAipLayer };
 
-  const initialBase = baseLayers[props.initialBaseLayer] ?? mono
+  const initialBase = baseLayers[props.initialBaseLayer] ?? mono;
   const initialOverlayLayers = (props.initialOverlays ?? [])
     .map((key) => overlayLayers[key])
-    .filter((layer): layer is TileLayer => Boolean(layer))
+    .filter((layer): layer is TileLayer => Boolean(layer));
 
   map = new LeafletMap(mapContainerRef.value, {
     center: props.initialCenter,
     zoom: props.initialZoom,
     zoomControl: true,
     layers: [initialBase, ...initialOverlayLayers],
-  }) as LeafletMapWithExtras
+  }) as LeafletMapWithExtras;
 
   new leaflet.Control.Layers(
     {
       OpenStreetMap: mono,
       OpenTopoMap: topo,
-      'Austria Orthophoto': ortho,
+      "Austria Orthophoto": ortho,
     },
     {
       [openFlightMapsOverlay.name]: openFlightMapsLayer,
       openAIP: openAipLayer,
     },
-  ).addTo(map)
-  new leaflet.Control.Scale({ imperial: false, maxWidth: 300 }).addTo(map)
+  ).addTo(map);
+  new leaflet.Control.Scale({ imperial: false, maxWidth: 300 }).addTo(map);
 
   if (props.home) {
     const HomeControl = Control.extend({
-      options: { position: 'topleft' },
+      options: { position: "topleft" },
       onAdd(controlMap: LeafletMapWithExtras) {
-        const btn = DomUtil.create('div', 'leaflet-bar home-control') as HTMLDivElement
-        const link = DomUtil.create('a', '', btn) as HTMLAnchorElement
-        link.href = '#'
-        link.title = 'Go to my location'
-        link.innerHTML = '&#x2302;'
-        link.role = 'button'
-        DomEvent.disableClickPropagation(btn)
-        DomEvent.on(link, 'click', (event: Event) => {
-          DomEvent.preventDefault(event)
+        const btn = DomUtil.create(
+          "div",
+          "leaflet-bar home-control",
+        ) as HTMLDivElement;
+        const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
+        link.href = "#";
+        link.title = "Go to my location";
+        link.innerHTML = "&#x2302;";
+        link.role = "button";
+        DomEvent.disableClickPropagation(btn);
+        DomEvent.on(link, "click", (event: Event) => {
+          DomEvent.preventDefault(event);
           navigator.geolocation.getCurrentPosition(
             (position) => {
-              const latlng = new LatLng(position.coords.latitude, position.coords.longitude)
-              controlMap.setView(latlng, 12)
-              controlMap.fireEvent('click', { latlng } as LeafletMouseEvent)
+              const latlng = new LatLng(
+                position.coords.latitude,
+                position.coords.longitude,
+              );
+              controlMap.setView(latlng, 12);
+              controlMap.fireEvent("click", { latlng } as LeafletMouseEvent);
               emit(
-                'update:altitude',
+                "update:altitude",
                 position.coords.altitude != null
                   ? Math.round(position.coords.altitude * 3.28084)
                   : 0,
-              )
+              );
             },
-            (error) => console.warn('Geolocation error:', error.message),
+            (error) => console.warn("Geolocation error:", error.message),
             { enableHighAccuracy: true, timeout: 10_000 },
-          )
-        })
-        return btn
+          );
+        });
+        return btn;
       },
-    }) as LeafletControlCtor
-    new HomeControl().addTo(map)
+    }) as LeafletControlCtor;
+    new HomeControl().addTo(map);
   }
 
   if (props.link) {
     const ShareControl = Control.extend({
-      options: { position: 'topleft' },
+      options: { position: "topleft" },
       onAdd(controlMap: LeafletMapWithExtras) {
-        const btn = DomUtil.create('div', 'leaflet-bar share-control') as HTMLDivElement
-        const link = DomUtil.create('a', '', btn) as HTMLAnchorElement
-        link.href = '#'
-        link.title = 'Copy link to this location'
-        link.innerHTML = '&#x1F517;'
-        link.role = 'button'
-        DomEvent.disableClickPropagation(btn)
-        DomEvent.on(link, 'click', (event: Event) => {
-          DomEvent.preventDefault(event)
-          const pos = currentMarker ? currentMarker.getLatLng() : controlMap.getCenter()
-          const zoom = controlMap.getZoom()
-          const altitude = props.altitude
-          const url = `${location.origin}${location.pathname}?lat=${pos.lat.toFixed(6)}&lng=${pos.lng.toFixed(6)}&z=${zoom}&alt=${altitude}`
+        const btn = DomUtil.create(
+          "div",
+          "leaflet-bar share-control",
+        ) as HTMLDivElement;
+        const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
+        link.href = "#";
+        link.title = "Copy link to this location";
+        link.innerHTML = "&#x1F517;";
+        link.role = "button";
+        DomEvent.disableClickPropagation(btn);
+        DomEvent.on(link, "click", (event: Event) => {
+          DomEvent.preventDefault(event);
+          const pos = currentMarker
+            ? currentMarker.getLatLng()
+            : controlMap.getCenter();
+          const zoom = controlMap.getZoom();
+          const altitude = props.altitude;
+          const url = `${location.origin}${location.pathname}?lat=${pos.lat.toFixed(6)}&lng=${pos.lng.toFixed(6)}&z=${zoom}&alt=${altitude}`;
           copyText(url).then((ok) => {
             if (!ok) {
-              console.warn('Copy failed: Clipboard API unavailable in this context')
-              return
+              console.warn(
+                "Copy failed: Clipboard API unavailable in this context",
+              );
+              return;
             }
-            btn.classList.add('copied')
-            link.innerHTML = '&#x2713;'
+            btn.classList.add("copied");
+            link.innerHTML = "&#x2713;";
             setTimeout(() => {
-              btn.classList.remove('copied')
-              link.innerHTML = '&#x1F517;'
-            }, 2000)
-          })
-        })
-        return btn
+              btn.classList.remove("copied");
+              link.innerHTML = "&#x1F517;";
+            }, 2000);
+          });
+        });
+        return btn;
       },
-    }) as LeafletControlCtor
-    new ShareControl().addTo(map)
+    }) as LeafletControlCtor;
+    new ShareControl().addTo(map);
   }
 
   const StackHostControl = Control.extend({
-    options: { position: 'bottomright' },
+    options: { position: "bottomright" },
     onAdd() {
-      const div = DomUtil.create('div', 'airspace-stack-host') as HTMLDivElement
-      DomEvent.disableClickPropagation(div)
-      DomEvent.disableScrollPropagation(div)
-      stackTarget.value = div
-      return div
+      const div = DomUtil.create(
+        "div",
+        "airspace-stack-host",
+      ) as HTMLDivElement;
+      DomEvent.disableClickPropagation(div);
+      DomEvent.disableScrollPropagation(div);
+      stackTarget.value = div;
+      return div;
     },
     onRemove() {
-      stackTarget.value = null
+      stackTarget.value = null;
     },
-  }) as LeafletControlCtor
+  }) as LeafletControlCtor;
 
-  stackHostControl = new StackHostControl()
-  stackHostControl.addTo(map)
+  stackHostControl = new StackHostControl();
+  stackHostControl.addTo(map);
 
-  map.on('click', (event: LeafletMouseEvent) => {
+  map.on("click", (event: LeafletMouseEvent) => {
     if (shouldIgnoreMapClick(event)) {
-      return
+      return;
     }
-    void onMapClick(event)
-    logAirportRefresh('trigger-click', { center: event.latlng.toString() })
-    void refreshAirports(event.latlng)
-  })
-  map.on('contextmenu', () => clearAll())
-  map.on('moveend', () => {
+    void onMapClick(event);
+    logAirportRefresh("trigger-click", { center: event.latlng.toString() });
+    void refreshAirports(event.latlng);
+  });
+  map.on("contextmenu", () => clearAll());
+  map.on("moveend", () => {
     if (!map) {
-      return
+      return;
     }
     const pos = currentMarker
       ? currentMarker.getLatLng()
       : trackMarker
         ? (trackMarker as unknown as Marker).getLatLng()
-        : map.getCenter()
-    emit('update:viewport', { lat: pos.lat, lng: pos.lng, zoom: map.getZoom() })
-    scheduleRefreshAirports()
-  })
-  map.on('baselayerchange', () => {
+        : map.getCenter();
+    emit("update:viewport", {
+      lat: pos.lat,
+      lng: pos.lng,
+      zoom: map.getZoom(),
+    });
+    scheduleRefreshAirports();
+  });
+  map.on("baselayerchange", () => {
     if (!map) {
-      return
+      return;
     }
-    const key = Object.entries(baseLayers).find(([, layer]) => map?.hasLayer(layer))?.[0]
+    const key = Object.entries(baseLayers).find(([, layer]) =>
+      map?.hasLayer(layer),
+    )?.[0];
     if (key) {
-      emit('update:baseLayer', key)
+      emit("update:baseLayer", key);
     }
-  })
+  });
   const emitOverlays = () => {
     if (!map) {
-      return
+      return;
     }
     const keys = Object.entries(overlayLayers)
       .filter(([, layer]) => map?.hasLayer(layer))
-      .map(([key]) => key)
-    emit('update:overlays', keys)
-  }
-  map.on('overlayadd', emitOverlays)
-  map.on('overlayremove', emitOverlays)
+      .map(([key]) => key);
+    emit("update:overlays", keys);
+  };
+  map.on("overlayadd", emitOverlays);
+  map.on("overlayremove", emitOverlays);
 
   if (!props.showStack) {
-    ;(stackHostControl as Control & { remove(): void }).remove()
-    stackAttached = false
+    (stackHostControl as Control & { remove(): void }).remove();
+    stackAttached = false;
   }
 
-  if (props.mode === 'track') {
-    startTracking()
+  if (props.mode === "track") {
+    startTracking();
   }
 
-  void refreshAirports()
-})
+  void refreshAirports();
+});
 
 onBeforeUnmount(() => {
-  stopTracking()
+  stopTracking();
   if (refreshTimer !== null) {
-    clearTimeout(refreshTimer)
-    refreshTimer = null
+    clearTimeout(refreshTimer);
+    refreshTimer = null;
   }
-  map?.remove()
-  map = null
-})
+  map?.remove();
+  map = null;
+});
 
 watch(
   () => props.mode,
   (newMode) => {
-    if (newMode === 'track') {
-      startTracking()
+    if (newMode === "track") {
+      startTracking();
     } else {
-      stopTracking()
+      stopTracking();
     }
   },
-)
-watch(() => props.showAirspace, () => applyShowAirspace())
-watch(() => props.showStack, () => applyShowStack())
-watch(() => props.showAirports, () => applyShowAirports())
+);
+watch(
+  () => props.showAirspace,
+  () => applyShowAirspace(),
+);
+watch(
+  () => props.showStack,
+  () => applyShowStack(),
+);
+watch(
+  () => props.showAirports,
+  () => applyShowAirports(),
+);
 </script>
 
 <style scoped>

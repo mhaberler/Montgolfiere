@@ -37,45 +37,47 @@
 </template>
 
 <script setup lang="ts">
-import 'leaflet/dist/leaflet.css'
-import '@/assets/airspace-import.css'
+import "leaflet/dist/leaflet.css";
+import "@/assets/airspace-import.css";
 
-import { nextTick, onMounted, reactive, ref, watch } from 'vue'
-import AirspaceMap from '@/components/airspace/AirspaceMap.vue'
-import TitleBar from '@/components/airspace/TitleBar.vue'
+import { nextTick, onMounted, reactive, ref, watch } from "vue";
+import AirspaceMap from "@/components/airspace/AirspaceMap.vue";
+import TitleBar from "@/components/airspace/TitleBar.vue";
 
-const params = new URLSearchParams(location.search)
-const initialLat = parseFloat(params.get('lat') ?? '')
-const initialLng = parseFloat(params.get('lng') ?? '')
+const params = new URLSearchParams(location.search);
+const initialLat = parseFloat(params.get("lat") ?? "");
+const initialLng = parseFloat(params.get("lng") ?? "");
 const initialCenter: [number, number] =
   !Number.isNaN(initialLat) && !Number.isNaN(initialLng)
     ? [initialLat, initialLng]
-    : [47, 15]
-const initialZoom = parseInt(params.get('z') ?? '12', 10)
-const initialAlt = parseInt(params.get('alt') ?? '', 10)
-const initialBaseLayer = params.get('base') ?? 'osm'
-const initialOverlays = params.get('overlays')?.split(',').filter(Boolean) ?? ['openaip']
+    : [47, 15];
+const initialZoom = parseInt(params.get("z") ?? "12", 10);
+const initialAlt = parseInt(params.get("alt") ?? "", 10);
+const initialBaseLayer = params.get("base") ?? "osm";
+const initialOverlays = params.get("overlays")?.split(",").filter(Boolean) ?? [
+  "openaip",
+];
 
-const urlMode = params.get('mode')
-const urlFollow = params.get('follow')
-const urlShow = params.get('show')
+const urlMode = params.get("mode");
+const urlFollow = params.get("follow");
+const urlShow = params.get("show");
 
 const state = reactive({
-  mode: (urlMode === 'track' || urlMode === 'what-if' ? urlMode : 'what-if') as
-    | 'track'
-    | 'what-if',
-  follow: urlFollow !== null ? urlFollow === '1' : true,
+  mode: (urlMode === "track" || urlMode === "what-if" ? urlMode : "what-if") as
+    | "track"
+    | "what-if",
+  follow: urlFollow !== null ? urlFollow === "1" : true,
   showAirspace: true,
   showStack: true,
   showAirports: true,
   altitude: !Number.isNaN(initialAlt) && initialAlt > 0 ? initialAlt : 0,
-})
+});
 
 if (urlShow !== null) {
-  const keys = new Set(urlShow.split(',').filter(Boolean))
-  state.showAirspace = keys.has('airspace')
-  state.showStack = keys.has('stack')
-  state.showAirports = keys.has('airports')
+  const keys = new Set(urlShow.split(",").filter(Boolean));
+  state.showAirspace = keys.has("airspace");
+  state.showStack = keys.has("stack");
+  state.showAirports = keys.has("airports");
 }
 
 const viewport = reactive({
@@ -84,90 +86,98 @@ const viewport = reactive({
   zoom: initialZoom,
   baseLayer: initialBaseLayer,
   overlays: [...initialOverlays],
-})
+});
 
-const mapRef = ref<InstanceType<typeof AirspaceMap> | null>(null)
+const mapRef = ref<InstanceType<typeof AirspaceMap> | null>(null);
 
-const toastMsg = ref<string | null>(null)
-let toastTimer: ReturnType<typeof setTimeout> | null = null
+const toastMsg = ref<string | null>(null);
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
 
 function showToast(message: string): void {
-  toastMsg.value = message
+  toastMsg.value = message;
   if (toastTimer) {
-    clearTimeout(toastTimer)
+    clearTimeout(toastTimer);
   }
   toastTimer = setTimeout(() => {
-    toastMsg.value = null
-  }, 4000)
+    toastMsg.value = null;
+  }, 4000);
 }
 
 function updateUrl(): void {
-  const nextParams = new URLSearchParams()
-  nextParams.set('lat', viewport.lat.toFixed(6))
-  nextParams.set('lng', viewport.lng.toFixed(6))
-  nextParams.set('z', String(viewport.zoom))
+  const nextParams = new URLSearchParams();
+  nextParams.set("lat", viewport.lat.toFixed(6));
+  nextParams.set("lng", viewport.lng.toFixed(6));
+  nextParams.set("z", String(viewport.zoom));
   if (state.altitude > 0) {
-    nextParams.set('alt', String(state.altitude))
+    nextParams.set("alt", String(state.altitude));
   }
-  if (viewport.baseLayer !== 'osm') {
-    nextParams.set('base', viewport.baseLayer)
+  if (viewport.baseLayer !== "osm") {
+    nextParams.set("base", viewport.baseLayer);
   }
   if (viewport.overlays.length) {
-    nextParams.set('overlays', viewport.overlays.join(','))
+    nextParams.set("overlays", viewport.overlays.join(","));
   }
-  if (state.mode !== 'what-if') {
-    nextParams.set('mode', state.mode)
+  if (state.mode !== "what-if") {
+    nextParams.set("mode", state.mode);
   }
   if (state.follow) {
-    nextParams.set('follow', '1')
+    nextParams.set("follow", "1");
   }
 
-  const show: string[] = []
+  const show: string[] = [];
   if (state.showAirspace) {
-    show.push('airspace')
+    show.push("airspace");
   }
   if (state.showStack) {
-    show.push('stack')
+    show.push("stack");
   }
   if (state.showAirports) {
-    show.push('airports')
+    show.push("airports");
   }
   if (show.length < 3) {
-    nextParams.set('show', show.join(','))
+    nextParams.set("show", show.join(","));
   }
 
-  history.replaceState(null, '', `${location.pathname}?${nextParams}`)
+  history.replaceState(null, "", `${location.pathname}?${nextParams}`);
 }
 
-function onViewport(nextViewport: { lat: number; lng: number; zoom: number }): void {
-  viewport.lat = nextViewport.lat
-  viewport.lng = nextViewport.lng
-  viewport.zoom = nextViewport.zoom
-  updateUrl()
+function onViewport(nextViewport: {
+  lat: number;
+  lng: number;
+  zoom: number;
+}): void {
+  viewport.lat = nextViewport.lat;
+  viewport.lng = nextViewport.lng;
+  viewport.zoom = nextViewport.zoom;
+  updateUrl();
 }
 
 function onPosition(pos: { lat: number; lng: number }): void {
-  viewport.lat = pos.lat
-  viewport.lng = pos.lng
-  updateUrl()
+  viewport.lat = pos.lat;
+  viewport.lng = pos.lng;
+  updateUrl();
 }
 
 function onBaseLayer(key: string): void {
-  viewport.baseLayer = key
-  updateUrl()
+  viewport.baseLayer = key;
+  updateUrl();
 }
 
 function onOverlays(keys: string[]): void {
-  viewport.overlays = keys
-  updateUrl()
+  viewport.overlays = keys;
+  updateUrl();
 }
 
-watch(state, () => updateUrl(), { deep: true })
+watch(state, () => updateUrl(), { deep: true });
 
 onMounted(async () => {
-  if (!Number.isNaN(initialLat) && !Number.isNaN(initialLng) && state.mode === 'what-if') {
-    await nextTick()
-    mapRef.value?.triggerClickAt({ lat: initialLat, lng: initialLng })
+  if (
+    !Number.isNaN(initialLat) &&
+    !Number.isNaN(initialLng) &&
+    state.mode === "what-if"
+  ) {
+    await nextTick();
+    mapRef.value?.triggerClickAt({ lat: initialLat, lng: initialLng });
   }
-})
+});
 </script>

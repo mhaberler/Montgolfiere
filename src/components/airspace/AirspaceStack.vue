@@ -48,9 +48,18 @@
       </div>
     </div>
 
-    <div class="airspace-stack-resize-handle left" @pointerdown="onLeftResizeStart" />
-    <div class="airspace-stack-resize-handle top" @pointerdown="onTopResizeStart" />
-    <div class="airspace-stack-resize-handle corner" @pointerdown="onCornerResizeStart" />
+    <div
+      class="airspace-stack-resize-handle left"
+      @pointerdown="onLeftResizeStart"
+    />
+    <div
+      class="airspace-stack-resize-handle top"
+      @pointerdown="onTopResizeStart"
+    />
+    <div
+      class="airspace-stack-resize-handle corner"
+      @pointerdown="onCornerResizeStart"
+    />
 
     <div
       v-if="detailPopup"
@@ -59,31 +68,39 @@
       :style="detailPopupStyle"
       @click.stop
     >
-      <div class="airspace-detail-close" @click="detailPopup = null">&times;</div>
-      <b>{{ detailPopup.entry.name }}</b><br />
+      <div class="airspace-detail-close" @click="detailPopup = null">
+        &times;
+      </div>
+      <b>{{ detailPopup.entry.name }}</b
+      ><br />
       {{ airspaceTypeName(detailPopup.entry.type) }},
       {{ icaoClassName(detailPopup.entry.icaoClass) }}<br />
       <template v-if="detailPopup.entry.activity">
         {{ activityName(detailPopup.entry.activity) }}<br />
       </template>
-      Lower: {{ detailPopup.entry.lowerLabel }}
-      ({{ detailPopup.entry.lowerFt.toLocaleString() }} ft)<br />
-      Upper: {{ detailPopup.entry.upperLabel }}
-      ({{ detailPopup.entry.upperFt.toLocaleString() }} ft)<br />
+      Lower: {{ detailPopup.entry.lowerLabel }} ({{
+        detailPopup.entry.lowerFt.toLocaleString()
+      }}
+      ft)<br />
+      Upper: {{ detailPopup.entry.upperLabel }} ({{
+        detailPopup.entry.upperFt.toLocaleString()
+      }}
+      ft)<br />
       Status:
       <span :style="{ color: detailPopup.entry.active ? 'green' : 'grey' }">
-        {{ detailPopup.entry.active ? 'ACTIVE' : 'INACTIVE' }}
+        {{ detailPopup.entry.active ? "ACTIVE" : "INACTIVE" }}
       </span>
       ({{ detailPopup.entry.activeReason }})
       <template v-if="detailPopup.entry.flags.length">
-        <br />{{ detailPopup.entry.flags.join(', ') }}
+        <br />{{ detailPopup.entry.flags.join(", ") }}
       </template>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import type { Feature } from "geojson";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import {
   type AirspaceEntry,
   activityName,
@@ -96,71 +113,83 @@ import {
   featuresToEntries,
   hexToRgba,
   icaoClassName,
-} from '@/airspace/airspaceStack'
+} from "@/airspace/airspaceStack";
 
 interface Props {
-  features: GeoJSON.Feature[]
-  altitude: number
-  ceiling?: number
+  features: Feature[];
+  altitude: number;
+  ceiling?: number;
 }
 
-const props = withDefaults(defineProps<Props>(), { ceiling: undefined })
+const props = withDefaults(defineProps<Props>(), { ceiling: undefined });
 const emit = defineEmits<{
-  'update:altitude': [value: number]
-  'block-click': [payload: { entry: AirspaceEntry; index: number }]
-}>()
+  "update:altitude": [value: number];
+  "block-click": [payload: { entry: AirspaceEntry; index: number }];
+}>();
 
-const containerRef = ref<HTMLDivElement | null>(null)
-const stackAreaRef = ref<HTMLDivElement | null>(null)
-const detailPopupRef = ref<HTMLDivElement | null>(null)
+const containerRef = ref<HTMLDivElement | null>(null);
+const stackAreaRef = ref<HTMLDivElement | null>(null);
+const detailPopupRef = ref<HTMLDivElement | null>(null);
 
-const entries = computed(() => featuresToEntries(props.features))
-const derivedCeiling = computed(() => computeCeiling(entries.value))
-const effectiveCeiling = computed(() => props.ceiling ?? derivedCeiling.value)
-const columnOf = computed(() => assignColumns(entries.value))
-const numCols = computed(() => Math.max(1, new Set(columnOf.value).size))
+const entries = computed(() => featuresToEntries(props.features));
+const derivedCeiling = computed(() => computeCeiling(entries.value));
+const effectiveCeiling = computed(() => props.ceiling ?? derivedCeiling.value);
+const columnOf = computed(() => assignColumns(entries.value));
+const numCols = computed(() => Math.max(1, new Set(columnOf.value).size));
 const colOrder = computed(() =>
-  computeColumnOrder(entries.value, columnOf.value, numCols.value, props.altitude),
-)
+  computeColumnOrder(
+    entries.value,
+    columnOf.value,
+    numCols.value,
+    props.altitude,
+  ),
+);
 
-const altitudeLabel = computed(() => `${props.altitude.toLocaleString()} ft`)
+const altitudeLabel = computed(() => `${props.altitude.toLocaleString()} ft`);
 const aircraftPct = computed(() =>
-  effectiveCeiling.value > 0 ? (props.altitude / effectiveCeiling.value) * 100 : 0,
-)
+  effectiveCeiling.value > 0
+    ? (props.altitude / effectiveCeiling.value) * 100
+    : 0,
+);
 
 const ticks = computed(() => {
-  const list: Array<{ alt: number; pct: number; label: string }> = []
-  for (let altitude = 0; altitude <= effectiveCeiling.value; altitude += CEIL_STEP) {
+  const list: Array<{ alt: number; pct: number; label: string }> = [];
+  for (
+    let altitude = 0;
+    altitude <= effectiveCeiling.value;
+    altitude += CEIL_STEP
+  ) {
     list.push({
       alt: altitude,
       pct: (altitude / effectiveCeiling.value) * 100,
       label: altitude >= 10_000 ? `${altitude / 1000}k` : `${altitude}`,
-    })
+    });
   }
-  return list
-})
+  return list;
+});
 
 interface BlockView {
-  index: number
-  entry: AirspaceEntry
-  active: boolean
-  style: Record<string, string>
-  title: string
+  index: number;
+  entry: AirspaceEntry;
+  active: boolean;
+  style: Record<string, string>;
+  title: string;
 }
 
 const blocks = computed<BlockView[]>(() => {
   if (entries.value.length === 0) {
-    return []
+    return [];
   }
 
-  const colWidth = 100 / numCols.value
+  const colWidth = 100 / numCols.value;
   return entries.value.map((entry, index) => {
-    const bottomPct = (entry.lowerFt / effectiveCeiling.value) * 100
-    const topPct = (entry.upperFt / effectiveCeiling.value) * 100
-    const heightPct = topPct - bottomPct
-    const displayCol = colOrder.value[columnOf.value[index]]
-    const active = props.altitude >= entry.lowerFt && props.altitude < entry.upperFt
-    const hex = airspaceColor(entry)
+    const bottomPct = (entry.lowerFt / effectiveCeiling.value) * 100;
+    const topPct = (entry.upperFt / effectiveCeiling.value) * 100;
+    const heightPct = topPct - bottomPct;
+    const displayCol = colOrder.value[columnOf.value[index]];
+    const active =
+      props.altitude >= entry.lowerFt && props.altitude < entry.upperFt;
+    const hex = airspaceColor(entry);
     return {
       index,
       entry,
@@ -174,279 +203,299 @@ const blocks = computed<BlockView[]>(() => {
         borderColor: hexToRgba(hex, 0.8),
       },
       title: `${entry.name}: ${entry.lowerLabel} – ${entry.upperLabel}`,
-    }
-  })
-})
+    };
+  });
+});
 
-const STORAGE_KEY = 'airspace-stack-size'
+const STORAGE_KEY = "airspace-stack-size";
 
 function loadStoredSize(): { width: number | null; height: number | null } {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      return { width: null, height: null }
+      return { width: null, height: null };
     }
-    const parsed = JSON.parse(raw)
+    const parsed = JSON.parse(raw);
     return {
-      width: typeof parsed.width === 'number' ? parsed.width : null,
-      height: typeof parsed.height === 'number' ? parsed.height : null,
-    }
+      width: typeof parsed.width === "number" ? parsed.width : null,
+      height: typeof parsed.height === "number" ? parsed.height : null,
+    };
   } catch {
-    return { width: null, height: null }
+    return { width: null, height: null };
   }
 }
 
 function saveStoredSize(width: number | null, height: number | null): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ width, height }))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ width, height }));
   } catch {
-    return
+    return;
   }
 }
 
-const stored = loadStoredSize()
-const manualWidthPx = ref<number | null>(stored.width)
-const manualHeightPx = ref<number | null>(stored.height)
-const windowWidth = ref(typeof window === 'undefined' ? 1024 : window.innerWidth)
-const isResizing = ref(false)
-const autoWidthTrigger = ref(0)
+const stored = loadStoredSize();
+const manualWidthPx = ref<number | null>(stored.width);
+const manualHeightPx = ref<number | null>(stored.height);
+const windowWidth = ref(
+  typeof window === "undefined" ? 1024 : window.innerWidth,
+);
+const isResizing = ref(false);
+const autoWidthTrigger = ref(0);
 
 function getMinWidthPx(): number {
   if (!containerRef.value) {
-    return 100
+    return 100;
   }
-  return parseFloat(getComputedStyle(containerRef.value).minWidth) || 100
+  return parseFloat(getComputedStyle(containerRef.value).minWidth) || 100;
 }
 
 function getCssVarPx(name: string, fallback: number): number {
   if (!containerRef.value) {
-    return fallback
+    return fallback;
   }
-  return parseFloat(getComputedStyle(containerRef.value).getPropertyValue(name)) || fallback
+  return (
+    parseFloat(getComputedStyle(containerRef.value).getPropertyValue(name)) ||
+    fallback
+  );
 }
 
 function getAvailableWidthPx(): number {
   if (!containerRef.value) {
-    return window.innerWidth
+    return window.innerWidth;
   }
-  const rect = containerRef.value.getBoundingClientRect()
-  const margin = getCssVarPx('--airspace-stack-viewport-margin', 8)
-  return Math.max(getMinWidthPx(), rect.right - margin)
+  const rect = containerRef.value.getBoundingClientRect();
+  const margin = getCssVarPx("--airspace-stack-viewport-margin", 8);
+  return Math.max(getMinWidthPx(), rect.right - margin);
 }
 
 function clampWidthPx(widthPx: number): number {
-  return Math.max(getMinWidthPx(), Math.min(widthPx, getAvailableWidthPx()))
+  return Math.max(getMinWidthPx(), Math.min(widthPx, getAvailableWidthPx()));
 }
 
 function computeAutoWidthPx(): number {
-  const colVw = getCssVarPx('--airspace-stack-column-width-vw', 5)
-  return (windowWidth.value * colVw * numCols.value) / 100
+  const colVw = getCssVarPx("--airspace-stack-column-width-vw", 5);
+  return (windowWidth.value * colVw * numCols.value) / 100;
 }
 
 const containerStyle = computed(() => {
-  void autoWidthTrigger.value
-  void windowWidth.value
-  void numCols.value
-  const style: Record<string, string> = {}
+  void autoWidthTrigger.value;
+  void windowWidth.value;
+  void numCols.value;
+  const style: Record<string, string> = {};
   if (containerRef.value) {
-    const desired = manualWidthPx.value ?? computeAutoWidthPx()
-    style.width = `${Math.round(clampWidthPx(desired))}px`
+    const desired = manualWidthPx.value ?? computeAutoWidthPx();
+    style.width = `${Math.round(clampWidthPx(desired))}px`;
   }
   if (manualHeightPx.value != null) {
-    style.height = `${manualHeightPx.value}px`
+    style.height = `${manualHeightPx.value}px`;
   }
-  return style
-})
+  return style;
+});
 
 const stackAreaStyle = computed(() => {
   if (manualHeightPx.value == null) {
-    return {}
+    return {};
   }
-  return { height: `${manualHeightPx.value - 35}px` }
-})
+  return { height: `${manualHeightPx.value - 35}px` };
+});
 
 function onWindowResize() {
-  windowWidth.value = window.innerWidth
+  windowWidth.value = window.innerWidth;
 }
 
-const altDragging = ref(false)
+const altDragging = ref(false);
 function onAltDragStart(event: PointerEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  altDragging.value = true
-  window.addEventListener('pointermove', onAltDragMove)
-  window.addEventListener('pointerup', onAltDragEnd)
+  event.preventDefault();
+  event.stopPropagation();
+  altDragging.value = true;
+  window.addEventListener("pointermove", onAltDragMove);
+  window.addEventListener("pointerup", onAltDragEnd);
 }
 
 function onAltDragMove(event: PointerEvent) {
   if (!stackAreaRef.value) {
-    return
+    return;
   }
-  const rect = stackAreaRef.value.getBoundingClientRect()
-  const ratio = 1 - Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height))
+  const rect = stackAreaRef.value.getBoundingClientRect();
+  const ratio =
+    1 - Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
   const value = Math.max(
     0,
-    Math.min(effectiveCeiling.value, Math.round((ratio * effectiveCeiling.value) / 100) * 100),
-  )
-  emit('update:altitude', value)
+    Math.min(
+      effectiveCeiling.value,
+      Math.round((ratio * effectiveCeiling.value) / 100) * 100,
+    ),
+  );
+  emit("update:altitude", value);
 }
 
 function onAltDragEnd() {
-  altDragging.value = false
-  window.removeEventListener('pointermove', onAltDragMove)
-  window.removeEventListener('pointerup', onAltDragEnd)
+  altDragging.value = false;
+  window.removeEventListener("pointermove", onAltDragMove);
+  window.removeEventListener("pointerup", onAltDragEnd);
 }
 
 function onLeftResizeStart(event: PointerEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isResizing.value = true
-  window.addEventListener('pointermove', onLeftResizeMove)
-  window.addEventListener('pointerup', onLeftResizeEnd)
+  event.preventDefault();
+  event.stopPropagation();
+  isResizing.value = true;
+  window.addEventListener("pointermove", onLeftResizeMove);
+  window.addEventListener("pointerup", onLeftResizeEnd);
 }
 
 function onLeftResizeMove(event: PointerEvent) {
   if (!containerRef.value) {
-    return
+    return;
   }
-  const rect = containerRef.value.getBoundingClientRect()
-  manualWidthPx.value = Math.max(getMinWidthPx(), rect.right - event.clientX)
+  const rect = containerRef.value.getBoundingClientRect();
+  manualWidthPx.value = Math.max(getMinWidthPx(), rect.right - event.clientX);
 }
 
 function onLeftResizeEnd() {
-  isResizing.value = false
-  window.removeEventListener('pointermove', onLeftResizeMove)
-  window.removeEventListener('pointerup', onLeftResizeEnd)
-  saveStoredSize(manualWidthPx.value, manualHeightPx.value)
+  isResizing.value = false;
+  window.removeEventListener("pointermove", onLeftResizeMove);
+  window.removeEventListener("pointerup", onLeftResizeEnd);
+  saveStoredSize(manualWidthPx.value, manualHeightPx.value);
 }
 
 function onTopResizeStart(event: PointerEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isResizing.value = true
-  window.addEventListener('pointermove', onTopResizeMove)
-  window.addEventListener('pointerup', onTopResizeEnd)
+  event.preventDefault();
+  event.stopPropagation();
+  isResizing.value = true;
+  window.addEventListener("pointermove", onTopResizeMove);
+  window.addEventListener("pointerup", onTopResizeEnd);
 }
 
 function onTopResizeMove(event: PointerEvent) {
   if (!containerRef.value) {
-    return
+    return;
   }
-  const rect = containerRef.value.getBoundingClientRect()
-  manualHeightPx.value = Math.max(100, rect.bottom - event.clientY)
+  const rect = containerRef.value.getBoundingClientRect();
+  manualHeightPx.value = Math.max(100, rect.bottom - event.clientY);
 }
 
 function onTopResizeEnd() {
-  isResizing.value = false
-  window.removeEventListener('pointermove', onTopResizeMove)
-  window.removeEventListener('pointerup', onTopResizeEnd)
-  saveStoredSize(manualWidthPx.value, manualHeightPx.value)
+  isResizing.value = false;
+  window.removeEventListener("pointermove", onTopResizeMove);
+  window.removeEventListener("pointerup", onTopResizeEnd);
+  saveStoredSize(manualWidthPx.value, manualHeightPx.value);
 }
 
 function onCornerResizeStart(event: PointerEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isResizing.value = true
-  window.addEventListener('pointermove', onCornerResizeMove)
-  window.addEventListener('pointerup', onCornerResizeEnd)
+  event.preventDefault();
+  event.stopPropagation();
+  isResizing.value = true;
+  window.addEventListener("pointermove", onCornerResizeMove);
+  window.addEventListener("pointerup", onCornerResizeEnd);
 }
 
 function onCornerResizeMove(event: PointerEvent) {
   if (!containerRef.value) {
-    return
+    return;
   }
-  const rect = containerRef.value.getBoundingClientRect()
-  manualWidthPx.value = Math.max(getMinWidthPx(), rect.right - event.clientX)
-  manualHeightPx.value = Math.max(100, rect.bottom - event.clientY)
+  const rect = containerRef.value.getBoundingClientRect();
+  manualWidthPx.value = Math.max(getMinWidthPx(), rect.right - event.clientX);
+  manualHeightPx.value = Math.max(100, rect.bottom - event.clientY);
 }
 
 function onCornerResizeEnd() {
-  isResizing.value = false
-  window.removeEventListener('pointermove', onCornerResizeMove)
-  window.removeEventListener('pointerup', onCornerResizeEnd)
-  saveStoredSize(manualWidthPx.value, manualHeightPx.value)
+  isResizing.value = false;
+  window.removeEventListener("pointermove", onCornerResizeMove);
+  window.removeEventListener("pointerup", onCornerResizeEnd);
+  saveStoredSize(manualWidthPx.value, manualHeightPx.value);
 }
 
 interface DetailPopupState {
-  entry: AirspaceEntry
-  index: number
-  x: number
-  y: number
-  placed: boolean
+  entry: AirspaceEntry;
+  index: number;
+  x: number;
+  y: number;
+  placed: boolean;
 }
 
-const detailPopup = ref<DetailPopupState | null>(null)
+const detailPopup = ref<DetailPopupState | null>(null);
 const detailPopupStyle = computed(() => {
   if (!detailPopup.value) {
-    return {}
+    return {};
   }
   return {
-    position: 'fixed' as const,
+    position: "fixed" as const,
     left: `${detailPopup.value.x}px`,
     top: `${detailPopup.value.y}px`,
-    pointerEvents: 'auto' as const,
-    visibility: detailPopup.value.placed ? ('visible' as const) : ('hidden' as const),
-  }
-})
+    pointerEvents: "auto" as const,
+    visibility: detailPopup.value.placed
+      ? ("visible" as const)
+      : ("hidden" as const),
+  };
+});
 
-async function onBlockClick(entry: AirspaceEntry, index: number, event: MouseEvent) {
-  event.stopPropagation()
-  const clickX = event.clientX
-  const clickY = event.clientY
-  detailPopup.value = { entry, index, x: clickX, y: clickY, placed: false }
-  emit('block-click', { entry, index })
-  await nextTick()
+async function onBlockClick(
+  entry: AirspaceEntry,
+  index: number,
+  event: MouseEvent,
+) {
+  event.stopPropagation();
+  const clickX = event.clientX;
+  const clickY = event.clientY;
+  detailPopup.value = { entry, index, x: clickX, y: clickY, placed: false };
+  emit("block-click", { entry, index });
+  await nextTick();
   if (!detailPopupRef.value || !detailPopup.value) {
-    return
+    return;
   }
-  const rect = detailPopupRef.value.getBoundingClientRect()
-  const margin = 8
+  const rect = detailPopupRef.value.getBoundingClientRect();
+  const margin = 8;
   const x = Math.max(
     margin,
     Math.min(clickX - rect.width / 2, window.innerWidth - rect.width - margin),
-  )
+  );
   const y = Math.max(
     margin,
-    Math.min(clickY - rect.height / 2, window.innerHeight - rect.height - margin),
-  )
-  detailPopup.value = { entry, index, x, y, placed: true }
+    Math.min(
+      clickY - rect.height / 2,
+      window.innerHeight - rect.height - margin,
+    ),
+  );
+  detailPopup.value = { entry, index, x, y, placed: true };
 }
 
 function onAreaClick(event: MouseEvent) {
-  const target = event.target as HTMLElement
+  const target = event.target as HTMLElement;
   if (!stackAreaRef.value) {
-    return
+    return;
   }
   if (
     target === stackAreaRef.value ||
-    target.classList.contains('airspace-stack-aircraft') ||
-    target.classList.contains('airspace-stack-aircraft-label') ||
-    target.classList.contains('airspace-stack-tick')
+    target.classList.contains("airspace-stack-aircraft") ||
+    target.classList.contains("airspace-stack-aircraft-label") ||
+    target.classList.contains("airspace-stack-tick")
   ) {
-    detailPopup.value = null
+    detailPopup.value = null;
   }
 }
 
 function preventTouchMove(event: TouchEvent) {
-  event.preventDefault()
+  event.preventDefault();
 }
 
 onMounted(() => {
-  window.addEventListener('resize', onWindowResize)
-  containerRef.value?.addEventListener('touchmove', preventTouchMove, { passive: false })
-  autoWidthTrigger.value++
-})
+  window.addEventListener("resize", onWindowResize);
+  containerRef.value?.addEventListener("touchmove", preventTouchMove, {
+    passive: false,
+  });
+  autoWidthTrigger.value++;
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', onWindowResize)
-  containerRef.value?.removeEventListener('touchmove', preventTouchMove)
-  window.removeEventListener('pointermove', onAltDragMove)
-  window.removeEventListener('pointerup', onAltDragEnd)
-  window.removeEventListener('pointermove', onLeftResizeMove)
-  window.removeEventListener('pointerup', onLeftResizeEnd)
-  window.removeEventListener('pointermove', onTopResizeMove)
-  window.removeEventListener('pointerup', onTopResizeEnd)
-  window.removeEventListener('pointermove', onCornerResizeMove)
-  window.removeEventListener('pointerup', onCornerResizeEnd)
-})
+  window.removeEventListener("resize", onWindowResize);
+  containerRef.value?.removeEventListener("touchmove", preventTouchMove);
+  window.removeEventListener("pointermove", onAltDragMove);
+  window.removeEventListener("pointerup", onAltDragEnd);
+  window.removeEventListener("pointermove", onLeftResizeMove);
+  window.removeEventListener("pointerup", onLeftResizeEnd);
+  window.removeEventListener("pointermove", onTopResizeMove);
+  window.removeEventListener("pointerup", onTopResizeEnd);
+  window.removeEventListener("pointermove", onCornerResizeMove);
+  window.removeEventListener("pointerup", onCornerResizeEnd);
+});
 </script>
