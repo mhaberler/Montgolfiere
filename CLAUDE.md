@@ -318,6 +318,8 @@ const devices = ref<Map<string, ExtendedScanResult>>(new Map());
 
 ### Testing
 
+**Note:** No automated test suite is wired up. `cypress.config.ts` is present and `test:e2e`/`test:unit` scripts exist in `scripts-disabled` in `package.json` — testing is currently manual on real hardware.
+
 **BLE Testing:**
 
 - Use Settings > Sensors to view discovered BLE devices and assign them to balloon units
@@ -429,9 +431,11 @@ bun run debug-android-a15 # Android emulator
 **Production Builds:**
 
 ```bash
-bun run ios-beta         # iOS beta build
-bun run android-beta     # Android beta build
-bun run build-dev        # Web build
+bun run ios-beta         # iOS beta build (fastlane)
+bun run android-beta     # Android beta build (fastlane)
+bun run build-dev        # Web build (development mode)
+bun run build-prod       # Web build (production mode)
+bun run deploy-mah.priv.at  # Build + rsync web preview to static host
 ```
 
 **Capacitor Sync:**
@@ -488,6 +492,15 @@ bun run sync             # Sync web assets to native platforms
 - [ ] Multi-balloon fleet monitoring
 - [ ] Export flight data (GPX, KML)
 
+## Additional Repo Docs
+
+- `README.md` — top-level overview
+- `BUILD.md` — build/signing notes
+- `MAPTERHORN.md` — terrain/elevation map background
+- `mdns.md`, `mikrotik.md` — networking notes
+- `legacy/airspace/README.md` — historical airspace impl (removed from live tree; recover only if needed)
+- `examples/`, `vendor/`, `python/` — out-of-tree helpers, not part of the app build
+
 ## Resources
 
 - [Vue 3 Composition API](https://vuejs.org/guide/extras/composition-api-faq.html)
@@ -503,8 +516,8 @@ For questions or issues, refer to the project repository documentation or contac
 
 ---
 
-**Last Updated:** April 9, 2026
-**Version:** 1.1.0
+**Last Updated:** 2026-05-21
+**Version:** 1.12.4
 **Latest Changes:** Removed the Ionic UI/runtime layer while keeping Capacitor; migrated routing and app shell to standard Vue Router; replaced Ionic components with native Vue/Tailwind UI; moved navigation to a sticky top tab bar with swipe support on mobile; moved BLE sensor assignment into Settings as a standalone Sensors accordion section with header-level Clear/Restart controls.
 
 # CLAUDE.md
