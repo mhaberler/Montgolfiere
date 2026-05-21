@@ -1,5 +1,5 @@
 PODS:
-  - Capacitor (8.3.3):
+  - Capacitor (8.3.4):
     - CapacitorCordova
   - CapacitorActionSheet (8.1.1):
     - Capacitor
@@ -27,7 +27,7 @@ PODS:
     - Capacitor
   - CapacitorCommunityKeepAwake (8.0.1):
     - Capacitor
-  - CapacitorCordova (8.3.3)
+  - CapacitorCordova (8.3.4)
   - CapacitorDevice (8.0.2):
     - Capacitor
   - CapacitorDialog (8.0.1):
@@ -37,12 +37,12 @@ PODS:
     - IONGeolocationLib (= 2.1.0)
   - CapacitorHaptics (8.0.2):
     - Capacitor
-  - CapacitorInappbrowser (3.0.3):
+  - CapacitorInappbrowser (4.0.0):
     - Capacitor
     - OSInAppBrowserLib (~> 2.3.2)
   - CapacitorKeyboard (8.0.3):
     - Capacitor
-  - CapacitorLocalNotifications (8.1.0):
+  - CapacitorLocalNotifications (8.2.0):
     - Capacitor
   - CapacitorMlkitBarcodeScanning (8.1.0):
     - Capacitor
@@ -71,13 +71,13 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorScreenshot (8.0.1):
     - Capacitor
-  - CapgoCapacitorShake (8.0.29):
+  - CapgoCapacitorShake (8.0.30):
     - Capacitor
-  - CapgoCapacitorUploader (8.2.0):
+  - CapgoCapacitorUploader (8.2.1):
     - Capacitor
   - CapgoNativeAudio (8.4.2):
     - Capacitor
-  - CapgoNativegeocoder (8.0.30):
+  - CapgoNativegeocoder (8.0.31):
     - Capacitor
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
@@ -108,7 +108,7 @@ PODS:
     - Capacitor
   - MhaberlerCapacitorBarometer (2.0.1):
     - Capacitor
-  - MhaberlerCapacitorZeroconfNsd (5.0.3):
+  - MhaberlerCapacitorZeroconfNsd (5.0.4):
     - Capacitor
   - MLImage (1.0.0-beta7)
   - MLKitBarcodeScanning (7.0.0):
@@ -282,7 +282,7 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@mhaberler/capacitor-zeroconf-nsd"
 
 SPEC CHECKSUMS:
-  Capacitor: e6868a40e11989d2ba7c00f29ce6bdb3a01f29c1
+  Capacitor: d13cad5fa09155679672808cc4ca9fbc2997e1b4
   CapacitorActionSheet: c3394c32eb29990e73e9c6c5677e3b31eb46ad3f
   CapacitorApp: 449ffe26375e96f8aaaee625ac6e01e5c57c8650
   CapacitorAppLauncher: 43949ccc5aaa5139a1ebe27a98c0a4d76c883fa7
@@ -295,14 +295,14 @@ SPEC CHECKSUMS:
   CapacitorCommunityBluetoothLe: ab4b04474c7c13315cd591dee0995f1adce73c98
   CapacitorCommunityCameraPreview: 38b73c0135eae2c8bc7652745b3820b035737313
   CapacitorCommunityKeepAwake: d41922812644562e94a79acaf7f41e6d9413af8c
-  CapacitorCordova: 71cde252d2c3c3e73a9586e85d2354fc8bbf0209
+  CapacitorCordova: c07921bdcfec6f691bae22274446b4d606ebf6a4
   CapacitorDevice: 14cba6f88d1c3074cbf825fea977c8c526453ff8
   CapacitorDialog: 854c5dac405081cae697c177ca43bcaa95ae67bf
   CapacitorGeolocation: b36f6287bfc9f2eefa04dc900496f2c8ae666136
   CapacitorHaptics: 296f771ecd89c7a1bd92a7b6826a7d268e2e70f5
-  CapacitorInappbrowser: 77fd27ec2bbd2ea591a9a3ccfc7b27fe9eeb816c
+  CapacitorInappbrowser: 9e37b866ab024807900024c38a7d6f3eeed514b0
   CapacitorKeyboard: 31c8285d92c9d1410071d52449f16d2c6673b6f4
-  CapacitorLocalNotifications: 910c3e45572b4adb92a32e7b6c3791d1eadadcbf
+  CapacitorLocalNotifications: 2615aa008f608b95d3921a778ee1988abf1e6148
   CapacitorMlkitBarcodeScanning: 31c6af9f39873ff69e16ed5b39ebe2e1915f16fe
   CapacitorNetwork: 8812ce60d11fb63d8f2e4ba51a49b2e59892ebe2
   CapacitorPreferences: cca2021f386efb75947c850334447d9ff22b14f1
@@ -316,10 +316,10 @@ SPEC CHECKSUMS:
   CapawesomeCapacitorFilePicker: eb29fb54c59614fede51e0e0fe25070dda9d024c
   CapawesomeCapacitorScreenOrientation: 81a4e51518bc6d6d1971ebe4f45892e29115c79e
   CapawesomeCapacitorScreenshot: 12d23f0773903de4e5b0b3fdebabef1d3813f826
-  CapgoCapacitorShake: abcb13c7edbf52364c6f01f1025b0d324f55dcbb
-  CapgoCapacitorUploader: 5986d45e9ca75c7b3c8e589fcb9f62271d1545f0
+  CapgoCapacitorShake: cf6a24e86a5d98d425b4b1664717d202cd7152d3
+  CapgoCapacitorUploader: 80b48c8ff160853e28680e66d156b821c0397472
   CapgoNativeAudio: cfc29c10c7a7e6b52ce1077398a694eb8c3101b8
-  CapgoNativegeocoder: c6ea96f8cdd2dcae39f4ffe6bb3dc990538466da
+  CapgoNativegeocoder: 1fc15ca7f050bb9de6fa63f8f920d090b8016b8d
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: ddd51d7dff36ff28defa69afedd9cdce684fd857
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
@@ -329,7 +329,7 @@ SPEC CHECKSUMS:
   IONGeolocationLib: 6a7b6f76063fb1b01cfb14fae7d0f526e3c9b271
   LeadscoutHttp: 3b639e66d5e816630edb9fdf2acb7faff0ee7cb6
   MhaberlerCapacitorBarometer: 1b71b4c71d6c6683a3438899007927acc2559a58
-  MhaberlerCapacitorZeroconfNsd: 88705b7013c1f8da0cdc45b48323da4c54b91e78
+  MhaberlerCapacitorZeroconfNsd: 89f5b79b8b83bd9277aa877bb9ffed9880cdd1af
   MLImage: 2ab9c968e75f57911c16f4c9d9e8a8e9604a86a1
   MLKitBarcodeScanning: 72c6437f13a900833b400136be53a8a5d86f42fa
   MLKitCommon: 26b779f072a182c1603d4c88a101c350cac837b1
