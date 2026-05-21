@@ -98,3 +98,6 @@ android/app/src/main/res/values/strings.xml
 .env.*.local
 .vscode/settings.json
 .vscode/settings.json
+.claude
+.cc-history
+
