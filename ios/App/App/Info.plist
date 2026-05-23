@@ -28,7 +28,9 @@
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
+		<string>bluetooth-le</string>
+		<string>location-services</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -46,34 +48,26 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to track your flight.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to track your flight.</string>
+	<string>Montgolfiere uses your location to record your flight track, show your position on the airspace map, and identify the local WiFi network for sensor discovery.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>We need to use Bluetooth to scan to read envelope and tank sensors.</string>
+	<string>Montgolfiere uses Bluetooth to read envelope temperature, propane tank level, and variometer data from your balloon's BLE sensors.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>We need to use Bluetooth to scan to read envelope and tank sensors.</string>
+	<string>Montgolfiere uses Bluetooth to read envelope temperature, propane tank level, and variometer data from your balloon's BLE sensors.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>We need access to motion and barometer sensors to measure atmospheric pressure and altitude.</string>
+	<string>Montgolfiere uses the device barometer to measure atmospheric pressure and compute altitude and vertical speed.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>To be able to scan barcodes</string>
+	<string>Montgolfiere uses the camera to scan QR codes for sensor configuration.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To be able to retrieve a qrcode stored in the gallery</string>
-
-	<!-- @capawesome/capacitor-file-picker -->
-	<key>com.apple.security.files.user-selected.read-only</key>
-	<true/>
+	<string>Montgolfiere reads QR-code images from your photo library for sensor configuration.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>This app needs access to the local network to discover MQTT devices</string>
+	<string>Montgolfiere uses the local network to discover MQTT brokers and mDNS services for in-flight diagnostics.</string>
 
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_mqtt-ws._tcp</string>
 		<string>_mqtt-wss._tcp</string>
 	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location access to identify WiFi networks for device discovery</string>
 	<!-- Export Compliance: Set to false if app only uses standard encryption -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
