@@ -36,6 +36,9 @@ const longPressDirective: ObjectDirective<LongPressElement, LongPressCallback> =
         // Only handle primary mouse button or touch events
         if (e.type === "mousedown" && (e as MouseEvent).button !== 0) return;
 
+        // Prevent Android text-selection toolbar on long-press
+        if (e.type === "touchstart") e.preventDefault();
+
         if (el._longPressTimer === null || el._longPressTimer === undefined) {
           el._longPressTimer = window.setTimeout(() => {
             binding.value(e);
@@ -56,7 +59,7 @@ const longPressDirective: ObjectDirective<LongPressElement, LongPressCallback> =
 
       // Add event listeners
       el.addEventListener("mousedown", start, { passive: true });
-      el.addEventListener("touchstart", start, { passive: true });
+      el.addEventListener("touchstart", start, { passive: false });
       el.addEventListener("mouseup", cancel, { passive: true });
       el.addEventListener("mouseleave", cancel, { passive: true });
       el.addEventListener("touchend", cancel, { passive: true });

@@ -1,7 +1,8 @@
 <template>
   <div
-    class="relative w-full h-full bg-white p-1 sm:p-5 flex flex-col justify-between items-center text-center transition-all duration-300 ease-in-out transform hover:scale-105 border-4"
+    class="relative w-full h-full bg-white p-1 sm:p-5 flex flex-col justify-between items-center text-center transition-all duration-300 ease-in-out transform hover:scale-105 border-4 select-none"
     :class="[frameClass, batteryBorderClass]"
+    style="user-select: none; -webkit-user-select: none;"
   >
     <!-- Value (Centered and Prominent) -->
     <div class="grow flex items-center justify-center w-full mb-0 mt-0">
