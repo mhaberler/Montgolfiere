@@ -516,23 +516,23 @@ interface MqttInitOptions {
   onStatusChange: (status: string) => void;
 }
 
-const checkMqttConnection = async (): Promise<void> => {
-  console.log(`------------fooo`);
-  await initializeMqtt({
-    brokerUrl: "wss://test.mosquitto.org:8081/mqtt",
-    // mqttBrokerUrl.value,
-    topics: ["location/updates", "barometer/readings", "ble/advertisements"],
-    onMessageCallback: (topic: string, message: string | Buffer): void => {
-      const data: unknown = JSON.parse(message.toString());
-      // Process location, barometer, or BLE data here
-      console.log(`Processed data from ${topic}:`, data);
-    },
-    onStatusChange: (status: string): void => {
-      console.log(`MQTT status updated: ${status}`);
-      // Update UI or app state based on status, e.g., show connection indicator
-    },
-  } as MqttInitOptions);
-};
+// const checkMqttConnection = async (): Promise<void> => {
+//   console.log(`------------fooo`);
+//   await initializeMqtt({
+//     brokerUrl: "wss://test.mosquitto.org:8081/mqtt",
+//     // mqttBrokerUrl.value,
+//     topics: ["location/updates", "barometer/readings", "ble/advertisements"],
+//     onMessageCallback: (topic: string, message: string | Buffer): void => {
+//       const data: unknown = JSON.parse(message.toString());
+//       // Process location, barometer, or BLE data here
+//       console.log(`Processed data from ${topic}:`, data);
+//     },
+//     onStatusChange: (status: string): void => {
+//       console.log(`MQTT status updated: ${status}`);
+//       // Update UI or app state based on status, e.g., show connection indicator
+//     },
+//   } as MqttInitOptions);
+// };
 
 // const toggleDebugInfo = () => {
 //   showDebugInfo.value = !showDebugInfo.value;
