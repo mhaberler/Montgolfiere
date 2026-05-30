@@ -6,13 +6,13 @@
       <div class="flex items-center gap-2">
         <button
           v-if="isCapacitorApp"
-          @click="toggleScan"
+          @click="restartScan"
           :class="[
             'btn text-sm py-1.5 px-3',
             isScanning ? 'btn-danger' : 'btn-success',
           ]"
         >
-          {{ isScanning ? `Scan (${scanTimeRemaining}s)` : "Discover" }}
+          {{ isScanning ? "Scanning…" : "Discover" }}
         </button>
         <span
           v-if="!isCapacitorApp"
@@ -477,26 +477,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onUnmounted, watch, computed } from "vue";
+import { defineComponent, ref, watch, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Capacitor } from "@capacitor/core";
 import {
-  ZeroConf,
-  type ZeroConfService,
-  type ZeroConfAction,
-} from "@mhaberler/capacitor-zeroconf-nsd";
-import {
   useAppState,
-  mdnsScanActive,
   type ServiceEntry,
   type BrokerSource,
 } from "../composables/useAppState";
 import { useMqttConnection } from "../composables/useMqttConnection";
+import { useMdnsScan } from "../composables/useMdnsScan";
 import { useAppLifecycle } from "../composables/useAppLifecycle";
-
-function removeLeadingAndTrailingDots(str: string): string {
-  return str.replace(/^\.+|\.+$/g, "");
-}
 
 export default defineComponent({
   name: "ScannerView",
@@ -509,12 +500,8 @@ export default defineComponent({
     );
     const selectedType = ref<string>("_mqtt-ws._tcp.");
     const manualRejectUnauthorized = ref<boolean>(true);
-    const isScanning = ref<boolean>(false);
     const isCapacitorApp = ref<boolean>(Capacitor.isNativePlatform());
     const scanError = ref<string>("");
-    const scanTimeRemaining = ref<number>(0);
-    let scanTimer: ReturnType<typeof setInterval> | null = null;
-    let hasTriggeredStartupScan = false;
 
     // Inline test state
     const isTesting = ref<boolean>(false);
@@ -525,9 +512,7 @@ export default defineComponent({
     // Shared state
     const { preferredBroker } = useAppState();
     const mqttConn = useMqttConnection();
-
-    // Service types to scan for
-    const serviceTypes: string[] = ["_mqtt-ws._tcp.", "_mqtt-wss._tcp."];
+    const { services: discoveredServices, isScanning, restartScan } = useMdnsScan();
 
     // --- Pre-configured brokers ---
     const defaultServices: Record<string, ServiceEntry> = {
@@ -578,11 +563,10 @@ export default defineComponent({
     );
 
     const discoveredList = computed(() =>
-      Object.entries(services.value)
-        .filter(
-          ([, s]) => s.source === "discovered" || (!s.source && s.discovered),
-        )
-        .map(([key, service]) => ({ key, service })),
+      Object.entries(discoveredServices.value).map(([key, service]) => ({
+        key,
+        service,
+      })),
     );
 
     // Single manual entry (keyed as 'manual')
@@ -777,186 +761,17 @@ export default defineComponent({
       console.log("preferredBroker:", JSON.parse(JSON.stringify(preferredBroker.value)));
     };
 
-    // --- mDNS scanning ---
-    const onServiceEvent = (
-      arg: { action: ZeroConfAction; service: ZeroConfService } | null,
-    ) => {
-      if (!arg) return;
-      const { action, service } = arg;
-      const st = removeLeadingAndTrailingDots(service.type || "");
-      const key = `${service.name || "unknown"}_${service.domain || "local"}_${st}`;
-
-      if (action === "added") {
-        services.value[key] = {
-          name: service.name || `${service.type ?? "service"} Service`,
-          type: service.type || "",
-          host:
-            service.hostname ||
-            service.ipv4Addresses?.[0] ||
-            service.ipv6Addresses?.[0] ||
-            "Unknown",
-          port: service.port || 0,
-          domain: service.domain,
-          discovered: true,
-          resolved: false,
-          source: "discovered",
-        };
-      } else if (action === "removed") {
-        if (services.value[key]?.discovered) {
-          delete services.value[key];
-        }
-      } else if (action === "resolved" && service.port) {
-        if (services.value[key]) {
-          services.value[key] = {
-            ...services.value[key],
-            name: service.name || services.value[key].name,
-            host:
-              service.hostname ||
-              service.ipv4Addresses?.[0] ||
-              service.ipv6Addresses?.[0] ||
-              services.value[key].host,
-            port: service.port || services.value[key].port,
-            domain: service.domain || services.value[key].domain,
-            resolved: true,
-            txtRecord: service.txtRecord || {},
-            ipv4Addresses: service.ipv4Addresses || [],
-            ipv6Addresses: service.ipv6Addresses || [],
-          };
-        }
-      }
-    };
-
-    const startScan = async () => {
-      if (!isCapacitorApp.value) return;
-      try {
-        isScanning.value = true;
-        mdnsScanActive.value = true;
-        scanError.value = "";
-        scanTimeRemaining.value = 3;
-
-        for (const serviceType of serviceTypes) {
-          await ZeroConf.watch(
-            { type: serviceType, domain: "local." },
-            onServiceEvent,
-          );
-        }
-
-        scanTimer = setInterval(() => {
-          scanTimeRemaining.value -= 1;
-          if (scanTimeRemaining.value <= 0) stopScan();
-        }, 1000);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Unknown error";
-        scanError.value = `Failed to start scan: ${msg}`;
-        isScanning.value = false;
-        mdnsScanActive.value = false;
-        scanTimeRemaining.value = 0;
-      }
-    };
-
-    const stopScan = async () => {
-      if (!isCapacitorApp.value) return;
-      if (scanTimer) {
-        clearInterval(scanTimer);
-        scanTimer = null;
-      }
-      scanTimeRemaining.value = 0;
-      try {
-        for (const serviceType of serviceTypes) {
-          ZeroConf.unwatch({ type: serviceType, domain: "local." });
-        }
-        isScanning.value = false;
-        mdnsScanActive.value = false;
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Unknown error";
-        scanError.value = `Failed to stop scan: ${msg}`;
-      }
-    };
-
-    const toggleScan = () => {
-      if (isScanning.value) stopScan();
-      else startScan();
-    };
-
-    // Startup: scan for preferred broker if it's an mDNS-discovered one, or if no preferred broker exists
-    watch(
-      preferredBroker,
-      (broker) => {
-        if (
-          !hasTriggeredStartupScan &&
-          isCapacitorApp.value &&
-          !isScanning.value
-        ) {
-          if (broker && broker.discovered === true) {
-            // Scan if preferred broker is discovered but not in services list
-            hasTriggeredStartupScan = true;
-            const found = Object.values(services.value).some(
-              (s) => s.name === broker.name && s.port === broker.port,
-            );
-            if (!found) {
-              startScan();
-            }
-          } else if (!broker) {
-            // Auto-scan if no preferred broker is set
-            hasTriggeredStartupScan = true;
-            startScan();
-          }
-        }
-      },
-      { immediate: true },
-    );
-
-    // Update preferred broker network info when re-discovered via mDNS
-    watch(
-      () => Object.values(services.value),
-      (allServices) => {
-        if (!preferredBroker.value || !preferredBroker.value.discovered) return;
-        const match = allServices.find(
-          (s) =>
-            s.name === preferredBroker.value!.name &&
-            s.port === preferredBroker.value!.port &&
-            s.resolved,
-        );
-        if (match) {
-          const current = preferredBroker.value;
-          if (
-            current.host !== match.host ||
-            JSON.stringify(current.ipv4Addresses) !==
-              JSON.stringify(match.ipv4Addresses)
-          ) {
-            preferredBroker.value = {
-              ...current,
-              host: match.host,
-              ipv4Addresses: match.ipv4Addresses,
-              ipv6Addresses: match.ipv6Addresses,
-              resolved: true,
-              discovered: true,
-            };
-          }
-        }
-      },
-      { deep: true },
-    );
-
     // Cleanup on unmount
     onUnmounted(() => {
-      if (scanTimer) {
-        clearInterval(scanTimer);
-        scanTimer = null;
-      }
       if (testTimer) {
         clearInterval(testTimer);
         testTimer = null;
       }
     });
 
-    // Stop mDNS scan when app goes to background
+    // Blur focused element when page goes to background
     const { isActive } = useAppLifecycle();
-    watch(isActive, (active) => {
-      if (!active && isScanning.value) {
-        stopScan();
-      }
-      // Blur any focused element when page becomes hidden
+    watch(isActive, (active: boolean) => {
       if (!active) {
         (document.activeElement as HTMLElement)?.blur();
       }
@@ -970,7 +785,6 @@ export default defineComponent({
       isScanning,
       isCapacitorApp,
       scanError,
-      scanTimeRemaining,
       preferredBroker,
       isTesting,
       testResult,
@@ -991,7 +805,7 @@ export default defineComponent({
       navigateToClient,
       runInlineTest,
       manualRejectUnauthorized,
-      toggleScan,
+      restartScan,
       setPreferred,
       clearPreferredBroker,
       toggleAutoConnect,

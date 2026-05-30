@@ -5,12 +5,7 @@ import { Device } from "@capacitor/device";
 import { ref, watch } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
 import { startBarometer, stopBarometer } from "../sensors/barometer";
-import {
-  showDebugInfo,
-  preferredBroker,
-  mdnsScanActive,
-} from "../composables/useAppState";
-import type { ServiceEntry } from "../composables/useAppState";
+import { showDebugInfo, preferredBroker } from "../composables/useAppState";
 import { useAppLifecycle } from "../composables/useAppLifecycle";
 import {
   initializeAndStartBLEScan,
@@ -23,11 +18,7 @@ import {
   networkStatus,
 } from "../sensors/network";
 import { useMqttConnection } from "../composables/useMqttConnection";
-import {
-  ZeroConf,
-  type ZeroConfAction,
-  type ZeroConfService,
-} from "@mhaberler/capacitor-zeroconf-nsd";
+import { useMdnsScan } from "../composables/useMdnsScan";
 import { startTimer, stopTimer } from "./ticker";
 import { Share } from "@capacitor/share";
 import QRCode from "qrcode";
@@ -79,47 +70,7 @@ const clearRetry = () => {
   }
 };
 
-const mdnsScan = (broker: ServiceEntry, durationMs: number): Promise<void> => {
-  return new Promise((resolve) => {
-    if (isWeb || mdnsScanActive.value) {
-      resolve();
-      return;
-    }
-    mdnsScanActive.value = true;
-    ZeroConf.watch(
-      { type: broker.type, domain: "local." },
-      (arg: { action: ZeroConfAction; service: ZeroConfService } | null) => {
-        if (!arg) return;
-        const { action, service } = arg;
-        if (
-          action === "resolved" &&
-          service.name === broker.name &&
-          service.port
-        ) {
-          const ip =
-            service.ipv4Addresses?.[0] || service.hostname || broker.host;
-          preferredBroker.value = {
-            ...preferredBroker.value!,
-            host: ip,
-            port: service.port,
-            resolved: true,
-          };
-        }
-      },
-    ).catch(() => {});
-    setTimeout(async () => {
-      try {
-        await ZeroConf.unwatch({ type: broker.type, domain: "local." });
-      } catch (_) {
-        /* ignore */
-      }
-      mdnsScanActive.value = false;
-      resolve();
-    }, durationMs);
-  });
-};
-
-const connectAutomatic = async () => {
+const connectAutomatic = () => {
   const { connect, autoConnectActive } = useMqttConnection();
   const broker = preferredBroker.value;
   if (!broker?.autoConnect) {
@@ -129,10 +80,8 @@ const connectAutomatic = async () => {
   }
   autoConnectActive.value = true;
   clearRetry();
-  if (broker.discovered) {
-    await mdnsScan(broker, 3000);
-  }
-  connect(preferredBroker.value!);
+  // preferredBroker.host/port is kept fresh by the continuous mDNS scan
+  connect(broker);
 };
 
 const cameToForeground = async () => {
@@ -152,7 +101,6 @@ const cameToForeground = async () => {
     } catch (e) {
       console.error("Failed to start BLE scanning in foreground:", e);
     }
-    // startScan();
   }
   if (wakeLockAvailable.value) {
     if (!(await isKeptAwake())) {
@@ -160,6 +108,7 @@ const cameToForeground = async () => {
       await KeepAwake.keepAwake();
     }
   }
+  useMdnsScan().startScan();
   useMqttConnection().resume();
 };
 
@@ -183,6 +132,7 @@ const wentToBackground = async () => {
       await KeepAwake.allowSleep();
     }
   }
+  useMdnsScan().stopScan();
   useMqttConnection().pause();
   clearRetry();
 };
@@ -286,13 +236,12 @@ const initializeApp = async () => {
   });
 
   watch(networkStatus, (status, prev) => {
-    if (
-      status?.connected &&
-      !prev?.connected &&
-      preferredBroker.value?.autoConnect
-    ) {
-      useMqttConnection().disconnect();
-      connectAutomatic();
+    if (status?.connected && !prev?.connected) {
+      useMdnsScan().restartScan();
+      if (preferredBroker.value?.autoConnect) {
+        useMqttConnection().disconnect();
+        retryTimer = setTimeout(() => connectAutomatic(), 1000);
+      }
     }
   });
 
@@ -308,6 +257,7 @@ const initializeApp = async () => {
     } catch (e) {
       console.error("Failed to start startNetworkObserver in foreground:", e);
     }
+    useMdnsScan().startScan();
   }
   startTimer();
   // console.log('Network status:', networkStatus.value?.connected, networkStatus.value?.connectionType);
