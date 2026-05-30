@@ -50,6 +50,8 @@
 
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Montgolfiere uses your location to record your flight track, show your position on the airspace map, and identify the local WiFi network for sensor discovery.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Montgolfiere uses your location to record your flight track, show your position on the airspace map, and identify the local WiFi network for sensor discovery.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Montgolfiere uses Bluetooth to read envelope temperature, propane tank level, and variometer data from your balloon's BLE sensors.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
