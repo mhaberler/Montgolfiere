@@ -172,68 +172,61 @@
         <Teleport to="body">
           <div
             v-if="isModalOpen"
-            class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+            class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-3 sm:items-center"
             @click.self="closeModal"
           >
             <div
               v-if="modalData"
-              class="safe-bottom w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+              class="safe-bottom w-full max-w-sm overflow-hidden rounded-xl border-2 border-blue-200 bg-white shadow-2xl"
               role="dialog"
               aria-modal="true"
               :aria-label="modalData.name || 'Sensor Data'"
             >
-              <div class="border-b border-gray-200 px-4 py-3">
-                <div class="flex items-center justify-between gap-4">
-                  <h2 class="text-lg font-semibold text-gray-900">
-                    {{ modalData.name || "Sensor Data" }}
-                  </h2>
-                  <button
-                    ref="modalCloseButton"
-                    type="button"
-                    class="rounded-md px-2 py-1 text-xl leading-none text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
-                    @click="closeModal"
-                  >
-                    ×
-                  </button>
-                </div>
+              <!-- Header -->
+              <div class="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  {{ modalData.name || "Sensor Data" }}
+                </span>
+                <button
+                  ref="modalCloseButton"
+                  type="button"
+                  class="rounded px-1.5 py-0.5 text-lg leading-none text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+                  @click="closeModal"
+                >
+                  ×
+                </button>
               </div>
 
-              <div class="space-y-6 p-4">
-                <div class="rounded-lg bg-gray-100 p-6 text-center">
-                  <h3 class="mb-2 text-lg font-semibold text-gray-700">
-                    Current {{ modalData.name }}
-                  </h3>
-                  <div class="text-4xl font-bold text-blue-600">
-                    {{ modalData.value }} {{ modalData.unit }}
+              <!-- Value display -->
+              <div class="px-3 py-3">
+                <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+                  <div class="font-mono text-3xl font-bold text-blue-600">
+                    {{ modalData.value }} <span class="text-lg text-gray-500">{{ modalData.unit }}</span>
                   </div>
                 </div>
 
-                <div class="space-y-4">
+                <!-- Actions -->
+                <div class="mt-3 flex gap-2">
                   <button
                     type="button"
-                    class="btn btn-success w-full py-3 text-base"
+                    class="btn text-xs py-1.5 px-3 btn-success flex-1"
                     @click="setOnGround"
                   >
                     Set as Ground Level
                   </button>
-
                   <button
                     type="button"
-                    class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-50"
+                    class="btn text-xs py-1.5 px-3 bg-white hover:bg-gray-50 text-gray-600 border border-gray-200"
                     @click="closeModal"
                   >
                     Cancel
                   </button>
                 </div>
 
-                <div class="mt-4 text-sm text-gray-600">
-                  <p>
-                    This will set the current {{ modalData.name }} value ({{
-                      modalData.value
-                    }}
-                    {{ modalData.unit }}) as the ground reference level.
-                  </p>
-                </div>
+                <!-- Info -->
+                <p class="mt-2 text-[10px] text-gray-400">
+                  Sets {{ modalData.value }} {{ modalData.unit }} as ground reference level.
+                </p>
               </div>
             </div>
           </div>
