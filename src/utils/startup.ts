@@ -229,7 +229,7 @@ const initializeApp = async () => {
     if (state === "disconnected") {
       autoConnectActive.value = true;
       clearRetry();
-      retryTimer = setTimeout(() => connectAutomatic(), 15000);
+      retryTimer = setTimeout(() => connectAutomatic(), 10000);
     } else if (state === "connected") {
       clearRetry();
     }
