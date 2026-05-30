@@ -101,12 +101,15 @@
         >
           {{ isTesting ? `Testing (${testTimeRemaining}s)` : "Test" }}
         </button>
-        <button
-          @click="navigateToClient(preferredBroker)"
-          class="btn text-xs py-1.5 px-3 btn-primary flex-1"
-        >
-          Open Client
-        </button>
+        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            :checked="preferredBroker.autoConnect"
+            @change="toggleAutoConnect"
+            class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary"
+          />
+          <span class="text-xs text-gray-600">Auto-connect</span>
+        </label>
         <button
           @click="clearPreferredBroker"
           class="btn text-xs py-1.5 px-3 bg-white hover:bg-red-50 text-red-600 border border-red-200"
@@ -527,28 +530,39 @@ export default defineComponent({
 
     // --- Pre-configured brokers ---
     const defaultServices: Record<string, ServiceEntry> = {
-      "test-mosquitto-wss": {
-        name: "test.mosquitto.org (WSS)",
-        type: "_mqtt-wss._tcp.",
-        host: "test.mosquitto.org",
-        port: 8081,
+      "localAP": {
+        name: "localAP (MQTT-WS)",
+        type: "_mqtt-ws._tcp.",
+        host: "192.168.4.1",
+        port: 8883,
         discovered: false,
         resolved: true,
         source: "preconfigured",
       },
+
+
+      // "test-mosquitto-wss": {
+      //   name: "test.mosquitto.org (WSS)",
+      //   type: "_mqtt-wss._tcp.",
+      //   host: "test.mosquitto.org",
+      //   port: 8081,
+      //   discovered: false,
+      //   resolved: true,
+      //   source: "preconfigured",
+      // },
     };
 
-    if (isCapacitorApp.value) {
-      defaultServices["test-mosquitto-ws"] = {
-        name: "test.mosquitto.org (WS)",
-        type: "_mqtt-ws._tcp.",
-        host: "test.mosquitto.org",
-        port: 8080,
-        discovered: false,
-        resolved: true,
-        source: "preconfigured",
-      };
-    }
+    // if (isCapacitorApp.value) {
+    //   defaultServices["test-mosquitto-ws"] = {
+    //     name: "test.mosquitto.org (WS)",
+    //     type: "_mqtt-ws._tcp.",
+    //     host: "test.mosquitto.org",
+    //     port: 8080,
+    //     discovered: false,
+    //     resolved: true,
+    //     source: "preconfigured",
+    //   };
+    // }
 
     services.value = { ...defaultServices };
 
@@ -751,6 +765,15 @@ export default defineComponent({
     const clearPreferredBroker = () => {
       preferredBroker.value = null;
       testResult.value = null;
+    };
+
+    const toggleAutoConnect = () => {
+      if (!preferredBroker.value) return;
+      preferredBroker.value = {
+        ...preferredBroker.value,
+        autoConnect: !preferredBroker.value.autoConnect,
+      };
+      console.log("preferredBroker:", JSON.parse(JSON.stringify(preferredBroker.value)));
     };
 
     // --- mDNS scanning ---
@@ -967,6 +990,7 @@ export default defineComponent({
       toggleScan,
       setPreferred,
       clearPreferredBroker,
+      toggleAutoConnect,
     };
   },
 });
