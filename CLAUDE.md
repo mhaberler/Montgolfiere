@@ -44,6 +44,8 @@ src/
 ├── composables/        # Vue composables for shared logic
 │   ├── airspace/       # OpenAIP fetch/refetch logic for the map route
 │   ├── useDeviceMapping.ts    # BLE device to balloon unit mapping
+│   ├── useMdnsScan.ts         # Single continuous mDNS scan (sole ZeroConf owner)
+│   ├── useMqttConnection.ts   # Singleton MQTT connection state and actions
 │   └── usePersistedRef.ts     # Persistent state management
 ├── decoders/           # BLE protocol decoders
 │   ├── ruuvi.ts       # RuuviTag sensors (temp, humidity, pressure)
@@ -61,11 +63,12 @@ src/
 │   └── sun.ts         # Sunrise/sunset calculations
 ├── views/              # Route-level page components
 │   ├── TabsPage.vue   # Shared top navigation shell and swipe handling
-│   ├── Tab1Page.vue   # Main flight status display
+│   ├── Tab1Page.vue   # Main flight status display + MQTT status badge
 │   ├── MapPage.vue    # Airspace lookup map, tracking, and stack display
-│   ├── SettingsPage.vue # Settings, sensors, QNH, debug, build info
-│   ├── ScannerView.vue # mDNS / network scanning tools
+│   ├── SettingsPage.vue # Settings, sensors, QNH, MQTT topics, debug, build info
 │   └── MQTTClientView.vue # MQTT diagnostics/configuration
+├── components/
+│   └── ScannerView.vue # mDNS broker discovery UI (consumer of useMdnsScan)
 ├── types/              # TypeScript type definitions
 ├── utils/              # Utility functions
 │   ├── state.ts       # Centralized state exports
@@ -261,6 +264,68 @@ Extended Kalman Filter (EKF) for smooth altitude and velocity estimation:
 - The previous `src/map/*` airspace implementation has been removed from the live source tree.
 - Recovery, if ever needed, should come from git history or `legacy/airspace/README.md`, not by recreating `src/map`.
 
+### 8. mDNS Scan (`src/composables/useMdnsScan.ts`)
+
+Singleton composable — the **sole owner** of all `ZeroConf.watch()`/`unwatch()` calls. Android NSD crashes (FAILURE_ALREADY_ACTIVE) if more than one caller watches the same service type simultaneously; this composable prevents that.
+
+**Responsibilities:**
+
+- Watch `_mqtt-ws._tcp.` and `_mqtt-wss._tcp.` continuously while app is in foreground
+- Maintain reactive `services: Ref<ServiceMap>` of all discovered brokers
+- Update `preferredBroker.host/port` directly when a matching `resolved` event arrives
+
+**Key Exports:**
+
+- `services: Ref<ServiceMap>` — all currently known mDNS brokers
+- `isScanning: Ref<boolean>`
+- `startScan()` / `stopScan()` / `restartScan()` — called by `startup.ts`, not components
+
+**Rules:**
+
+- Never call `ZeroConf.watch()` from anywhere else (startup.ts, ScannerView, etc.)
+- `ScannerView` is a **consumer** only — it reads `services` and `isScanning`, calls `restartScan()` on button press
+- `startup.ts` calls `startScan()` in `cameToForeground()`, `stopScan()` in `wentToBackground()`, `restartScan()` on network recovery
+
+### 9. MQTT Connection (`src/composables/useMqttConnection.ts`)
+
+Singleton composable for persistent MQTT state across view navigations.
+
+**Connection States:**
+
+```typescript
+type ConnectionState = "disconnected" | "trying" | "connected" | "retrying";
+```
+
+**Key Exports:**
+
+- `connectionState`, `autoConnectActive: Ref<boolean>` — drives Tab1 status badge
+- `connect(broker)` / `disconnect()` / `pause()` / `resume()`
+- `pause()` / `resume()` — called by `startup.ts` on background/foreground transitions
+- `keepalive: 15` — detects dead connections within ~20s
+
+**Auto-connect logic** lives entirely in `startup.ts`:
+
+- Watches `preferredBroker` — calls `connect()` immediately when `autoConnect: true`
+- Watches `connectionState` — schedules 15s retry on `"disconnected"` while autoConnect active
+- On network recovery: `restartScan()` + 1s delay + `connect()`
+- `autoConnectActive` stays `true` during retry loop; cleared when `autoConnect` turned off
+
+### 10. Settings Page Accordion (`src/views/SettingsPage.vue`)
+
+Accordion sections: Configuration, Sensors, QNH, Topics, Debug, Build Info, MQTT.
+
+**Topics accordion** — shows per-topic message counts from MQTT and a compact publish row:
+
+- Grayed out (`opacity-50 pointer-events-none`) when not MQTT connected
+- Topic list derived from `messages` (excludes `"system"` topic), sorted by count descending
+- Compact publish: topic + payload inputs inline with `→` button
+
+**Pattern for disabled-when-disconnected accordions:**
+
+```html
+<section :class="{ 'opacity-50 pointer-events-none': !isConnected }">
+```
+
 ## Development Guidelines
 
 ### State Management Pattern
@@ -392,20 +457,27 @@ const resetWatchdog = () => {
 
 ## App Lifecycle
 
-**Foreground:**
+**Foreground (`cameToForeground`):**
 
+- Start barometer, location, timer
 - Start BLE scanning
-- Start location tracking
-- Start barometer
-- Start timer for state updates
-- Acquire wake lock (keep screen on)
+- Start mDNS scan (`useMdnsScan().startScan()`)
+- Resume MQTT connection (`useMqttConnection().resume()`)
+- Acquire wake lock
 
-**Background:**
+**Background (`wentToBackground`):**
 
-- Stop BLE scanning (battery optimization)
-- Stop location tracking
-- Stop barometer
+- Stop barometer, location, timer
+- Stop BLE scanning
+- Stop mDNS scan (`useMdnsScan().stopScan()`)
+- Pause MQTT connection (`useMqttConnection().pause()`)
+- Cancel retry timer
 - Release wake lock
+
+**Network recovery:**
+
+- Restart mDNS scan (`useMdnsScan().restartScan()`)
+- Reconnect MQTT after 1s delay (gives NSD time to re-resolve)
 
 **Handled by:** `src/utils/startup.ts`
 
@@ -474,6 +546,19 @@ bun run sync             # Sync web assets to native platforms
 - Check reactive timestamp is updating
 - Review status aggregation logic
 
+**MQTT Not Connecting (autoConnect on):**
+
+- Check `preferredBroker.autoConnect` is `true` in Settings > MQTT
+- Check Tab1 badge: "MQTT…" = trying, "MQTT retry" = in retry loop, no badge = autoConnect off
+- Verify broker host/port in Settings > MQTT preferred broker card
+- For discovered brokers: check mDNS scan is running (Settings > MQTT "Scanning…" indicator)
+- Check logcat for `ZeroConf: Discovery failed` or `MQTT connecting to:` lines
+
+**mDNS Double-Watch Crash (Android):**
+
+- Only `useMdnsScan` may call `ZeroConf.watch()`. Never add ZeroConf calls elsewhere.
+- If crash returns: check logcat for `E ZeroConf: Discovery failed ... Error: 0` appearing twice for same type
+
 ## Performance Considerations
 
 - **BLE Scanning:** Low latency mode provides fastest updates but uses more battery
@@ -516,9 +601,9 @@ For questions or issues, refer to the project repository documentation or contac
 
 ---
 
-**Last Updated:** 2026-05-21
-**Version:** 1.12.4
-**Latest Changes:** Removed the Ionic UI/runtime layer while keeping Capacitor; migrated routing and app shell to standard Vue Router; replaced Ionic components with native Vue/Tailwind UI; moved navigation to a sticky top tab bar with swipe support on mobile; moved BLE sensor assignment into Settings as a standalone Sensors accordion section with header-level Clear/Restart controls.
+**Last Updated:** 2026-05-30
+**Version:** 1.12.5
+**Latest Changes:** Added MQTT auto-connect (`autoConnect` field on `ServiceEntry`, retry loop in `startup.ts`, Tab1 status badge); refactored mDNS scanning into singleton `useMdnsScan` composable (single continuous scan, sole ZeroConf owner, fixes Android double-watch crash); added Topics accordion in Settings (per-topic message counts, compact publish); added MQTT keepalive=15s for faster dead-connection detection.
 
 # CLAUDE.md
 
