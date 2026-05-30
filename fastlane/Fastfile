@@ -10,6 +10,21 @@ platform(:ios) do
     match(type: "appstore")
   end
 
+  desc("Nuke and renew expired certificates using API key (no Apple ID password needed)")
+  lane(:renew_certs) do
+    app_store_connect_api_key(
+      key_id: ENV["FASTLANE_KEY_ID"] || raise("Missing FASTLANE_KEY_ID"),
+      issuer_id: ENV["FASTLANE_ISSUER_ID"] || raise("Missing FASTLANE_ISSUER_ID"),
+      key_filepath: ENV["FASTLANE_KEY_PATH"] || raise("Missing FASTLANE_KEY_PATH"),
+      duration: 1200,
+      in_house: false
+    )
+    match_nuke(type: "development")
+    match_nuke(type: "appstore")
+    match(type: "development")
+    match(type: "appstore")
+  end
+
   desc("Build and deploy to TestFlight")
   lane(:beta) do
 

@@ -42,6 +42,14 @@ Bump versions for both platforms
 
 Sync certificates and profiles
 
+### ios renew_certs
+
+```sh
+[bundle exec] fastlane ios renew_certs
+```
+
+Nuke and renew expired certificates using API key (no Apple ID password needed)
+
 ### ios beta
 
 ```sh
