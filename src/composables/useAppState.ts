@@ -1,8 +1,12 @@
 // src/composables/useAppState.ts
+import { ref } from "vue";
 import { usePersistedRef } from "./usePersistedRef";
 import { usePersistedRefWithTimestamp } from "./usePersistedRefWithTimestamp";
 import { Capacitor } from "@capacitor/core";
 import type { UnitType } from "@/types/units";
+
+/** True while any ZeroConf.watch() is active — guards against double-watch crashes */
+export const mdnsScanActive = ref(false);
 
 /** How the broker was added to the list */
 export type BrokerSource = "preconfigured" | "discovered" | "manual";

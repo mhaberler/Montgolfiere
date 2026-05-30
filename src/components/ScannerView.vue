@@ -487,6 +487,7 @@ import {
 } from "@mhaberler/capacitor-zeroconf-nsd";
 import {
   useAppState,
+  mdnsScanActive,
   type ServiceEntry,
   type BrokerSource,
 } from "../composables/useAppState";
@@ -829,6 +830,7 @@ export default defineComponent({
       if (!isCapacitorApp.value) return;
       try {
         isScanning.value = true;
+        mdnsScanActive.value = true;
         scanError.value = "";
         scanTimeRemaining.value = 3;
 
@@ -847,6 +849,7 @@ export default defineComponent({
         const msg = err instanceof Error ? err.message : "Unknown error";
         scanError.value = `Failed to start scan: ${msg}`;
         isScanning.value = false;
+        mdnsScanActive.value = false;
         scanTimeRemaining.value = 0;
       }
     };
@@ -863,6 +866,7 @@ export default defineComponent({
           ZeroConf.unwatch({ type: serviceType, domain: "local." });
         }
         isScanning.value = false;
+        mdnsScanActive.value = false;
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Unknown error";
         scanError.value = `Failed to stop scan: ${msg}`;

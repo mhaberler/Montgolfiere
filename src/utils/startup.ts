@@ -5,14 +5,29 @@ import { Device } from "@capacitor/device";
 import { ref, watch } from "vue";
 import { startLocation, stopLocation } from "../sensors/location";
 import { startBarometer, stopBarometer } from "../sensors/barometer";
-import { showDebugInfo } from "../composables/useAppState";
+import {
+  showDebugInfo,
+  preferredBroker,
+  mdnsScanActive,
+} from "../composables/useAppState";
+import type { ServiceEntry } from "../composables/useAppState";
 import { useAppLifecycle } from "../composables/useAppLifecycle";
 import {
   initializeAndStartBLEScan,
   startBLEScan,
   cleanupBLE,
 } from "../sensors/blesensors";
-import { startNetworkObserver, stopNetworkObserver } from "../sensors/network";
+import {
+  startNetworkObserver,
+  stopNetworkObserver,
+  networkStatus,
+} from "../sensors/network";
+import { useMqttConnection } from "../composables/useMqttConnection";
+import {
+  ZeroConf,
+  type ZeroConfAction,
+  type ZeroConfService,
+} from "@mhaberler/capacitor-zeroconf-nsd";
 import { startTimer, stopTimer } from "./ticker";
 import { Share } from "@capacitor/share";
 import QRCode from "qrcode";
@@ -53,6 +68,73 @@ const isKeptAwake = async () => {
   return result.isKeptAwake;
 };
 
+// --- Auto-connect logic ---
+
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+const clearRetry = () => {
+  if (retryTimer) {
+    clearTimeout(retryTimer);
+    retryTimer = null;
+  }
+};
+
+const mdnsScan = (broker: ServiceEntry, durationMs: number): Promise<void> => {
+  return new Promise((resolve) => {
+    if (isWeb || mdnsScanActive.value) {
+      resolve();
+      return;
+    }
+    mdnsScanActive.value = true;
+    ZeroConf.watch(
+      { type: broker.type, domain: "local." },
+      (arg: { action: ZeroConfAction; service: ZeroConfService } | null) => {
+        if (!arg) return;
+        const { action, service } = arg;
+        if (
+          action === "resolved" &&
+          service.name === broker.name &&
+          service.port
+        ) {
+          const ip =
+            service.ipv4Addresses?.[0] || service.hostname || broker.host;
+          preferredBroker.value = {
+            ...preferredBroker.value!,
+            host: ip,
+            port: service.port,
+            resolved: true,
+          };
+        }
+      },
+    ).catch(() => {});
+    setTimeout(async () => {
+      try {
+        await ZeroConf.unwatch({ type: broker.type, domain: "local." });
+      } catch (_) {
+        /* ignore */
+      }
+      mdnsScanActive.value = false;
+      resolve();
+    }, durationMs);
+  });
+};
+
+const connectAutomatic = async () => {
+  const { connect, autoConnectActive } = useMqttConnection();
+  const broker = preferredBroker.value;
+  if (!broker?.autoConnect) {
+    autoConnectActive.value = false;
+    clearRetry();
+    return;
+  }
+  autoConnectActive.value = true;
+  clearRetry();
+  if (broker.discovered) {
+    await mdnsScan(broker, 3000);
+  }
+  connect(preferredBroker.value!);
+};
+
 const cameToForeground = async () => {
   console.log("App is in the foreground");
   startBarometer();
@@ -78,6 +160,7 @@ const cameToForeground = async () => {
       await KeepAwake.keepAwake();
     }
   }
+  useMqttConnection().resume();
 };
 
 const wentToBackground = async () => {
@@ -100,6 +183,8 @@ const wentToBackground = async () => {
       await KeepAwake.allowSleep();
     }
   }
+  useMqttConnection().pause();
+  clearRetry();
 };
 
 const shareData = async () => {
@@ -171,6 +256,43 @@ const initializeApp = async () => {
     } else {
       console.log("App is in the background");
       wentToBackground();
+    }
+  });
+
+  // Auto-connect watchers
+  const { connectionState, autoConnectActive } = useMqttConnection();
+
+  watch(
+    preferredBroker,
+    (broker) => {
+      if (broker?.autoConnect) connectAutomatic();
+      else {
+        clearRetry();
+        autoConnectActive.value = false;
+      }
+    },
+    { immediate: true },
+  );
+
+  watch(connectionState, (state) => {
+    if (!preferredBroker.value?.autoConnect) return;
+    if (state === "disconnected") {
+      autoConnectActive.value = true;
+      clearRetry();
+      retryTimer = setTimeout(() => connectAutomatic(), 15000);
+    } else if (state === "connected") {
+      clearRetry();
+    }
+  });
+
+  watch(networkStatus, (status, prev) => {
+    if (
+      status?.connected &&
+      !prev?.connected &&
+      preferredBroker.value?.autoConnect
+    ) {
+      useMqttConnection().disconnect();
+      connectAutomatic();
     }
   });
 

@@ -3,7 +3,7 @@ import { ref, computed, type Ref } from "vue";
 import mqtt, { type MqttClient } from "mqtt";
 import type { ServiceEntry } from "./useAppState";
 
-export type ConnectionState = "disconnected" | "trying" | "connected";
+export type ConnectionState = "disconnected" | "trying" | "connected" | "retrying";
 
 export type MessageItem = {
   id: string;
@@ -54,6 +54,7 @@ function buildConnectUrl(broker: ServiceEntry): string {
 
 // --- Singleton state (survives across view navigations) ---
 const connectionState = ref<ConnectionState>("disconnected");
+const autoConnectActive = ref<boolean>(false);
 const error = ref<string | null>(null);
 const messages = ref<MessageItem[]>([]);
 const connectedBroker = ref<ServiceEntry | null>(null);
@@ -125,6 +126,7 @@ function connect(broker: ServiceEntry) {
       clean: true,
       connectTimeout: 10000,
       reconnectPeriod: 0,
+      keepalive: 15,
     };
 
     if (broker.username) options.username = broker.username;
@@ -326,6 +328,7 @@ export function useMqttConnection() {
   return {
     // State
     connectionState: connectionState as Ref<ConnectionState>,
+    autoConnectActive,
     error,
     messages,
     connectedBroker,

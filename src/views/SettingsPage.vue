@@ -351,6 +351,60 @@
             </div>
           </section>
 
+          <!-- Topics accordion -->
+          <section
+            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+            :class="{ 'opacity-50 pointer-events-none': !mqttIsConnected }"
+          >
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+              @click="mqttIsConnected && toggleAccordion('topics')"
+            >
+              <span class="flex items-center gap-2">
+                Topics
+                <span v-if="!mqttIsConnected" class="text-[10px] font-normal text-gray-400">(not connected)</span>
+              </span>
+              <span class="text-gray-400">{{ openAccordion === "topics" ? "−" : "+" }}</span>
+            </button>
+            <div v-if="openAccordion === 'topics'" class="border-t border-gray-100 p-3 space-y-3">
+              <!-- Topic list -->
+              <div v-if="topicCounts.length > 0" class="space-y-1">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-1">Received topics</div>
+                <div
+                  v-for="t in topicCounts"
+                  :key="t.topic"
+                  class="flex items-center justify-between py-1 px-2 bg-gray-50 rounded text-xs font-mono"
+                >
+                  <span class="truncate text-gray-700">{{ t.topic }}</span>
+                  <span class="ml-2 shrink-0 text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded">{{ t.count }}</span>
+                </div>
+              </div>
+              <div v-else class="text-xs text-gray-400 px-1">No messages yet</div>
+
+              <!-- Compact publish -->
+              <div class="bg-white rounded-lg border border-gray-100 p-2">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-2">Publish</div>
+                <div class="flex gap-1.5 items-center">
+                  <input
+                    v-model="publishTopic"
+                    placeholder="topic"
+                    class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none font-mono"
+                  />
+                  <input
+                    v-model="publishPayload"
+                    placeholder="payload"
+                    class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none font-mono"
+                  />
+                  <button
+                    @click="mqttPublish"
+                    class="btn text-xs py-1.5 px-3 btn-success shrink-0"
+                  >→</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section
             class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
           >
@@ -458,6 +512,7 @@
 <script setup lang="ts">
 import { watch, computed, ref, onMounted } from "vue";
 import AppPageContent from "@/components/layout/AppPageContent.vue";
+import { useMqttConnection } from "@/composables/useMqttConnection";
 import { Preferences } from "@capacitor/preferences";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
@@ -516,23 +571,23 @@ interface MqttInitOptions {
   onStatusChange: (status: string) => void;
 }
 
-// const checkMqttConnection = async (): Promise<void> => {
-//   console.log(`------------fooo`);
-//   await initializeMqtt({
-//     brokerUrl: "wss://test.mosquitto.org:8081/mqtt",
-//     // mqttBrokerUrl.value,
-//     topics: ["location/updates", "barometer/readings", "ble/advertisements"],
-//     onMessageCallback: (topic: string, message: string | Buffer): void => {
-//       const data: unknown = JSON.parse(message.toString());
-//       // Process location, barometer, or BLE data here
-//       console.log(`Processed data from ${topic}:`, data);
-//     },
-//     onStatusChange: (status: string): void => {
-//       console.log(`MQTT status updated: ${status}`);
-//       // Update UI or app state based on status, e.g., show connection indicator
-//     },
-//   } as MqttInitOptions);
-// };
+const checkMqttConnection = async (): Promise<void> => {
+  console.log(`------------fooo`);
+  // await initializeMqtt({
+  //   brokerUrl: "wss://test.mosquitto.org:8081/mqtt",
+  //   // mqttBrokerUrl.value,
+  //   topics: ["location/updates", "barometer/readings", "ble/advertisements"],
+  //   onMessageCallback: (topic: string, message: string | Buffer): void => {
+  //     const data: unknown = JSON.parse(message.toString());
+  //     // Process location, barometer, or BLE data here
+  //     console.log(`Processed data from ${topic}:`, data);
+  //   },
+  //   onStatusChange: (status: string): void => {
+  //     console.log(`MQTT status updated: ${status}`);
+  //     // Update UI or app state based on status, e.g., show connection indicator
+  //   },
+  // } as MqttInitOptions);
+};
 
 // const toggleDebugInfo = () => {
 //   showDebugInfo.value = !showDebugInfo.value;
@@ -567,6 +622,33 @@ const updateDemUrl = () => {
 
 //   return options;
 // });
+
+// MQTT Topics section
+const { isConnected, messages, publish: mqttPublishFn } = useMqttConnection();
+const mqttIsConnected = isConnected;
+
+const topicCounts = computed(() => {
+  const counts = new Map<string, number>();
+  for (const m of messages.value) {
+    if (m.topic === "system") continue;
+    counts.set(m.topic, (counts.get(m.topic) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([topic, count]) => ({ topic, count }));
+});
+
+const publishTopic = ref("test/topic");
+const publishPayload = ref("");
+
+const mqttPublish = async () => {
+  if (!publishTopic.value || !mqttIsConnected.value) return;
+  try {
+    await mqttPublishFn(publishTopic.value, publishPayload.value);
+  } catch (_) {
+    // error shown in composable
+  }
+};
 
 // QNH update state
 const loadingQnh = ref(false);

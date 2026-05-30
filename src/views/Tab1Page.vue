@@ -2,6 +2,11 @@
   <div class="flex min-h-0 flex-1 flex-col bg-gray-50">
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
+        <!-- MQTT auto-connect status badge -->
+        <div v-if="mqttBadgeVisible" class="flex items-center gap-1.5 px-1 pb-1">
+          <span :class="['w-2 h-2 rounded-full shrink-0', mqttDotClass]"></span>
+          <span class="text-[10px] font-semibold text-gray-600">{{ mqttBadgeText }}</span>
+        </div>
         <div class="bg-white shadow-xl rounded-xl">
           <div class="grid grid-cols-4 gap-1">
             <ValueCard
@@ -249,8 +254,34 @@ import { BCMT, ECET } from "../process/sun";
 import {
   elevationAtTakeoff,
   altitudeAtTakeoff,
+  preferredBroker,
 } from "@/composables/useAppState";
+import { useMqttConnection } from "@/composables/useMqttConnection";
+import { computed } from "vue";
 import ValueCard from "../components/ValueCard.vue";
+
+const { connectionState, autoConnectActive } = useMqttConnection();
+
+const mqttBadgeVisible = computed(() => {
+  if (!preferredBroker.value?.autoConnect) return false;
+  return (
+    connectionState.value === "connected" ||
+    connectionState.value === "trying" ||
+    (connectionState.value === "disconnected" && autoConnectActive.value)
+  );
+});
+
+const mqttDotClass = computed(() =>
+  connectionState.value === "connected"
+    ? "bg-success shadow-[0_0_4px_rgba(76,175,80,0.6)]"
+    : "bg-warning animate-pulse",
+);
+
+const mqttBadgeText = computed(() => {
+  if (connectionState.value === "connected") return "MQTT";
+  if (connectionState.value === "trying") return "MQTT…";
+  return "MQTT retry";
+});
 import LinearScale from "../components/LinearScale.vue";
 const confidenceColor = ref("#0de732");
 const maxElevationAtTakeoffAge = 3600 * 4; // 4 hours
