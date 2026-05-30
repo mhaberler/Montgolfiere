@@ -624,19 +624,14 @@ const updateDemUrl = () => {
 // });
 
 // MQTT Topics section
-const { isConnected, messages, publish: mqttPublishFn } = useMqttConnection();
+const { isConnected, topicCounts: rawTopicCounts, publish: mqttPublishFn } = useMqttConnection();
 const mqttIsConnected = isConnected;
 
-const topicCounts = computed(() => {
-  const counts = new Map<string, number>();
-  for (const m of messages.value) {
-    if (m.topic === "system") continue;
-    counts.set(m.topic, (counts.get(m.topic) ?? 0) + 1);
-  }
-  return Array.from(counts.entries())
+const topicCounts = computed(() =>
+  Array.from(rawTopicCounts.value.entries())
     .sort((a, b) => b[1] - a[1])
-    .map(([topic, count]) => ({ topic, count }));
-});
+    .map(([topic, count]) => ({ topic, count })),
+);
 
 const publishTopic = ref("test/topic");
 const publishPayload = ref("");

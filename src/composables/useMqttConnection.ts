@@ -64,6 +64,8 @@ let suspendedBroker: ServiceEntry | null = null;
 
 const MESSAGE_CAP = 10;
 
+const topicCounts = ref<Map<string, number>>(new Map());
+
 function addMessage(topic: string, payload: string) {
   const timestamp = new Date().toLocaleTimeString();
   const newMsg: MessageItem = {
@@ -73,10 +75,16 @@ function addMessage(topic: string, payload: string) {
     timestamp,
   };
   messages.value = [newMsg, ...messages.value].slice(0, MESSAGE_CAP);
+  if (topic !== "system") {
+    const counts = new Map(topicCounts.value);
+    counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    topicCounts.value = counts;
+  }
 }
 
 function clearMessages() {
   messages.value = [];
+  topicCounts.value = new Map();
 }
 
 function cleanup() {
@@ -331,6 +339,7 @@ export function useMqttConnection() {
     autoConnectActive,
     error,
     messages,
+    topicCounts,
     connectedBroker,
     brokerUrl,
     isConnected,
