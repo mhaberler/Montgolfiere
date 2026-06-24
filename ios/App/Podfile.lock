@@ -1,5 +1,5 @@
 PODS:
-  - Capacitor (8.3.4):
+  - Capacitor (8.4.1):
     - CapacitorCordova
   - CapacitorActionSheet (8.1.1):
     - Capacitor
@@ -19,13 +19,13 @@ PODS:
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
-  - CapacitorCommunityBluetoothLe (8.1.3):
+  - CapacitorCommunityBluetoothLe (8.2.0):
     - Capacitor
   - CapacitorCommunityCameraPreview (8.0.1):
     - Capacitor
   - CapacitorCommunityKeepAwake (8.0.1):
     - Capacitor
-  - CapacitorCordova (8.3.4)
+  - CapacitorCordova (8.4.1)
   - CapacitorDevice (8.0.2):
     - Capacitor
   - CapacitorDialog (8.0.1):
@@ -38,7 +38,7 @@ PODS:
   - CapacitorInappbrowser (4.0.0):
     - Capacitor
     - OSInAppBrowserLib (~> 2.3.2)
-  - CapacitorKeyboard (8.0.3):
+  - CapacitorKeyboard (8.0.5):
     - Capacitor
   - CapacitorLocalNotifications (8.2.0):
     - Capacitor
@@ -63,15 +63,15 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorBackgroundTask (8.0.2):
     - Capacitor
-  - CapawesomeCapacitorFilePicker (8.0.2):
+  - CapawesomeCapacitorFilePicker (8.0.3):
     - Capacitor
   - CapawesomeCapacitorScreenOrientation (8.0.1):
     - Capacitor
   - CapawesomeCapacitorScreenshot (8.0.1):
     - Capacitor
-  - CapgoCapacitorShake (8.0.30):
+  - CapgoCapacitorShake (8.0.36):
     - Capacitor
-  - CapgoCapacitorUploader (8.2.1):
+  - CapgoCapacitorUploader (8.2.12):
     - Capacitor
   - CapgoNativeAudio (8.4.2):
     - Capacitor
@@ -277,7 +277,7 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@mhaberler/capacitor-zeroconf-nsd"
 
 SPEC CHECKSUMS:
-  Capacitor: d13cad5fa09155679672808cc4ca9fbc2997e1b4
+  Capacitor: 35242afe195b1e53c58ca1b827d1b444c5e6602b
   CapacitorActionSheet: c3394c32eb29990e73e9c6c5677e3b31eb46ad3f
   CapacitorApp: 449ffe26375e96f8aaaee625ac6e01e5c57c8650
   CapacitorAppLauncher: 43949ccc5aaa5139a1ebe27a98c0a4d76c883fa7
@@ -286,16 +286,16 @@ SPEC CHECKSUMS:
   CapacitorCamera: 8f6acf83664118321111e76acef86390211ccb08
   CapacitorClipboard: c75fdaa6e622111119f35e7914ecfc67b05efecb
   CapacitorCommunityBarcodeScanner: 100051f49caad62966f331cbdf6844a3e51db8e9
-  CapacitorCommunityBluetoothLe: ab4b04474c7c13315cd591dee0995f1adce73c98
+  CapacitorCommunityBluetoothLe: 8c17283f1837af41fc739110daab518c694674c8
   CapacitorCommunityCameraPreview: 38b73c0135eae2c8bc7652745b3820b035737313
   CapacitorCommunityKeepAwake: d41922812644562e94a79acaf7f41e6d9413af8c
-  CapacitorCordova: c07921bdcfec6f691bae22274446b4d606ebf6a4
+  CapacitorCordova: eebe6bcf807b1b06f3f48237650f96bbcd0eef09
   CapacitorDevice: 14cba6f88d1c3074cbf825fea977c8c526453ff8
   CapacitorDialog: 854c5dac405081cae697c177ca43bcaa95ae67bf
   CapacitorGeolocation: b36f6287bfc9f2eefa04dc900496f2c8ae666136
   CapacitorHaptics: 296f771ecd89c7a1bd92a7b6826a7d268e2e70f5
   CapacitorInappbrowser: 9e37b866ab024807900024c38a7d6f3eeed514b0
-  CapacitorKeyboard: 31c8285d92c9d1410071d52449f16d2c6673b6f4
+  CapacitorKeyboard: b6b0744890cdb1d9a96e2cafcc9253fdcc55de3b
   CapacitorLocalNotifications: 2615aa008f608b95d3921a778ee1988abf1e6148
   CapacitorMlkitBarcodeScanning: 31c6af9f39873ff69e16ed5b39ebe2e1915f16fe
   CapacitorNetwork: 8812ce60d11fb63d8f2e4ba51a49b2e59892ebe2
@@ -307,11 +307,11 @@ SPEC CHECKSUMS:
   CapacitorTextZoom: b3c80b09abef831245bc3434b1c03aa898ad4762
   CapacitorToast: 408036fbd702120d3adde3980b740f3c0fb60c9e
   CapawesomeCapacitorBackgroundTask: ca454a603fbe27d624c928d0c5e7477a920e468d
-  CapawesomeCapacitorFilePicker: eb29fb54c59614fede51e0e0fe25070dda9d024c
+  CapawesomeCapacitorFilePicker: 1b4fa0c4983250a55f745acaa9f945a96f60abd5
   CapawesomeCapacitorScreenOrientation: 81a4e51518bc6d6d1971ebe4f45892e29115c79e
   CapawesomeCapacitorScreenshot: 12d23f0773903de4e5b0b3fdebabef1d3813f826
-  CapgoCapacitorShake: cf6a24e86a5d98d425b4b1664717d202cd7152d3
-  CapgoCapacitorUploader: 80b48c8ff160853e28680e66d156b821c0397472
+  CapgoCapacitorShake: 1c621825bcdc84abc69b6b57dfd32231d7bb7c8f
+  CapgoCapacitorUploader: f225b60a1d1005aad6bd004cdf231e9caab4a75c
   CapgoNativeAudio: cfc29c10c7a7e6b52ce1077398a694eb8c3101b8
   CapgoNativegeocoder: 1fc15ca7f050bb9de6fa63f8f920d090b8016b8d
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
