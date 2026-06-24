@@ -1,4 +1,4 @@
-import { getTimes, GetTimesResult } from "suncalc";
+import { getTimes } from "suncalc";
 import { ref, watch } from "vue";
 import { location, locationAvailable } from "../sensors/location";
 import { elevation, elevationAvailable } from "../sensors/location";
@@ -6,8 +6,9 @@ import { elevation, elevationAvailable } from "../sensors/location";
 const BCMT = ref<string | null>(null);
 const ECET = ref<string | null>(null);
 
-// Format times as HH:mm with leading zeros
-const formatTime = (date: Date): string => {
+// Format times as HH:mm with leading zeros; null when event doesn't occur (e.g. polar latitudes)
+const formatTime = (date: Date | null): string | null => {
+  if (date == null) return null;
   const hours = date.getUTCHours().toString();
   const minutes = date.getUTCMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
