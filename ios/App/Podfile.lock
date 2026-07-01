@@ -106,7 +106,7 @@ PODS:
     - Capacitor
   - MhaberlerCapacitorBarometer (2.0.1):
     - Capacitor
-  - MhaberlerCapacitorZeroconfNsd (5.0.4):
+  - MhaberlerCapacitorZeroconfNsd (5.0.5):
     - Capacitor
   - MLImage (1.0.0-beta7)
   - MLKitBarcodeScanning (7.0.0):
@@ -323,7 +323,7 @@ SPEC CHECKSUMS:
   IONGeolocationLib: 6a7b6f76063fb1b01cfb14fae7d0f526e3c9b271
   LeadscoutHttp: 3b639e66d5e816630edb9fdf2acb7faff0ee7cb6
   MhaberlerCapacitorBarometer: 1b71b4c71d6c6683a3438899007927acc2559a58
-  MhaberlerCapacitorZeroconfNsd: 89f5b79b8b83bd9277aa877bb9ffed9880cdd1af
+  MhaberlerCapacitorZeroconfNsd: 9e9d4f7a3a9f6c142696abdb2778df1d2ca96e68
   MLImage: 2ab9c968e75f57911c16f4c9d9e8a8e9604a86a1
   MLKitBarcodeScanning: 72c6437f13a900833b400136be53a8a5d86f42fa
   MLKitCommon: 26b779f072a182c1603d4c88a101c350cac837b1

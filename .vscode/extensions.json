@@ -1,3 +1,6 @@
 {
-  "recommendations": ["Webnative.webnative", "ms-python.vscode-python-envs"]
+  "recommendations": [
+    "Webnative.webnative",
+    "ms-python.vscode-python-envs"
+  ]
 }
