@@ -16,7 +16,8 @@ import {
   type AirportItem,
 } from "@/airspace/markerCallback";
 
-export const AIRPORT_FETCH_RADIUS_M = 300_000;
+// OpenAIP rejects dist > 50_000 with HTTP 400
+export const AIRPORT_FETCH_RADIUS_M = 50_000;
 export const AIRSPACE_REFETCH_THRESHOLD_M = 10_000;
 export const AIRPORT_REFETCH_THRESHOLD_M = AIRPORT_FETCH_RADIUS_M / 2;
 const AIRSPACE_DIST_METERS = 10;
