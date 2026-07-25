@@ -101,3 +101,8 @@ android/app/src/main/res/values/strings.xml
 .claude
 .cc-history
 
+
+# vue-tsc build output (vite.config.ts is the source)
+vite.config.js
+vite.config.d.ts
+*.tsbuildinfo

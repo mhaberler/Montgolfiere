@@ -1,6 +1,6 @@
 import vue from "@vitejs/plugin-vue";
 import path from "path";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import devtoolsJson from "vite-plugin-devtools-json";
 import { qrcode } from "vite-plugin-qrcode";
 import { execSync } from "child_process";
@@ -30,9 +30,6 @@ try {
 const buildDate = execSync("date -u +%Y-%m-%dT%H:%M:%SZ").toString().trim();
 
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  const env = loadEnv(mode, process.cwd(), "");
-
   return {
     plugins: [
       vue(),

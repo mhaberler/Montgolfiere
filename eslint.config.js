@@ -47,6 +47,9 @@ export default [
       ".git",
       ".idea",
       "python/**",
+      // vue-tsc build output; vite.config.ts is the source
+      "vite.config.js",
+      "vite.config.d.ts",
     ],
   },
   // Test files (must come before general TypeScript pattern)
@@ -88,7 +91,10 @@ export default [
       ...js.configs.recommended.rules,
       "no-console": isProduction ? "warn" : "off",
       "no-debugger": isProduction ? "warn" : "off",
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", caughtErrors: "none" },
+      ],
     },
   },
   // Vue files
@@ -120,6 +126,7 @@ export default [
       "@typescript-eslint/no-explicit-any": "off",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      "no-useless-assignment": "off",
     },
   },
   // TypeScript definition files - relaxed rules
