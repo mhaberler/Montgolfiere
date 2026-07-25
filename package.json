@@ -1,7 +1,7 @@
 {
   "name": "Montgolfiere",
   "private": true,
-  "version": "1.12.6",
+  "version": "1.12.7",
   "type": "module",
   "description": "A Capacitor Vue project",
   "config": {
