@@ -197,7 +197,6 @@
 				"${BUILT_PRODUCTS_DIR}/CapacitorActionSheet/CapacitorActionSheet.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorAppLauncher/CapacitorAppLauncher.framework",
-				"${BUILT_PRODUCTS_DIR}/CapacitorBarcodeScanner/CapacitorBarcodeScanner.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorBrowser/CapacitorBrowser.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorCamera/CapacitorCamera.framework",
 				"${BUILT_PRODUCTS_DIR}/CapacitorClipboard/CapacitorClipboard.framework",
@@ -240,7 +239,6 @@
 				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/IONGeolocationLib/IONGeolocationLib.framework/IONGeolocationLib",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OSBarcodeLib/OSBarcodeLib.framework/OSBarcodeLib",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OSInAppBrowserLib/OSInAppBrowserLib.framework/OSInAppBrowserLib",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -249,7 +247,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorActionSheet.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorApp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorAppLauncher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorBarcodeScanner.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorBrowser.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorCamera.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CapacitorClipboard.framework",
@@ -292,7 +289,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IONGeolocationLib.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OSBarcodeLib.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OSInAppBrowserLib.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
