@@ -5,6 +5,9 @@ export type UnitType =
   | "Tank1"
   | "Tank2"
   | "Tank3"
+  | "Tank4"
+  | "Tank5"
+  | "Tank6"
   | "Box"
   | "Vario"
   | "Switch";
@@ -51,6 +54,27 @@ export const UNIT_CONFIGS: Record<UnitType, UnitConfig> = {
     type: "Tank3",
     name: "Tank 3",
     description: "Propane tank 3",
+    iconName: "flame-outline",
+  },
+  Tank4: {
+    id: "tank4",
+    type: "Tank4",
+    name: "Tank 4",
+    description: "Propane tank 4",
+    iconName: "flame-outline",
+  },
+  Tank5: {
+    id: "tank5",
+    type: "Tank5",
+    name: "Tank 5",
+    description: "Propane tank 5",
+    iconName: "flame-outline",
+  },
+  Tank6: {
+    id: "tank6",
+    type: "Tank6",
+    name: "Tank 6",
+    description: "Propane tank 6",
     iconName: "flame-outline",
   },
   Box: {

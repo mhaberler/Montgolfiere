@@ -40,6 +40,9 @@ export const unitTypes: UnitType[] = [
   "Tank1",
   "Tank2",
   "Tank3",
+  "Tank4",
+  "Tank5",
+  "Tank6",
   "Box",
   "Vario",
   "Switch",
@@ -81,6 +84,11 @@ const SENSOR_STATUS_THRESHOLDS = {
     warning: 20 * 1000,
     offline: 60 * 1000,
   },
+  "Rotarex-ELG": {
+    online: 60 * 1000, // periodic frames are infrequent
+    warning: 120 * 1000,
+    offline: 300 * 1000,
+  },
   default: {
     online: 30 * 1000, // Default 30 seconds
     warning: 60 * 1000, // Default 60 seconds
@@ -88,41 +96,27 @@ const SENSOR_STATUS_THRESHOLDS = {
   },
 };
 
+// Shared by Tank1..Tank6
+const TANK_METRIC_CONFIG: MetricConfig = {
+  primary: ["percent", "level", "bar"],
+  secondary: ["voltage", "temperature", "status", "serial"],
+  hidden: [
+    "rssi",
+    "accelerationX",
+    "accelerationY",
+    "accelerationZ",
+    "humidity",
+  ],
+};
+
 // Unit-specific metric configuration
 const UNIT_METRIC_CONFIGS: Record<UnitType, MetricConfig> = {
-  Tank1: {
-    primary: ["percent", "level", "bar"],
-    secondary: ["pressure", "voltage"],
-    hidden: [
-      "rssi",
-      "accelerationX",
-      "accelerationY",
-      "accelerationZ",
-      "humidity",
-    ],
-  },
-  Tank2: {
-    primary: ["percent", "level", "bar"],
-    secondary: ["pressure", "voltage"],
-    hidden: [
-      "rssi",
-      "accelerationX",
-      "accelerationY",
-      "accelerationZ",
-      "humidity",
-    ],
-  },
-  Tank3: {
-    primary: ["percent", "level", "bar"],
-    secondary: ["batpct", "qualityStars"],
-    hidden: [
-      "rssi",
-      "accelerationX",
-      "accelerationY",
-      "accelerationZ",
-      "humidity",
-    ],
-  },
+  Tank1: TANK_METRIC_CONFIG,
+  Tank2: TANK_METRIC_CONFIG,
+  Tank3: TANK_METRIC_CONFIG,
+  Tank4: TANK_METRIC_CONFIG,
+  Tank5: TANK_METRIC_CONFIG,
+  Tank6: TANK_METRIC_CONFIG,
   Envelope: {
     primary: ["temp", "hum", "batpct"],
     secondary: [],
@@ -194,6 +188,9 @@ const unitSensors = ref<Record<UnitType, UnitSensorData[]>>({
   Tank1: [],
   Tank2: [],
   Tank3: [],
+  Tank4: [],
+  Tank5: [],
+  Tank6: [],
   Box: [],
   Vario: [],
   Switch: [],

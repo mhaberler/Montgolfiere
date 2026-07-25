@@ -39,19 +39,31 @@
                 v-for="(metric, idx) in unit.metrics"
                 :key="metric.name"
                 class="inline-flex items-center gap-0.5 whitespace-nowrap"
+                :title="metricTitle(metric)"
                 :class="{
+                  'text-red-600 font-bold': metric.isFault,
+                  'text-amber-600 font-semibold':
+                    (!metric.isFault && metric.isStale) ||
+                    (!metric.isFault &&
+                      !metric.isStale &&
+                      getMetricAgeClass(metric.lastUpdate) === 'age-stale'),
                   'text-emerald-600 font-semibold':
+                    !metric.isFault &&
+                    !metric.isStale &&
                     getMetricAgeClass(metric.lastUpdate) === 'age-fresh',
                   'text-gray-800 font-semibold':
+                    !metric.isFault &&
+                    !metric.isStale &&
                     getMetricAgeClass(metric.lastUpdate) === 'age-recent',
-                  'text-amber-600 font-semibold':
-                    getMetricAgeClass(metric.lastUpdate) === 'age-stale',
                   'text-red-600 font-semibold opacity-70':
+                    !metric.isFault &&
+                    !metric.isStale &&
                     getMetricAgeClass(metric.lastUpdate) === 'age-old',
                 }"
               >
                 <span class="text-gray-500 text-xs">{{ metric.name }}:</span>
                 <span>{{ metric.formattedValue }}</span>
+                <span v-if="metric.isFault || metric.isStale">⚠</span>
                 <span
                   v-if="idx < unit.metrics.length - 1"
                   class="text-gray-300 mx-0.5"
@@ -77,6 +89,9 @@ import type { UnitType } from "@/types/units";
 
 const { getUnitStatus, getGroupedSensors, getFilteredMetrics } =
   useDeviceMapping();
+
+// No update within 3 minutes: keep the last value but flag it as stale
+const STALE_WARNING_MS = 3 * 60 * 1000;
 
 // Reactive timestamp for age calculations
 const reactiveTime = ref(Date.now());
@@ -106,6 +121,9 @@ const unitConfigs: UnitConfig[] = [
   { type: "Tank1", label: "Tank1", icon: "tank" },
   { type: "Tank2", label: "Tank2", icon: "tank" },
   { type: "Tank3", label: "Tank3", icon: "tank" },
+  { type: "Tank4", label: "Tank4", icon: "tank" },
+  { type: "Tank5", label: "Tank5", icon: "tank" },
+  { type: "Tank6", label: "Tank6", icon: "tank" },
   { type: "Box", label: "Box", icon: "box" },
   { type: "Vario", label: "Vario", icon: "vario" },
   { type: "Switch", label: "Switch", icon: "switch" },
@@ -127,6 +145,9 @@ const formatMetricName = (metric: string): string => {
     current_A: "A",
     pressure: "Press",
     qualityStars: "Qual",
+    level_raw: "Raw",
+    status: "Status",
+    serial: "SN",
     "distance (m)_m": "m",
     "speed_m/s": "m/s",
     "acceleration_m/s²": "m/s²",
@@ -153,6 +174,7 @@ const formatMetricValue = (metric: string, value: any): string => {
     current_A: (v) => `${v.toFixed(2)}A`,
     pressure: (v) => `${v.toFixed(0)}`,
     qualityStars: (v) => `${v}★`,
+    level_raw: (v) => `${v.toFixed(0)}%`,
     "distance (m)_m": (v) => `${v.toFixed(1)}`,
     "speed_m/s": (v) => `${v.toFixed(1)}`,
     "acceleration_m/s²": (v) => `${v.toFixed(3)}`,
@@ -168,6 +190,18 @@ const formatMetricValue = (metric: string, value: any): string => {
     return formatter(value);
   }
   return String(value);
+};
+
+// Non-color cue for the fault/stale states
+const metricTitle = (metric: {
+  lastUpdate: number;
+  isFault: boolean;
+  isStale: boolean;
+}): string => {
+  const ageSec = Math.round((reactiveTime.value - metric.lastUpdate) / 1000);
+  if (metric.isFault) return `Sensor fault (updated ${ageSec}s ago)`;
+  if (metric.isStale) return `No update for ${ageSec}s`;
+  return `Updated ${ageSec}s ago`;
 };
 
 const getMetricAgeClass = (lastUpdate: number): string => {
@@ -188,11 +222,17 @@ const getUnitMetrics = (unitType: UnitType) => {
     name: string;
     formattedValue: string;
     lastUpdate: number;
+    isFault: boolean;
+    isStale: boolean;
   }> = [];
 
   // Collect primary metrics
   for (const metric of primaryMetrics) {
-    const readings: Array<{ value: any; lastUpdate: number }> = [];
+    const readings: Array<{
+      value: any;
+      lastUpdate: number;
+      isFault: boolean;
+    }> = [];
 
     Object.values(groupedSensors)
       .flat()
@@ -201,6 +241,8 @@ const getUnitMetrics = (unitType: UnitType) => {
           readings.push({
             value: sensor.decodedValue[metric],
             lastUpdate: sensor.lastUpdate,
+            // Fault comes from the same sensor that supplied this reading
+            isFault: !!sensor.decodedValue.status,
           });
         }
       });
@@ -214,6 +256,9 @@ const getUnitMetrics = (unitType: UnitType) => {
         name: formatMetricName(metric),
         formattedValue: formatMetricValue(metric, latestReading.value),
         lastUpdate: latestReading.lastUpdate,
+        isFault: latestReading.isFault,
+        isStale:
+          reactiveTime.value - latestReading.lastUpdate > STALE_WARNING_MS,
       });
     }
   }

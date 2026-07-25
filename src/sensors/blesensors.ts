@@ -6,7 +6,7 @@ import {
 } from "@capacitor-community/bluetooth-le";
 import { parseRuuvi } from "@/decoders/ruuvi";
 import { parseOtodata } from "@/decoders/otodata";
-import { parseMystery } from "@/decoders/mystery";
+import { parseRotarexElg } from "@/decoders/rotarex-elg";
 import { parseMopeka } from "@/decoders/mopeka";
 import { parseTPMS0100, parseTPMS00AC } from "@/decoders/tpms";
 import { decodeBTHome } from "@/decoders/bthome";
@@ -80,7 +80,7 @@ const stopWatchdog = () => {
 // Manufacturer IDs to filter for (common beacon manufacturers)
 const allowedManufacturerIds = {
   0x0499: { type: "Ruuvi", sortingPriority: 1 },
-  0xffff: { type: "Rotarex", sortingPriority: 2 },
+  0x1044: { type: "Rotarex-ELG", sortingPriority: 2 },
   0x03b1: { type: "Otodata", sortingPriority: 3 },
   0x00ac: { type: "TPMS1", sortingPriority: 4 },
   0x0100: { type: "TPMS4", sortingPriority: 5 },
@@ -396,8 +396,13 @@ const decodeSensor = (result: ScanResult): Record<string, any> => {
         case "Mopeka":
           decoded.value = parseMopeka(dataView);
           break;
-        case "Rotarex":
-          decoded.value = parseMystery(dataView);
+        case "Rotarex-ELG":
+          // Merge frames: temperature only arrives in the ADV_IND (button)
+          // frame, so keep it visible across later periodic frames.
+          decoded.value = {
+            ...previousValue,
+            ...parseRotarexElg(dataView),
+          };
           break;
         case "TPMS1":
           decoded.value = parseTPMS00AC(dataView);
