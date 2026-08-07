@@ -2,9 +2,6 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
 
-include ':capacitor-community-barcode-scanner'
-project(':capacitor-community-barcode-scanner').projectDir = new File('../node_modules/@capacitor-community/barcode-scanner/android')
-
 include ':capacitor-community-bluetooth-le'
 project(':capacitor-community-bluetooth-le').projectDir = new File('../node_modules/@capacitor-community/bluetooth-le/android')
 
@@ -100,9 +97,6 @@ project(':capgo-capacitor-uploader').projectDir = new File('../node_modules/@cap
 
 include ':capgo-native-audio'
 project(':capgo-native-audio').projectDir = new File('../node_modules/@capgo/native-audio/android')
-
-include ':capgo-nativegeocoder'
-project(':capgo-nativegeocoder').projectDir = new File('../node_modules/@capgo/nativegeocoder/android')
 
 include ':leadscout-http'
 project(':leadscout-http').projectDir = new File('../node_modules/@leadscout/http/android')
