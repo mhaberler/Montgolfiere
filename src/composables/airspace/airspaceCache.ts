@@ -6,8 +6,9 @@
  */
 
 const DB_NAME = "airspace-cache";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE = "regions";
+const TILE_STORE = "tiles";
 const SIZE_LIMIT_BYTES = 50 * 1024 * 1024;
 
 export const REGION_TTL_MS = 28 * 24 * 60 * 60 * 1000; // AIRAC cycle
@@ -34,6 +35,10 @@ function openDb(): Promise<IDBDatabase> {
         if (!db.objectStoreNames.contains(STORE)) {
           const store = db.createObjectStore(STORE, { keyPath: "key" });
           store.createIndex("lastAccess", "lastAccess");
+        }
+        if (!db.objectStoreNames.contains(TILE_STORE)) {
+          const tiles = db.createObjectStore(TILE_STORE, { keyPath: "key" });
+          tiles.createIndex("lastAccess", "lastAccess");
         }
       };
       request.onsuccess = () => resolve(request.result);

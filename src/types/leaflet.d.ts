@@ -49,8 +49,28 @@ declare module "leaflet" {
     setRadius(radius: number): this;
   }
 
-  export class TileLayer extends Layer {
-    constructor(url: string, options?: Record<string, unknown>);
+  export interface TileLayerOptions {
+    attribution?: string;
+    maxZoom?: number;
+    opacity?: number;
+    zIndex?: number;
+    crossOrigin?: boolean | string;
+    errorTileUrl?: string;
+    [key: string]: unknown;
+  }
+
+  export class GridLayer extends Layer {
+    options: TileLayerOptions;
+    onRemove(map: Map): this;
+  }
+
+  export class TileLayer extends GridLayer {
+    constructor(url: string, options?: TileLayerOptions);
+    getTileUrl(coords: { x: number; y: number; z: number }): string;
+    createTile(
+      coords: { x: number; y: number; z: number },
+      done: (error: Error | null, tile: HTMLElement) => void,
+    ): HTMLElement;
   }
 
   export class GeoJSON extends Layer {

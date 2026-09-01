@@ -96,8 +96,59 @@ indexedDB.open("airspace-cache").onsuccess = (e) => {
 
 To exercise the stale path, edit an entry's `fetchedAt` to more than 28 days ago and reload.
 
-## Not Cached
+## Raster Tile Caching
 
-Base map tiles (OpenStreetMap, OpenTopoMap, orthophoto) and the OpenAIP/openflightmaps raster overlays are **not** cached — only the airspace and airport JSON. Offline coverage therefore includes airspace geometry, the altitude stack, and airport markers, but the map background will be blank outside whatever the browser's own tile cache happens to hold.
+Base map tiles (OpenStreetMap, OpenTopoMap, orthophoto) and the OpenFlightMaps/OpenAIP raster overlays are cached in IndexedDB the same way as region JSON, but as image blobs, one per `z/x/y` per layer, in a separate `tiles` object store of the same `airspace-cache` database.
 
-Caching base tiles is a separate exercise and carries a licensing constraint: bulk pre-download violates the OSM tile usage policy.
+**Cache-as-you-view only** — no bulk pre-download. A tile enters the cache the moment Leaflet requests it for the current view, exactly mirroring the existing network-only behavior, just persisted. This sidesteps the OSM tile usage policy's ban on bulk pre-fetching: nothing is ever fetched except what the user actually pans/zooms into.
+
+| Property | Value                                                                        |
+| -------- | ---------------------------------------------------------------------------- |
+| Store    | IndexedDB, database `airspace-cache`, object store `tiles`                   |
+| Key      | `` `${layerId}:${z}/${x}/${y}` `` — e.g. `osm:12/2145/1432`                  |
+| TTL      | None for basemaps (osm/topo/ortho); 28 days for aero overlays (ofm/openaip)  |
+| Budget   | 200 MB, LRU eviction by `lastAccess`, independent of the 50 MB region budget |
+
+Keys are layer-scoped and coordinate-based rather than the raw tile URL, so OpenTopoMap's `{s}` subdomain rotation and OpenAIP's API-key query string don't fragment or fingerprint the cache.
+
+Resolution order (`CachedTileLayer.createTile`):
+
+1. Cache hit — display immediately via `URL.createObjectURL`.
+2. Cache hit on an aero layer past its 28-day TTL — display the stale tile immediately, then fetch and overwrite the cache entry in the background (does not touch the on-screen tile; Leaflet naturally re-requests it on the next pan/zoom).
+3. Cache miss — fetch, cache the blob, then display.
+4. Fetch failure (offline or otherwise) — fall through to the browser's native broken-tile handling, same as an uncached `TileLayer` today.
+
+Basemap tiles never expire because their imagery barely changes; only the 200 MB LRU eviction prunes them. Aero tiles carry a TTL because they follow the AIRAC cycle, same as the region cache.
+
+Object URLs are revoked on the tile's `load`/`error` event, with a leak-guard sweep in `onRemove` (Leaflet's own layer-removal hook, fired on base-layer switch and on map teardown) for any tile whose URL never got its `load`/`error` fired.
+
+### Files (tiles)
+
+| Path                                          | Role                                                               |
+| --------------------------------------------- | ------------------------------------------------------------------ |
+| `src/composables/airspace/tileCache.ts`       | IndexedDB tile blob store, TTL check, LRU eviction                 |
+| `src/composables/airspace/CachedTileLayer.ts` | `TileLayer` subclass: cache-first `createTile`, blob URL lifecycle |
+| `src/components/airspace/AirspaceMap.vue`     | Constructs each of the 5 layers as a `CachedTileLayer`             |
+
+### Inspecting the tile cache
+
+DevTools → Application → IndexedDB → `airspace-cache` → `tiles`, or from the console:
+
+```js
+indexedDB.open("airspace-cache").onsuccess = (e) => {
+  e.target.result
+    .transaction("tiles", "readonly")
+    .objectStore("tiles")
+    .getAll().onsuccess = (r) =>
+    console.table(
+      r.target.result.map(({ key, layerId, sizeBytes, fetchedAt }) => ({
+        key,
+        layerId,
+        kb: Math.round(sizeBytes / 1024),
+        ageDays: Math.floor((Date.now() - fetchedAt) / 86400000),
+      })),
+    );
+};
+```
+
+To exercise the aero-layer stale path, edit an `ofm`/`openaip` entry's `fetchedAt` to more than 28 days ago and pan away and back.

@@ -45,6 +45,7 @@ import {
   icaoClassName,
 } from "@/airspace/airspaceStack";
 import AirspaceStack from "@/components/airspace/AirspaceStack.vue";
+import { CachedTileLayer } from "@/composables/airspace/CachedTileLayer";
 import {
   airportPopupHtml,
   airportTypeName,
@@ -679,30 +680,41 @@ onMounted(() => {
     zIndex: 2,
   } as const;
 
-  const mono = new TileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-  });
-  const topo = new TileLayer(
+  const mono = new CachedTileLayer(
+    "osm",
+    "https://tile.openstreetmap.de/{z}/{x}/{y}.png",
+    {
+      attribution: "&copy; OpenStreetMap contributors",
+    },
+  );
+  const topo = new CachedTileLayer(
+    "topo",
     "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
     {
       attribution: "&copy; OpenTopoMap contributors",
       maxZoom: 17,
     },
   );
-  const ortho = new TileLayer(
+  const ortho = new CachedTileLayer(
+    "ortho",
     "https://mapsneu.wien.gv.at/basemap/bmaporthofoto30cm/normal/google3857/{z}/{y}/{x}.jpeg",
     {
       attribution: "&copy; basemap.at",
       maxZoom: 18,
     },
   );
-  const openFlightMapsLayer = new TileLayer(openFlightMapsOverlay.url, {
-    attribution: openFlightMapsOverlay.attribution,
-    maxZoom: openFlightMapsOverlay.maxZoom,
-    opacity: openFlightMapsOverlay.opacity,
-    zIndex: openFlightMapsOverlay.zIndex,
-  });
-  const openAipLayer = new TileLayer(
+  const openFlightMapsLayer = new CachedTileLayer(
+    "ofm",
+    openFlightMapsOverlay.url,
+    {
+      attribution: openFlightMapsOverlay.attribution,
+      maxZoom: openFlightMapsOverlay.maxZoom,
+      opacity: openFlightMapsOverlay.opacity,
+      zIndex: openFlightMapsOverlay.zIndex,
+    },
+  );
+  const openAipLayer = new CachedTileLayer(
+    "openaip",
     `https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png?apiKey=${encodeURIComponent(import.meta.env.VITE_OPENAIP_KEY as string)}`,
     {
       attribution:
