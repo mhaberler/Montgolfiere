@@ -1,9 +1,6 @@
 declare module "leaflet" {
   export type ControlPosition =
-    | "topleft"
-    | "topright"
-    | "bottomleft"
-    | "bottomright";
+    "topleft" | "topright" | "bottomleft" | "bottomright";
 
   export type LatLngExpression = [number, number] | LatLng;
 

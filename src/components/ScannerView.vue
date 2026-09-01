@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full min-h-screen p-3 md:p-6 bg-gray-50">
+  <div class="min-h-screen w-full bg-gray-50 p-3 md:p-6">
     <!-- Header row: title + scan button -->
-    <div class="flex items-center justify-between mb-3">
+    <div class="mb-3 flex items-center justify-between">
       <!-- <h1 class="text-lg font-bold text-gray-800">Broker Configuration</h1> -->
       <div class="flex items-center gap-2">
         <button
           v-if="isCapacitorApp"
           @click="restartScan"
           :class="[
-            'btn text-sm py-1.5 px-3',
+            'btn px-3 py-1.5 text-sm',
             isScanning ? 'btn-danger' : 'btn-success',
           ]"
         >
@@ -16,7 +16,7 @@
         </button>
         <span
           v-if="!isCapacitorApp"
-          class="text-[10px] text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-200"
+          class="rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] text-amber-600"
         >
           mDNS: native only
         </span>
@@ -26,23 +26,23 @@
     <!-- Preferred broker card -->
     <div
       v-if="preferredBroker"
-      class="mb-3 p-3 rounded-xl border-2 shadow-sm"
+      class="mb-3 rounded-xl border-2 p-3 shadow-sm"
       :class="preferredCardClasses"
     >
       <div class="flex items-start gap-3">
         <!-- Connection state indicator -->
-        <div class="flex-shrink-0 mt-0.5">
-          <div :class="['w-4 h-4 rounded-full', stateIndicatorClass]"></div>
+        <div class="mt-0.5 flex-shrink-0">
+          <div :class="['h-4 w-4 rounded-full', stateIndicatorClass]"></div>
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-bold text-sm text-gray-800 break-words">{{
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-bold break-words text-gray-800">{{
               preferredBroker.name
             }}</span>
             <!-- Source badge -->
             <span
               :class="[
-                'inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full text-white',
+                'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold text-white',
                 sourceBadgeClass,
               ]"
             >
@@ -51,16 +51,16 @@
             <!-- Tested badge -->
             <span
               v-if="preferredBroker.tested"
-              class="inline-flex items-center gap-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-success text-white"
+              class="bg-success inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white"
             >
               &#10003; Tested
             </span>
           </div>
           <div
-            class="flex items-center gap-2 mt-1 text-xs text-gray-500 font-mono"
+            class="mt-1 flex items-center gap-2 font-mono text-xs text-gray-500"
           >
             <span>{{ preferredBroker.host }}:{{ preferredBroker.port }}</span>
-            <span class="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">{{
+            <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px]">{{
               friendlyType(preferredBroker.type)
             }}</span>
           </div>
@@ -69,50 +69,50 @@
             <input
               v-model="preferredBroker.username"
               placeholder="Username"
-              class="flex-1 min-w-[100px] px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none"
+              class="focus:ring-primary min-w-[100px] flex-1 rounded border border-gray-200 px-2 py-1 text-xs outline-none focus:ring-1"
             />
             <input
               v-model="preferredBroker.password"
               placeholder="Password"
               type="password"
-              class="flex-1 min-w-[100px] px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none"
+              class="focus:ring-primary min-w-[100px] flex-1 rounded border border-gray-200 px-2 py-1 text-xs outline-none focus:ring-1"
             />
           </div>
           <!-- TLS toggle -->
           <label
             v-if="isWssType(preferredBroker.type)"
-            class="flex items-center gap-2 mt-2"
+            class="mt-2 flex items-center gap-2"
           >
             <input
               type="checkbox"
               v-model="preferredBroker.rejectUnauthorized"
-              class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary"
+              class="text-primary focus:ring-primary h-3.5 w-3.5 rounded border-gray-300"
             />
             <span class="text-xs text-gray-600">Verify TLS certificate</span>
           </label>
         </div>
       </div>
       <!-- Action buttons row -->
-      <div class="flex gap-2 mt-3">
+      <div class="mt-3 flex gap-2">
         <button
           @click="runInlineTest"
           :disabled="isTesting"
-          class="btn text-xs py-1.5 px-3 btn-warning flex-1"
+          class="btn btn-warning flex-1 px-3 py-1.5 text-xs"
         >
           {{ isTesting ? `Testing (${testTimeRemaining}s)` : "Test" }}
         </button>
-        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+        <label class="flex cursor-pointer items-center gap-1.5 select-none">
           <input
             type="checkbox"
             :checked="preferredBroker.autoConnect"
             @change="toggleAutoConnect"
-            class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary"
+            class="text-primary focus:ring-primary h-3.5 w-3.5 rounded border-gray-300"
           />
           <span class="text-xs text-gray-600">Auto-connect</span>
         </label>
         <button
           @click="clearPreferredBroker"
-          class="btn text-xs py-1.5 px-3 bg-white hover:bg-red-50 text-red-600 border border-red-200"
+          class="btn border border-red-200 bg-white px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
         >
           Clear
         </button>
@@ -120,7 +120,7 @@
       <!-- Inline test result -->
       <div
         v-if="testResult !== null"
-        class="mt-2 text-xs font-semibold px-2 py-1 rounded"
+        class="mt-2 rounded px-2 py-1 text-xs font-semibold"
         :class="
           testResult ? 'bg-success/10 text-success' : 'bg-error/10 text-error'
         "
@@ -136,7 +136,7 @@
     <!-- Error display -->
     <div
       v-if="scanError"
-      class="mb-3 p-2 bg-red-50 text-red-700 rounded-lg text-xs border border-red-100"
+      class="mb-3 rounded-lg border border-red-100 bg-red-50 p-2 text-xs text-red-700"
     >
       {{ scanError }}
     </div>
@@ -146,14 +146,14 @@
       <!-- Pre-configured brokers -->
       <div v-if="preconfiguredList.length > 0">
         <div
-          class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 mb-1"
+          class="mb-1 px-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase"
         >
           Pre-configured
         </div>
         <div
           v-for="entry in preconfiguredList"
           :key="entry.key"
-          class="py-2 px-3 bg-white rounded border transition-all"
+          class="rounded border bg-white px-3 py-2 transition-all"
           :class="
             isPreferred(entry.service)
               ? 'border-2 border-amber-300 shadow-md'
@@ -166,21 +166,21 @@
           "
         >
           <div style="min-width: 0">
-            <span class="font-semibold text-sm text-gray-800 truncate">{{
+            <span class="truncate text-sm font-semibold text-gray-800">{{
               entry.service.name
             }}</span>
-            <span class="text-[10px] text-gray-400 font-mono"
+            <span class="font-mono text-[10px] text-gray-400"
               >{{ entry.service.host }}:{{ entry.service.port }}</span
             >
           </div>
-          <div class="flex items-center gap-1 flex-shrink-0">
+          <div class="flex flex-shrink-0 items-center gap-1">
             <button
               @click="navigateToClient(entry.service)"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-primary"
+              class="text-primary flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
               title="Open client"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -196,11 +196,11 @@
             <button
               v-if="!isPreferred(entry.service)"
               @click="setPreferred(entry.service)"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-warning"
+              class="text-warning flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
               title="Set preferred"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -215,9 +215,9 @@
             </button>
             <span
               v-else
-              class="w-8 h-8 flex items-center justify-center rounded-full text-amber-500"
+              class="flex h-8 w-8 items-center justify-center rounded-full text-amber-500"
             >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                 />
@@ -230,14 +230,14 @@
       <!-- Discovered brokers -->
       <div v-if="discoveredList.length > 0">
         <div
-          class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 mt-2 mb-1"
+          class="mt-2 mb-1 px-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase"
         >
           Discovered
         </div>
         <div
           v-for="entry in discoveredList"
           :key="entry.key"
-          class="py-2 px-3 bg-white rounded border transition-all"
+          class="rounded border bg-white px-3 py-2 transition-all"
           :class="
             isPreferred(entry.service)
               ? 'border-2 border-amber-300 shadow-md'
@@ -252,29 +252,29 @@
           <div style="min-width: 0">
             <div class="flex items-center gap-2">
               <span
-                class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                class="h-1.5 w-1.5 flex-shrink-0 rounded-full"
                 :class="
                   entry.service.resolved
                     ? 'bg-success'
                     : 'bg-warning animate-pulse'
                 "
               ></span>
-              <span class="font-semibold text-sm text-gray-800 truncate">{{
+              <span class="truncate text-sm font-semibold text-gray-800">{{
                 entry.service.name
               }}</span>
             </div>
-            <span class="text-[10px] text-gray-400 font-mono"
+            <span class="font-mono text-[10px] text-gray-400"
               >{{ entry.service.host }}:{{ entry.service.port }}</span
             >
           </div>
-          <div class="flex items-center gap-1 flex-shrink-0">
+          <div class="flex flex-shrink-0 items-center gap-1">
             <button
               @click="navigateToClient(entry.service)"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-primary"
+              class="text-primary flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
               title="Open client"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -290,11 +290,11 @@
             <button
               v-if="!isPreferred(entry.service)"
               @click="setPreferred(entry.service)"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-warning"
+              class="text-warning flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
               title="Set preferred"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -309,9 +309,9 @@
             </button>
             <span
               v-else
-              class="w-8 h-8 flex items-center justify-center rounded-full text-amber-500"
+              class="flex h-8 w-8 items-center justify-center rounded-full text-amber-500"
             >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                 />
@@ -324,14 +324,14 @@
       <!-- Manual broker section -->
       <div>
         <div
-          class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 mt-2 mb-1"
+          class="mt-2 mb-1 px-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase"
         >
           Manual
         </div>
         <!-- Existing manual broker (if any) -->
         <div
           v-if="manualEntry"
-          class="py-2 px-3 bg-white rounded border transition-all"
+          class="rounded border bg-white px-3 py-2 transition-all"
           :class="
             isPreferred(manualEntry)
               ? 'border-2 border-amber-300 shadow-md'
@@ -344,21 +344,21 @@
           "
         >
           <div style="min-width: 0">
-            <span class="font-semibold text-sm text-gray-800 truncate">{{
+            <span class="truncate text-sm font-semibold text-gray-800">{{
               manualEntry.name
             }}</span>
-            <span class="text-[10px] text-gray-400 font-mono"
+            <span class="font-mono text-[10px] text-gray-400"
               >{{ manualEntry.host }}:{{ manualEntry.port }}</span
             >
           </div>
-          <div class="flex items-center gap-1 flex-shrink-0">
+          <div class="flex flex-shrink-0 items-center gap-1">
             <button
               @click="navigateToClient(manualEntry)"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-primary"
+              class="text-primary flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
               title="Open client"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -374,11 +374,11 @@
             <button
               v-if="!isPreferred(manualEntry)"
               @click="setPreferred(manualEntry)"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-warning"
+              class="text-warning flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
               title="Set preferred"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -393,9 +393,9 @@
             </button>
             <span
               v-else
-              class="w-8 h-8 flex items-center justify-center rounded-full text-amber-500"
+              class="flex h-8 w-8 items-center justify-center rounded-full text-amber-500"
             >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                 />
@@ -403,11 +403,11 @@
             </span>
             <button
               @click="removeManualEntry"
-              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 text-red-400 hover:text-red-600"
+              class="flex h-8 w-8 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-gray-100 hover:text-red-600"
               title="Remove"
             >
               <svg
-                class="w-4 h-4"
+                class="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -423,22 +423,22 @@
           </div>
         </div>
         <!-- Manual entry form -->
-        <div class="mt-1 p-2 bg-white rounded-lg border border-gray-100">
+        <div class="mt-1 rounded-lg border border-gray-100 bg-white p-2">
           <div class="flex flex-wrap gap-2">
             <input
               v-model="manualHost"
               placeholder="Host / IP"
-              class="flex-1 min-w-[120px] px-2 py-1.5 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none"
+              class="focus:ring-primary min-w-[120px] flex-1 rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1"
             />
             <input
               v-model="manualPort"
               placeholder="Port"
               type="number"
-              class="w-20 px-2 py-1.5 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none"
+              class="focus:ring-primary w-20 rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1"
             />
             <select
               v-model="selectedType"
-              class="px-2 py-1.5 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none bg-white"
+              class="focus:ring-primary rounded border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:ring-1"
             >
               <option value="_mqtt-ws._tcp.">WS</option>
               <option value="_mqtt-wss._tcp.">WSS</option>
@@ -450,13 +450,13 @@
               <input
                 type="checkbox"
                 v-model="manualRejectUnauthorized"
-                class="w-3.5 h-3.5 text-primary border-gray-300 rounded"
+                class="text-primary h-3.5 w-3.5 rounded border-gray-300"
               />
               <span class="text-xs text-gray-600">Verify TLS</span>
             </label>
             <button
               @click="addManualService"
-              class="btn text-sm py-1.5 px-3 btn-primary"
+              class="btn btn-primary px-3 py-1.5 text-sm"
             >
               {{ manualEntry ? "Replace" : "Add" }}
             </button>
@@ -467,10 +467,10 @@
       <!-- Empty state -->
       <div
         v-if="Object.keys(services).length === 0 && !manualEntry"
-        class="py-8 text-center text-gray-400 text-sm"
+        class="py-8 text-center text-sm text-gray-400"
       >
         <p>No brokers available. Discover via mDNS or add one manually.</p>
-        <p class="text-xs mt-1 italic">Common ports: 8883 (MQTT-WS)</p>
+        <p class="mt-1 text-xs italic">Common ports: 8883 (MQTT-WS)</p>
       </div>
     </div>
   </div>
@@ -512,11 +512,15 @@ export default defineComponent({
     // Shared state
     const { preferredBroker } = useAppState();
     const mqttConn = useMqttConnection();
-    const { services: discoveredServices, isScanning, restartScan } = useMdnsScan();
+    const {
+      services: discoveredServices,
+      isScanning,
+      restartScan,
+    } = useMdnsScan();
 
     // --- Pre-configured brokers ---
     const defaultServices: Record<string, ServiceEntry> = {
-      "localAP": {
+      localAP: {
         name: "localAP (MQTT-WS)",
         type: "_mqtt-ws._tcp.",
         host: "192.168.4.1",
@@ -525,7 +529,6 @@ export default defineComponent({
         resolved: true,
         source: "preconfigured",
       },
-
 
       // "test-mosquitto-wss": {
       //   name: "test.mosquitto.org (WSS)",
@@ -758,7 +761,10 @@ export default defineComponent({
         ...preferredBroker.value,
         autoConnect: !preferredBroker.value.autoConnect,
       };
-      console.log("preferredBroker:", JSON.parse(JSON.stringify(preferredBroker.value)));
+      console.log(
+        "preferredBroker:",
+        JSON.parse(JSON.stringify(preferredBroker.value)),
+      );
     };
 
     // Cleanup on unmount

@@ -1,15 +1,15 @@
 <template>
-  <div class="overflow-x-auto bg-white rounded-lg">
-    <table class="w-full border-collapse text">
+  <div class="overflow-x-auto rounded-lg bg-white">
+    <table class="text w-full border-collapse">
       <thead>
         <tr>
           <th
-            class="bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700 border-b-2 border-gray-200 w-20"
+            class="w-20 border-b-2 border-gray-200 bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700"
           >
             Unit
           </th>
           <th
-            class="bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700 border-b-2 border-gray-200"
+            class="border-b-2 border-gray-200 bg-gray-100 px-2 py-1.5 text-left font-semibold text-gray-700"
           >
             Metrics
           </th>
@@ -26,47 +26,47 @@
           }"
         >
           <td
-            class="px-2 py-1 border-b border-gray-200 align-middle font-medium"
+            class="border-b border-gray-200 px-2 py-1 align-middle font-medium"
           >
             <div class="flex items-center gap-1">
               <AppUnitIcon :name="unit.icon" class="text-base text-gray-500" />
               <span>{{ unit.label }}</span>
             </div>
           </td>
-          <td class="px-2 py-1 border-b border-gray-200 align-middle">
-            <div class="flex flex-wrap gap-1 items-center">
+          <td class="border-b border-gray-200 px-2 py-1 align-middle">
+            <div class="flex flex-wrap items-center gap-1">
               <span
                 v-for="(metric, idx) in unit.metrics"
                 :key="metric.name"
                 class="inline-flex items-center gap-0.5 whitespace-nowrap"
                 :title="metricTitle(metric)"
                 :class="{
-                  'text-red-600 font-bold': metric.isFault,
-                  'text-amber-600 font-semibold':
+                  'font-bold text-red-600': metric.isFault,
+                  'font-semibold text-amber-600':
                     (!metric.isFault && metric.isStale) ||
                     (!metric.isFault &&
                       !metric.isStale &&
                       getMetricAgeClass(metric.lastUpdate) === 'age-stale'),
-                  'text-emerald-600 font-semibold':
+                  'font-semibold text-emerald-600':
                     !metric.isFault &&
                     !metric.isStale &&
                     getMetricAgeClass(metric.lastUpdate) === 'age-fresh',
-                  'text-gray-800 font-semibold':
+                  'font-semibold text-gray-800':
                     !metric.isFault &&
                     !metric.isStale &&
                     getMetricAgeClass(metric.lastUpdate) === 'age-recent',
-                  'text-red-600 font-semibold opacity-70':
+                  'font-semibold text-red-600 opacity-70':
                     !metric.isFault &&
                     !metric.isStale &&
                     getMetricAgeClass(metric.lastUpdate) === 'age-old',
                 }"
               >
-                <span class="text-gray-500 text-xs">{{ metric.name }}:</span>
+                <span class="text-xs text-gray-500">{{ metric.name }}:</span>
                 <span>{{ metric.formattedValue }}</span>
                 <span v-if="metric.isFault || metric.isStale">⚠</span>
                 <span
                   v-if="idx < unit.metrics.length - 1"
-                  class="text-gray-300 mx-0.5"
+                  class="mx-0.5 text-gray-300"
                   >|</span
                 >
               </span>

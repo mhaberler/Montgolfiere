@@ -3,7 +3,8 @@ import { ref, computed, type Ref } from "vue";
 import mqtt, { type MqttClient } from "mqtt";
 import type { ServiceEntry } from "./useAppState";
 
-export type ConnectionState = "disconnected" | "trying" | "connected" | "retrying";
+export type ConnectionState =
+  "disconnected" | "trying" | "connected" | "retrying";
 
 export type MessageItem = {
   id: string;

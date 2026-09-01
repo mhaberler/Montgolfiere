@@ -354,7 +354,7 @@
           <!-- Topics accordion -->
           <section
             class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-            :class="{ 'opacity-50 pointer-events-none': !mqttIsConnected }"
+            :class="{ 'pointer-events-none opacity-50': !mqttIsConnected }"
           >
             <button
               type="button"
@@ -363,43 +363,67 @@
             >
               <span class="flex items-center gap-2">
                 Topics
-                <span v-if="!mqttIsConnected" class="text-[10px] font-normal text-gray-400">(not connected)</span>
+                <span
+                  v-if="!mqttIsConnected"
+                  class="text-[10px] font-normal text-gray-400"
+                  >(not connected)</span
+                >
               </span>
-              <span class="text-gray-400">{{ openAccordion === "topics" ? "−" : "+" }}</span>
+              <span class="text-gray-400">{{
+                openAccordion === "topics" ? "−" : "+"
+              }}</span>
             </button>
-            <div v-if="openAccordion === 'topics'" class="border-t border-gray-100 p-3 space-y-3">
+            <div
+              v-if="openAccordion === 'topics'"
+              class="space-y-3 border-t border-gray-100 p-3"
+            >
               <!-- Topic list -->
               <div v-if="topicCounts.length > 0" class="space-y-1">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-1">Received topics</div>
+                <div
+                  class="mb-1 px-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase"
+                >
+                  Received topics
+                </div>
                 <div
                   v-for="t in topicCounts"
                   :key="t.topic"
-                  class="flex items-center justify-between py-1 px-2 bg-gray-50 rounded text-xs font-mono"
+                  class="flex items-center justify-between rounded bg-gray-50 px-2 py-1 font-mono text-xs"
                 >
                   <span class="truncate text-gray-700">{{ t.topic }}</span>
-                  <span class="ml-2 shrink-0 text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded">{{ t.count }}</span>
+                  <span
+                    class="bg-primary/10 text-primary ml-2 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold"
+                    >{{ t.count }}</span
+                  >
                 </div>
               </div>
-              <div v-else class="text-xs text-gray-400 px-1">No messages yet</div>
+              <div v-else class="px-1 text-xs text-gray-400">
+                No messages yet
+              </div>
 
               <!-- Compact publish -->
-              <div class="bg-white rounded-lg border border-gray-100 p-2">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-2">Publish</div>
-                <div class="flex gap-1.5 items-center">
+              <div class="rounded-lg border border-gray-100 bg-white p-2">
+                <div
+                  class="mb-2 px-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase"
+                >
+                  Publish
+                </div>
+                <div class="flex items-center gap-1.5">
                   <input
                     v-model="publishTopic"
                     placeholder="topic"
-                    class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none font-mono"
+                    class="focus:ring-primary min-w-0 flex-1 rounded border border-gray-200 px-2 py-1.5 font-mono text-xs outline-none focus:ring-1"
                   />
                   <input
                     v-model="publishPayload"
                     placeholder="payload"
-                    class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-primary outline-none font-mono"
+                    class="focus:ring-primary min-w-0 flex-1 rounded border border-gray-200 px-2 py-1.5 font-mono text-xs outline-none focus:ring-1"
                   />
                   <button
                     @click="mqttPublish"
-                    class="btn text-xs py-1.5 px-3 btn-success shrink-0"
-                  >→</button>
+                    class="btn btn-success shrink-0 px-3 py-1.5 text-xs"
+                  >
+                    →
+                  </button>
                 </div>
               </div>
             </div>
@@ -624,7 +648,11 @@ const updateDemUrl = () => {
 // });
 
 // MQTT Topics section
-const { isConnected, topicCounts: rawTopicCounts, publish: mqttPublishFn } = useMqttConnection();
+const {
+  isConnected,
+  topicCounts: rawTopicCounts,
+  publish: mqttPublishFn,
+} = useMqttConnection();
 const mqttIsConnected = isConnected;
 
 const topicCounts = computed(() =>

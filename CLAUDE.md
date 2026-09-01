@@ -323,7 +323,7 @@ Accordion sections: Configuration, Sensors, QNH, Topics, Debug, Build Info, MQTT
 **Pattern for disabled-when-disconnected accordions:**
 
 ```html
-<section :class="{ 'opacity-50 pointer-events-none': !isConnected }">
+<section :class="{ 'opacity-50 pointer-events-none': !isConnected }"></section>
 ```
 
 ## Development Guidelines

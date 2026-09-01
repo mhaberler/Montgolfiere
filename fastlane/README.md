@@ -19,8 +19,6 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane show_version
 ```
 
-
-
 ### bump
 
 ```sh
@@ -29,8 +27,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Bump versions for both platforms
 
-----
-
+---
 
 ## iOS
 
@@ -58,8 +55,7 @@ Nuke and renew expired certificates using API key (no Apple ID password needed)
 
 Build and deploy to TestFlight
 
-----
-
+---
 
 ## Android
 
@@ -68,8 +64,6 @@ Build and deploy to TestFlight
 ```sh
 [bundle exec] fastlane android test_api
 ```
-
-
 
 ### android release_aab
 
@@ -95,7 +89,7 @@ Deploy a new beta build to Google Play
 
 Build and auto-publish to internal testing
 
-----
+---
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 

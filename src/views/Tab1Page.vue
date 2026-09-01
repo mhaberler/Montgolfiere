@@ -3,11 +3,16 @@
     <main class="flex-1 overflow-auto">
       <AppPageContent content-class="safe-bottom">
         <!-- MQTT auto-connect status badge -->
-        <div v-if="mqttBadgeVisible" class="flex items-center gap-1.5 px-1 pb-1">
-          <span :class="['w-2 h-2 rounded-full shrink-0', mqttDotClass]"></span>
-          <span class="text-[10px] font-semibold text-gray-600">{{ mqttBadgeText }}</span>
+        <div
+          v-if="mqttBadgeVisible"
+          class="flex items-center gap-1.5 px-1 pb-1"
+        >
+          <span :class="['h-2 w-2 shrink-0 rounded-full', mqttDotClass]"></span>
+          <span class="text-[10px] font-semibold text-gray-600">{{
+            mqttBadgeText
+          }}</span>
         </div>
-        <div class="bg-white shadow-xl rounded-xl">
+        <div class="rounded-xl bg-white shadow-xl">
           <div class="grid grid-cols-4 gap-1">
             <ValueCard
               name="GPS"
@@ -99,7 +104,7 @@
               "
             />
 
-            <div class="row-span-3 col-span-1 text-xs w-full h-50">
+            <div class="col-span-1 row-span-3 h-50 w-full text-xs">
               <LinearScale
                 :value="ekfVelocity"
                 orientation="vertical"
@@ -120,7 +125,7 @@
                 :scaleLinePercent="30"
               />
             </div>
-            <div class="row-span-3 col-span-1 text-xs w-full h-50">
+            <div class="col-span-1 row-span-3 h-50 w-full text-xs">
               <LinearScale
                 :value="ekfAcceleration"
                 orientation="vertical"
@@ -169,7 +174,7 @@
             />
             <ValueCard :value="currentTimeUTC" name="TIME" unit="UTC" />
           </div>
-          <div class="overflow-y-auto overflow-x-hidden p-2">
+          <div class="overflow-x-hidden overflow-y-auto p-2">
             <UnitsTable />
           </div>
         </div>
@@ -188,8 +193,12 @@
               :aria-label="modalData.name || 'Sensor Data'"
             >
               <!-- Header -->
-              <div class="flex items-center justify-between border-b border-gray-100 px-3 py-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              <div
+                class="flex items-center justify-between border-b border-gray-100 px-3 py-2"
+              >
+                <span
+                  class="text-[10px] font-bold tracking-wider text-gray-400 uppercase"
+                >
                   {{ modalData.name || "Sensor Data" }}
                 </span>
                 <button
@@ -206,7 +215,10 @@
               <div class="px-3 py-3">
                 <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
                   <div class="font-mono text-3xl font-bold text-blue-600">
-                    {{ modalData.value }} <span class="text-lg text-gray-500">{{ modalData.unit }}</span>
+                    {{ modalData.value }}
+                    <span class="text-lg text-gray-500">{{
+                      modalData.unit
+                    }}</span>
                   </div>
                 </div>
 
@@ -214,14 +226,14 @@
                 <div class="mt-3 flex gap-2">
                   <button
                     type="button"
-                    class="btn text-xs py-1.5 px-3 btn-success flex-1"
+                    class="btn btn-success flex-1 px-3 py-1.5 text-xs"
                     @click="setOnGround"
                   >
                     Set as Ground Level
                   </button>
                   <button
                     type="button"
-                    class="btn text-xs py-1.5 px-3 bg-white hover:bg-gray-50 text-gray-600 border border-gray-200"
+                    class="btn border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
                     @click="closeModal"
                   >
                     Cancel
@@ -230,7 +242,8 @@
 
                 <!-- Info -->
                 <p class="mt-2 text-[10px] text-gray-400">
-                  Sets {{ modalData.value }} {{ modalData.unit }} as ground reference level.
+                  Sets {{ modalData.value }} {{ modalData.unit }} as ground
+                  reference level.
                 </p>
               </div>
             </div>

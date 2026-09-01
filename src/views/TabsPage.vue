@@ -9,7 +9,7 @@
           v-for="tab in visibleTabs"
           :key="tab.href"
           type="button"
-          class="min-w-0 rounded-lg px-3 py-2 text-sm font-semibold leading-none transition-colors"
+          class="min-w-0 rounded-lg px-3 py-2 text-sm leading-none font-semibold transition-colors"
           :class="
             isActiveTab(tab.href)
               ? 'bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100'

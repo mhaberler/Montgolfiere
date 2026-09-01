@@ -57,7 +57,12 @@ function onServiceEvent(
     // Keep preferredBroker host/port fresh when this service re-resolves
     const pb = preferredBroker.value;
     if (pb?.discovered && pb.name === service.name) {
-      preferredBroker.value = { ...pb, host: ip, port: service.port, resolved: true };
+      preferredBroker.value = {
+        ...pb,
+        host: ip,
+        port: service.port,
+        resolved: true,
+      };
     }
   } else if (action === "added") {
     if (!services.value[key]) {

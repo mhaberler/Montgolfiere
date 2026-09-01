@@ -1,13 +1,13 @@
 <template>
   <div class="flex min-h-0 flex-1 flex-col bg-gray-50">
-    <main class="flex-1 overflow-auto w-full bg-gray-50">
+    <main class="w-full flex-1 overflow-auto bg-gray-50">
       <AppPageContent content-class="safe-bottom w-full bg-gray-50">
         <!-- Header row: name + status dot + buttons -->
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2 min-w-0 flex-1">
+        <div class="mb-4 flex items-center justify-between">
+          <div class="flex min-w-0 flex-1 items-center gap-2">
             <div
               :class="[
-                'w-3 h-3 rounded-full shrink-0',
+                'h-3 w-3 shrink-0 rounded-full',
                 mqttConn.isTrying.value
                   ? 'bg-warning animate-pulse'
                   : mqttConn.isConnected.value
@@ -15,17 +15,17 @@
                     : 'bg-error',
               ]"
             ></div>
-            <div class="text-sm md:text-sm font-bold text-gray-800 truncate">
+            <div class="truncate text-sm font-bold text-gray-800 md:text-sm">
               {{ serviceName }}>
             </div>
           </div>
           <button
             :class="[
-              'btn text-xs md:text-sm py-1.5 px-2.5 md:px-3 font-bold whitespace-nowrap',
+              'btn px-2.5 py-1.5 text-xs font-bold whitespace-nowrap md:px-3 md:text-sm',
               mqttConn.isConnected.value
                 ? 'btn-danger'
                 : mqttConn.isTrying.value
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  ? 'cursor-not-allowed bg-gray-200 text-gray-500'
                   : 'btn-primary',
             ]"
             @click="
@@ -47,7 +47,7 @@
 
         <!-- Broker URL text-[9px] md:text-[10px]-->
         <p
-          class="font-mono text-sm md:text-sm text-gray-500 break-all mb-1 px-2"
+          class="mb-1 px-2 font-mono text-sm break-all text-gray-500 md:text-sm"
         >
           {{ mqttConn.brokerUrl.value }}
         </p>
@@ -55,14 +55,14 @@
         <!-- Error display -->
         <div
           v-if="mqttConn.error.value"
-          class="mb-3 p-2 bg-error/10 border border-error/20 rounded-lg flex justify-between items-center"
+          class="bg-error/10 border-error/20 mb-3 flex items-center justify-between rounded-lg border p-2"
         >
-          <p class="text-error text-xs font-medium flex-1 mr-2">
+          <p class="text-error mr-2 flex-1 text-xs font-medium">
             {{ mqttConn.error.value }}
           </p>
           <button
             @click="mqttConn.error.value = null"
-            class="w-6 h-6 flex items-center justify-center text-error/40 hover:text-error text-lg font-bold shrink-0"
+            class="text-error/40 hover:text-error flex h-6 w-6 shrink-0 items-center justify-center text-lg font-bold"
           >
             ×
           </button>
@@ -71,18 +71,18 @@
         <!-- Loading indicator -->
         <div
           v-if="mqttConn.isTrying.value"
-          class="mb-3 p-4 bg-white border border-gray-100 rounded-lg text-center"
+          class="mb-3 rounded-lg border border-gray-100 bg-white p-4 text-center"
         >
           <div
-            class="inline-block w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin mb-2"
+            class="border-primary mb-2 inline-block h-6 w-6 animate-spin rounded-full border-3 border-t-transparent"
           ></div>
-          <p class="text-gray-500 text-sm">Connecting…</p>
+          <p class="text-sm text-gray-500">Connecting…</p>
         </div>
 
         <!-- Publish section -->
         <div
           v-if="mqttConn.isConnected.value"
-          class="mb-1 p-3 bg-white rounded-lg shadow-sm border border-gray-100"
+          class="mb-1 rounded-lg border border-gray-100 bg-white p-3 shadow-sm"
         >
           <!-- <h3 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1.5">
             <span class="w-1.5 h-4 bg-primary rounded-sm"></span>
@@ -92,17 +92,17 @@
             <input
               v-model="publishTopic"
               placeholder="Topic"
-              class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-primary outline-none font-mono"
+              class="focus:ring-primary w-full rounded-md border border-gray-200 px-3 py-2 font-mono text-sm outline-none focus:ring-2"
             />
             <textarea
               v-model="publishMessage"
               placeholder="Payload"
-              class="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-primary outline-none font-mono resize-none"
+              class="focus:ring-primary w-full resize-none rounded-md border border-gray-200 px-3 py-2 font-mono text-sm outline-none focus:ring-2"
               rows="1"
             ></textarea>
             <button
               @click="publishMessageToTopic"
-              class="btn btn-success text-sm py-2 w-full active:scale-95"
+              class="btn btn-success w-full py-2 text-sm active:scale-95"
             >
               Publish →
             </button>
@@ -111,20 +111,20 @@
 
         <!-- Messages section -->
         <div
-          class="bg-white rounded-lg shadow-sm border border-gray-100 flex flex-col min-h-75 md:min-h-100"
+          class="flex min-h-75 flex-col rounded-lg border border-gray-100 bg-white shadow-sm md:min-h-100"
         >
           <div
-            class="p-1 border-b border-gray-50 flex justify-between items-center"
+            class="flex items-center justify-between border-b border-gray-50 p-1"
           >
             <div class="text-sm font-bold text-gray-800">
               Messages
-              <span class="text-primary font-mono ml-1"
+              <span class="text-primary ml-1 font-mono"
                 >({{ mqttConn.messages.value.length }})</span
               >
             </div>
             <button
               @click="mqttConn.clearMessages()"
-              class="text-sm font-bold text-gray-400 hover:text-error transition-colors uppercase tracking-wider"
+              class="hover:text-error text-sm font-bold tracking-wider text-gray-400 uppercase transition-colors"
             >
               Clear
             </button>
@@ -132,13 +132,13 @@
 
           <div
             v-if="mqttConn.messages.value.length === 0"
-            class="flex-1 flex flex-col items-center justify-center p-6 text-gray-400"
+            class="flex flex-1 flex-col items-center justify-center p-6 text-gray-400"
           >
             <div
-              class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center mb-2"
+              class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-50"
             >
               <svg
-                class="w-5 h-5"
+                class="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -160,37 +160,36 @@
             </p>
           </div>
 
-          <div class="flex-1 p-2 space-y-1 overflow-y-auto">
+          <div class="flex-1 space-y-1 overflow-y-auto p-2">
             <div
               v-for="message in mqttConn.messages.value"
               :key="message.id"
-              class="p-2 rounded text-xs transition-all"
+              class="rounded p-2 text-xs transition-all"
               :class="[
                 message.topic === 'system'
-                  ? 'bg-gray-50 border-l-3 border-gray-400 text-gray-600 italic'
-                  : 'bg-white border border-gray-100 shadow-sm',
+                  ? 'border-l-3 border-gray-400 bg-gray-50 text-gray-600 italic'
+                  : 'border border-gray-100 bg-white shadow-sm',
               ]"
             >
-              <div class="flex justify-between items-start gap-2 mb-1">
+              <div class="mb-1 flex items-start justify-between gap-2">
                 <span
                   v-if="message.topic !== 'system'"
-                  class="text-[9px] font-bold font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary shrink-0"
+                  class="bg-primary/10 text-primary shrink-0 rounded px-1.5 py-0.5 font-mono text-[9px] font-bold"
                   >{{ message.topic }}</span
                 >
                 <span
                   v-else
-                  class="text-[9px] font-bold font-mono text-gray-400 uppercase shrink-0"
+                  class="shrink-0 font-mono text-[9px] font-bold text-gray-400 uppercase"
                   >SYS</span
                 >
                 <span
-                  class="text-[9px] font-mono text-gray-300 ml-auto shrink-0"
+                  class="ml-auto shrink-0 font-mono text-[9px] text-gray-300"
                   >{{ message.timestamp }}</span
                 >
               </div>
               <pre
-                class="text-[10px] font-mono break-all whitespace-pre-wrap text-gray-700 bg-gray-50 p-1.5 rounded border border-gray-100/50 overflow-x-auto"
-                >{{ message.payload }}</pre
-              >
+                class="overflow-x-auto rounded border border-gray-100/50 bg-gray-50 p-1.5 font-mono text-[10px] break-all whitespace-pre-wrap text-gray-700"
+                >{{ message.payload }}</pre>
             </div>
           </div>
         </div>

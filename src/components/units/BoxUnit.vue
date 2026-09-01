@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-xl border border-gray-200 border-l-4 bg-white shadow-sm transition-colors duration-300"
+    class="rounded-xl border border-l-4 border-gray-200 bg-white shadow-sm transition-colors duration-300"
     :class="{
       'border-l-emerald-500': status.color === 'success',
       'border-l-amber-500': status.color === 'warning',
@@ -25,15 +25,15 @@
       <div v-if="Object.keys(groupedSensors).length > 0">
         <div class="mb-4">
           <div
-            class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]"
+            class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3"
           >
             <!-- Primary metrics -->
             <div
               v-for="metric in primaryMetrics"
               :key="`primary-${metric}`"
-              class="bg-ion-light rounded-lg p-3 border-2 border-ion-primary"
+              class="bg-ion-light border-ion-primary rounded-lg border-2 p-3"
             >
-              <div class="font-bold text-[0.9em] text-ion-primary mb-2">
+              <div class="text-ion-primary mb-2 text-[0.9em] font-bold">
                 {{ formatMetricName(metric) }}
               </div>
               <div class="flex flex-col gap-1">
@@ -51,7 +51,7 @@
                       getMetricAgeClass(reading.lastUpdate) === 'metric-stale',
                   }"
                 >
-                  <span class="font-bold text-[1.1em] text-sky-600">{{
+                  <span class="text-[1.1em] font-bold text-sky-600">{{
                     formatMetricValue(metric, reading.value)
                   }}</span>
                   <span class="text-[0.8em] text-gray-500"

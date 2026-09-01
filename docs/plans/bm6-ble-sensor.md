@@ -23,18 +23,18 @@ The codebase has **no existing GATT connect/write/notify pattern** — only `Ble
 
 ### Protocol constants (from reference)
 
-| Item | Value |
-|------|-------|
-| Device name | `BM6` |
-| AES key | `[108, 101, 97, 103, 101, 110, 100, 255, 254, 48, 49, 48, 48, 48, 48, 57]` |
-| AES mode | CBC, IV = 16 × `0x00` |
-| Write char | `FFF3` |
-| Notify char | `FFF4` |
-| Start command (plaintext) | `d1550700000000000000000000000000` |
-| Valid notification prefix | `d15507` (hex after decrypt) |
-| Voltage | bytes 15–17 of hex string → int / 100 |
-| SoC | bytes 12–13 → int |
-| Temperature | byte 6 = `01` → negative; else positive; magnitude from bytes 8–9 |
+| Item                      | Value                                                                      |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Device name               | `BM6`                                                                      |
+| AES key                   | `[108, 101, 97, 103, 101, 110, 100, 255, 254, 48, 49, 48, 48, 48, 48, 57]` |
+| AES mode                  | CBC, IV = 16 × `0x00`                                                      |
+| Write char                | `FFF3`                                                                     |
+| Notify char               | `FFF4`                                                                     |
+| Start command (plaintext) | `d1550700000000000000000000000000`                                         |
+| Valid notification prefix | `d15507` (hex after decrypt)                                               |
+| Voltage                   | bytes 15–17 of hex string → int / 100                                      |
+| SoC                       | bytes 12–13 → int                                                          |
+| Temperature               | byte 6 = `01` → negative; else positive; magnitude from bytes 8–9          |
 
 Further reading: [BM2 reverse engineering](https://doubleagent.net/bm2-reversing-the-ble-protocol-of-the-bm2-battery-monitor/), [KrystianD docs](https://github.com/KrystianD/bm2-battery-monitor/blob/master/.docs/reverse_engineering.md).
 

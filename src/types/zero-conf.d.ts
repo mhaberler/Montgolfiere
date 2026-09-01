@@ -4,12 +4,7 @@ declare module "@mhaberler/capacitor-zeroconf-nsd" {
    * Keep flexible to match runtime variations from different platforms.
    */
   export type TxtRecordValue =
-    | string
-    | number
-    | boolean
-    | string[]
-    | Record<string, string>
-    | null;
+    string | number | boolean | string[] | Record<string, string> | null;
   export type ZeroConfTxtRecord = Record<string, TxtRecordValue>;
 
   /** Core service object returned by the native plugin. */

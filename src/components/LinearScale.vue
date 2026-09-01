@@ -551,6 +551,6 @@ watch(
 <template>
   <svg
     ref="svgRef"
-    class="block w-full h-full bg-white rounded-xl shadow-md"
+    class="block h-full w-full rounded-xl bg-white shadow-md"
   ></svg>
 </template>

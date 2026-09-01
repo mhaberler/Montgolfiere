@@ -31,7 +31,7 @@
           <p v-if="device.decoded.type" class="text-sm text-gray-600">
             Type: {{ device.decoded.type }}
           </p>
-          <p class="text-sm italic text-gray-500">
+          <p class="text-sm text-gray-500 italic">
             Last seen:
             {{ Math.floor((reactiveTime - device.lastSeen) / 1000) }}s ago
           </p>
@@ -82,7 +82,7 @@
                     >{{ key }}:</span
                   >
                   <span
-                    class="tabular-nums text-sm font-semibold text-gray-900"
+                    class="text-sm font-semibold text-gray-900 tabular-nums"
                     >{{ value }}</span
                   >
                 </div>

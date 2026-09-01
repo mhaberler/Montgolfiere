@@ -1,47 +1,47 @@
 <template>
   <div
-    class="relative w-full h-full bg-white p-1 sm:p-5 flex flex-col justify-between items-center text-center transition-all duration-300 ease-in-out transform hover:scale-105 border-4 select-none"
+    class="relative flex h-full w-full transform flex-col items-center justify-between border-4 bg-white p-1 text-center transition-all duration-300 ease-in-out select-none hover:scale-105 sm:p-5"
     :class="[frameClass, batteryBorderClass]"
-    style="user-select: none; -webkit-user-select: none;"
+    style="user-select: none; -webkit-user-select: none"
   >
     <!-- Value (Centered and Prominent) -->
-    <div class="grow flex items-center justify-center w-full mb-0 mt-0">
+    <div class="mt-0 mb-0 flex w-full grow items-center justify-center">
       <p
         v-if="isNumeric"
-        class="tabular-nums text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight -ml-[0.3em]"
+        class="ios:text-xl -ml-[0.3em] text-2xl leading-tight font-extrabold text-gray-800 tabular-nums sm:text-4xl"
       >
         <span class="inline-block w-[0.6em] text-right">{{ signChar }}</span
         >{{ absValue }}
       </p>
       <p
         v-else
-        class="text-2xl ios:text-xl sm:text-4xl font-extrabold text-gray-800 leading-tight"
+        class="ios:text-xl text-2xl leading-tight font-extrabold text-gray-800 sm:text-4xl"
       >
         {{ displayValue }}
       </p>
     </div>
 
     <!-- Name and Unit (Bottom Row) -->
-    <div class="w-full mt-auto mb-0 pb-0 pt-0 border-gray-200">
-      <div class="grid grid-cols-2 w-full gap-2">
+    <div class="mt-auto mb-0 w-full border-gray-200 pt-0 pb-0">
+      <div class="grid w-full grid-cols-2 gap-2">
         <!-- Name (Lower Left) -->
-        <div class="flex justify-start items-end">
-          <p class="text-xs sm:text-sm font-semibold text-gray-600">
+        <div class="flex items-end justify-start">
+          <p class="text-xs font-semibold text-gray-600 sm:text-sm">
             {{ name }}
           </p>
         </div>
         <div v-if="timeSinceUpdate === ''">
           <!-- Unit (Lower Right) -->
-          <div class="flex justify-end items-end">
-            <p class="text-xs sm:text-sm font-semibold text-gray-600">
+          <div class="flex items-end justify-end">
+            <p class="text-xs font-semibold text-gray-600 sm:text-sm">
               {{ unit }}
             </p>
           </div>
         </div>
         <div v-else>
           <!-- Unit (Lower Right) -->
-          <div class="flex justify-end items-end">
-            <p class="text-xs sm:text-sm font-semibold text-gray-600">
+          <div class="flex items-end justify-end">
+            <p class="text-xs font-semibold text-gray-600 sm:text-sm">
               {{ timeSinceUpdate }}
             </p>
           </div>
