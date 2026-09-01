@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "composite": true,
+    // composite requires emit; keep it out of the source tree so Vite loads
+    // vite.config.ts rather than a stale emitted vite.config.js
+    "outDir": "./node_modules/.tmp/tsconfig.node",
     "target": "ESNext",
     "lib": ["ESNext"],
     "module": "ESNext",
