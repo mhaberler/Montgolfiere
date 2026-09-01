@@ -56,7 +56,7 @@
     "app-bump-major": "bunx npm version major --no-git-tag-version && fastlane   bump",
     "android-cpu-usage": "adb shell top",
     "sync": "eval \"$(rbenv init - zsh)\" && bunx cap sync && (cd ios/App && pod install)",
-    "deploy-leaflet-mapterhorn": "rsync -avz --delete examples/leaflet-elevation/index.html mah@mah.priv.at:/var/www/static.mah.priv.at/apps/leaflet-mapterhorn/ && echo visit https://static.mah.priv.at/apps/leaflet-mapterhorn/index.html"
+    "deploy-leaflet-mapterhorn": "rsync -avz --delete examples/leaflet-elevation/index.html mah@vps.mah.priv.at:/var/www/vps/apps/leaflet-mapterhorn/ && echo visit https://vps.mah.priv.at/apps/leaflet-mapterhorn/index.html"
   },
   "scripts-disabled": {
     "ios-build-number": "cd ios/App && agvtool what-version ",
