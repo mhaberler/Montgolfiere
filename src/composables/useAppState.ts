@@ -1,4 +1,5 @@
 // src/composables/useAppState.ts
+import { watch } from "vue";
 import { usePersistedRef } from "./usePersistedRef";
 import { usePersistedRefWithTimestamp } from "./usePersistedRefWithTimestamp";
 import { Capacitor } from "@capacitor/core";
@@ -102,7 +103,19 @@ export const deviceMappings = usePersistedRef<Record<string, UnitType | null>>(
 // ============================================================================
 export const selectedDemUrl = usePersistedRef<string>(
   "selectedDemUrl",
-  "https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles",
+  "https://download.mapterhorn.com/planet.pmtiles",
+);
+// One-time migration: old default pointed at eudem; move existing installs to mapterhorn.
+const OLD_DEFAULT_DEM_URL =
+  "https://static.mah.priv.at/cors/dem/eudem_dem_4258_europe.pmtiles";
+watch(
+  selectedDemUrl,
+  (url) => {
+    if (url === OLD_DEFAULT_DEM_URL) {
+      selectedDemUrl.value = "https://download.mapterhorn.com/planet.pmtiles";
+    }
+  },
+  { once: true },
 );
 
 // ============================================================================

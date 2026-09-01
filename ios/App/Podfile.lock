@@ -14,8 +14,6 @@ PODS:
     - IONCameraLib (~> 1.0.5)
   - CapacitorClipboard (8.0.1):
     - Capacitor
-  - CapacitorCommunityBarcodeScanner (4.0.1):
-    - Capacitor
   - CapacitorCommunityBluetoothLe (8.2.0):
     - Capacitor
   - CapacitorCommunityCameraPreview (8.0.1):
@@ -71,8 +69,6 @@ PODS:
   - CapgoCapacitorUploader (8.3.6):
     - Capacitor
   - CapgoNativeAudio (8.4.2):
-    - Capacitor
-  - CapgoNativegeocoder (8.0.31):
     - Capacitor
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
@@ -138,7 +134,6 @@ DEPENDENCIES:
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
-  - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
   - "CapacitorCommunityBluetoothLe (from `../../node_modules/@capacitor-community/bluetooth-le`)"
   - "CapacitorCommunityCameraPreview (from `../../node_modules/@capacitor-community/camera-preview`)"
   - "CapacitorCommunityKeepAwake (from `../../node_modules/@capacitor-community/keep-awake`)"
@@ -166,7 +161,6 @@ DEPENDENCIES:
   - "CapgoCapacitorShake (from `../../node_modules/@capgo/capacitor-shake`)"
   - "CapgoCapacitorUploader (from `../../node_modules/@capgo/capacitor-uploader`)"
   - "CapgoNativeAudio (from `../../node_modules/@capgo/native-audio`)"
-  - "CapgoNativegeocoder (from `../../node_modules/@capgo/nativegeocoder`)"
   - "LeadscoutHttp (from `../../node_modules/@leadscout/http`)"
   - "MhaberlerCapacitorBarometer (from `../../node_modules/@mhaberler/capacitor-barometer`)"
   - "MhaberlerCapacitorZeroconfNsd (from `../../node_modules/@mhaberler/capacitor-zeroconf-nsd`)"
@@ -203,8 +197,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/camera"
   CapacitorClipboard:
     :path: "../../node_modules/@capacitor/clipboard"
-  CapacitorCommunityBarcodeScanner:
-    :path: "../../node_modules/@capacitor-community/barcode-scanner"
   CapacitorCommunityBluetoothLe:
     :path: "../../node_modules/@capacitor-community/bluetooth-le"
   CapacitorCommunityCameraPreview:
@@ -259,8 +251,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capgo/capacitor-uploader"
   CapgoNativeAudio:
     :path: "../../node_modules/@capgo/native-audio"
-  CapgoNativegeocoder:
-    :path: "../../node_modules/@capgo/nativegeocoder"
   LeadscoutHttp:
     :path: "../../node_modules/@leadscout/http"
   MhaberlerCapacitorBarometer:
@@ -276,7 +266,6 @@ SPEC CHECKSUMS:
   CapacitorBrowser: 752e0208aa07c7aa63d1f7cde895a3e9519b2656
   CapacitorCamera: a8e5798460aa967d0636d34d3a0bf1f69a5b5a39
   CapacitorClipboard: c75fdaa6e622111119f35e7914ecfc67b05efecb
-  CapacitorCommunityBarcodeScanner: 100051f49caad62966f331cbdf6844a3e51db8e9
   CapacitorCommunityBluetoothLe: 8c17283f1837af41fc739110daab518c694674c8
   CapacitorCommunityCameraPreview: 38b73c0135eae2c8bc7652745b3820b035737313
   CapacitorCommunityKeepAwake: d41922812644562e94a79acaf7f41e6d9413af8c
@@ -304,7 +293,6 @@ SPEC CHECKSUMS:
   CapgoCapacitorShake: 70235b2ec10b38a9cebc05f9f137ac36908d34e4
   CapgoCapacitorUploader: f243db0ca88bb43d296fc2187f5fa55baaaf51fa
   CapgoNativeAudio: cfc29c10c7a7e6b52ce1077398a694eb8c3101b8
-  CapgoNativegeocoder: 1fc15ca7f050bb9de6fa63f8f920d090b8016b8d
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: ddd51d7dff36ff28defa69afedd9cdce684fd857
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
@@ -323,6 +311,6 @@ SPEC CHECKSUMS:
   OSInAppBrowserLib: c21c8fa3d886654d2f553b9f1bded9d27a0530c7
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
 
-PODFILE CHECKSUM: 13cc097d434d5af3392bcbe29b805e37b0a00283
+PODFILE CHECKSUM: b19256a00719da8760c1ee59fcb22b8d0967d945
 
 COCOAPODS: 1.16.2

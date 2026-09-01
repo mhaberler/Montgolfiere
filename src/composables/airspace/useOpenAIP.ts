@@ -21,6 +21,7 @@ export const AIRPORT_FETCH_RADIUS_M = 50_000;
 export const AIRSPACE_REFETCH_THRESHOLD_M = 10_000;
 export const AIRPORT_REFETCH_THRESHOLD_M = AIRPORT_FETCH_RADIUS_M / 2;
 const AIRSPACE_DIST_METERS = 10;
+const RATE_LIMIT_COOLDOWN_MS = 60_000;
 
 const API_KEY = import.meta.env.VITE_OPENAIP_KEY as string;
 
@@ -76,15 +77,29 @@ export function useOpenAIP() {
   let lastAirportFetchCenter: LatLng | null = null;
   let airportRefreshInFlight = false;
   let pendingAirportRefreshCenter: LatLng | null = null;
+  let rateLimitedUntil = 0;
+
+  function rateLimitMessage(): string {
+    const secs = Math.ceil((rateLimitedUntil - Date.now()) / 1000);
+    return `OpenAIP rate limited — retry in ${secs}s`;
+  }
 
   async function fetchAirspaceAt(
     lat: number,
     lng: number,
   ): Promise<AirspaceLookup> {
+    if (Date.now() < rateLimitedUntil) {
+      return { popupText: rateLimitMessage(), geojson: null };
+    }
+
     const url = `https://api.core.openaip.net/api/airspaces?pos=${lat},${lng}&dist=${AIRSPACE_DIST_METERS}&apiKey=${API_KEY}`;
 
     try {
       const response = await fetch(url);
+      if (response.status === 429) {
+        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+        return { popupText: rateLimitMessage(), geojson: null };
+      }
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -158,10 +173,17 @@ export function useOpenAIP() {
       return { popupText, geojson };
     } catch (error) {
       console.error("OpenAIP error:", error);
-      const message = !navigator.onLine
-        ? "Offline — no cached data for this location"
-        : `Error: ${error}`;
-      return { popupText: message, geojson: null };
+      if (!navigator.onLine) {
+        return {
+          popupText: "Offline — no cached data for this location",
+          geojson: null,
+        };
+      }
+      // A 429 response lacks CORS headers, so the browser reports it as an
+      // opaque "Failed to fetch" instead of a readable status — treat any
+      // fetch failure while online as a possible rate limit.
+      rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+      return { popupText: rateLimitMessage(), geojson: null };
     }
   }
 
@@ -169,10 +191,18 @@ export function useOpenAIP() {
     lat: number,
     lng: number,
   ): Promise<AirportItem[]> {
+    if (Date.now() < rateLimitedUntil) {
+      return [];
+    }
+
     const url = `https://api.core.openaip.net/api/airports?pos=${lat},${lng}&dist=${AIRPORT_FETCH_RADIUS_M}&apiKey=${API_KEY}`;
 
     try {
       const response = await fetch(url);
+      if (response.status === 429) {
+        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+        return [];
+      }
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -182,6 +212,12 @@ export function useOpenAIP() {
       );
     } catch (error) {
       console.error("Airport fetch error:", error);
+      if (navigator.onLine) {
+        // A 429 response lacks CORS headers, so the browser reports it as an
+        // opaque "Failed to fetch" instead of a readable status — treat any
+        // fetch failure while online as a possible rate limit.
+        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+      }
       return [];
     }
   }

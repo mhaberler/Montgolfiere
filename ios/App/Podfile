@@ -8,7 +8,6 @@ use_frameworks!
 def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorCommunityBarcodeScanner', :path => '../../node_modules/@capacitor-community/barcode-scanner'
   pod 'CapacitorCommunityBluetoothLe', :path => '../../node_modules/@capacitor-community/bluetooth-le'
   pod 'CapacitorCommunityCameraPreview', :path => '../../node_modules/@capacitor-community/camera-preview'
   pod 'CapacitorCommunityKeepAwake', :path => '../../node_modules/@capacitor-community/keep-awake'
@@ -41,7 +40,6 @@ def capacitor_pods
   pod 'CapgoCapacitorShake', :path => '../../node_modules/@capgo/capacitor-shake'
   pod 'CapgoCapacitorUploader', :path => '../../node_modules/@capgo/capacitor-uploader'
   pod 'CapgoNativeAudio', :path => '../../node_modules/@capgo/native-audio'
-  pod 'CapgoNativegeocoder', :path => '../../node_modules/@capgo/nativegeocoder'
   pod 'LeadscoutHttp', :path => '../../node_modules/@leadscout/http'
   pod 'MhaberlerCapacitorBarometer', :path => '../../node_modules/@mhaberler/capacitor-barometer'
   pod 'MhaberlerCapacitorZeroconfNsd', :path => '../../node_modules/@mhaberler/capacitor-zeroconf-nsd'
