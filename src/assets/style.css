@@ -25,7 +25,6 @@
 
 body {
   margin: 0;
-  min-width: 320px;
   min-height: 100vh;
   padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom)
     var(--safe-area-left);
