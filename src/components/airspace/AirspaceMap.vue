@@ -119,7 +119,10 @@ type LeafletControlFactory = {
 };
 
 type LeafletRuntime = typeof L & {
-  Circle: new (latlng: LatLngExpression, options?: Record<string, unknown>) => any;
+  Circle: new (
+    latlng: LatLngExpression,
+    options?: Record<string, unknown>,
+  ) => any;
   control?: LeafletControlFactory;
   Control: typeof Control & {
     Layers: new (
@@ -177,6 +180,7 @@ let trackMarker: CircleMarker | null = null;
 let accuracyCircle: any = null;
 let firstFix = true;
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+let downloadInFlight = false;
 
 const AIRPORT_DEBUG =
   import.meta.env.DEV &&
@@ -201,6 +205,29 @@ const AIRPORT_ICON_COLOR: Record<number, string> = {
 
 function airportColor(type: number): string {
   return AIRPORT_ICON_COLOR[type] ?? "#2E7D32";
+}
+
+/** Tray-and-arrow download glyph; a bare arrow character reads as navigation. */
+function createDownloadIcon(): SVGSVGElement {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "2");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  svg.setAttribute("aria-hidden", "true");
+
+  for (const d of [
+    "M12 3v11m0 0 4-4m-4 4-4-4",
+    "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2",
+  ]) {
+    const path = document.createElementNS(ns, "path");
+    path.setAttribute("d", d);
+    svg.append(path);
+  }
+  return svg;
 }
 
 function createLatLng(
@@ -465,13 +492,12 @@ function syncTrackPosition(position: Position): void {
       fillOpacity: 1,
     }).addTo(activeMap);
     accuracyCircle = new leaflet.Circle(latlng, {
-        radius: accuracy,
-        color: "#1a73e8",
-        weight: 1,
-        fillColor: "#1a73e8",
-        fillOpacity: 0.1,
-      })
-      .addTo(activeMap);
+      radius: accuracy,
+      color: "#1a73e8",
+      weight: 1,
+      fillColor: "#1a73e8",
+      fillOpacity: 0.1,
+    }).addTo(activeMap);
   } else {
     trackMarker.setLatLng(latlng);
     accuracyCircle?.setLatLng(latlng);
@@ -753,6 +779,48 @@ onMounted(() => {
   }) as LeafletControlCtor;
   homeControl = new HomeControl();
   applyHomeControl();
+
+  const DownloadControl = Control.extend({
+    options: { position: "topleft" },
+    onAdd(controlMap: LeafletMapWithExtras) {
+      const btn = DomUtil.create(
+        "div",
+        "leaflet-bar download-control",
+      ) as HTMLDivElement;
+      const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
+      link.href = "#";
+      link.title = "Download this area for offline use";
+      link.append(createDownloadIcon());
+      link.role = "button";
+      DomEvent.disableClickPropagation(btn);
+      DomEvent.on(link, "click", (event: Event) => {
+        DomEvent.preventDefault(event);
+        if (downloadInFlight) {
+          return;
+        }
+
+        downloadInFlight = true;
+        link.classList.add("is-busy");
+        void openAIP
+          .downloadRegion(controlMap.getCenter())
+          .then(({ airspaces, airports }) => {
+            emit(
+              "error",
+              `Area cached: ${airspaces} airspaces, ${airports} airports`,
+            );
+          })
+          .catch((error: unknown) => {
+            emit("error", `Download failed: ${error}`);
+          })
+          .finally(() => {
+            downloadInFlight = false;
+            link.classList.remove("is-busy");
+          });
+      });
+      return btn;
+    },
+  }) as LeafletControlCtor;
+  new DownloadControl().addTo(map);
 
   const StackHostControl = Control.extend({
     options: { position: "bottomright" },

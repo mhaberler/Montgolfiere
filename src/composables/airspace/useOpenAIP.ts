@@ -5,6 +5,7 @@ import {
   airspaceTypeName,
   activityName,
 } from "@/airspace/airspaceStack";
+import { containsPoint } from "@/airspace/pointInPolygon";
 import {
   airportPopupHtml as buildAirportPopupHtml,
   airportTypeName as getAirportTypeName,
@@ -15,12 +16,21 @@ import {
   type AirspaceItem,
   type AirportItem,
 } from "@/airspace/markerCallback";
+import {
+  ageDays,
+  cellCenter,
+  cellKey,
+  getRegion,
+  isStale,
+  putRegion,
+  type RegionEntry,
+} from "./airspaceCache";
 
 // OpenAIP rejects dist > 50_000 with HTTP 400
 export const AIRPORT_FETCH_RADIUS_M = 50_000;
+export const AIRSPACE_FETCH_RADIUS_M = 50_000;
 export const AIRSPACE_REFETCH_THRESHOLD_M = 10_000;
 export const AIRPORT_REFETCH_THRESHOLD_M = AIRPORT_FETCH_RADIUS_M / 2;
-const AIRSPACE_DIST_METERS = 10;
 const RATE_LIMIT_COOLDOWN_MS = 60_000;
 
 const API_KEY = import.meta.env.VITE_OPENAIP_KEY as string;
@@ -84,28 +94,108 @@ export function useOpenAIP() {
     return `OpenAIP rate limited — retry in ${secs}s`;
   }
 
-  async function fetchAirspaceAt(
-    lat: number,
-    lng: number,
-  ): Promise<AirspaceLookup> {
-    if (Date.now() < rateLimitedUntil) {
-      return { popupText: rateLimitMessage(), geojson: null };
+  /**
+   * Fetch one region from OpenAIP. Returns null on any failure, arming the
+   * rate-limit cooldown when the failure could be a 429 (whose CORS-less
+   * response the browser reports as an opaque "Failed to fetch").
+   */
+  async function fetchRegion<T>(
+    endpoint: "airspaces" | "airports",
+    center: LatLng,
+    radiusM: number,
+    ignoreCooldown = false,
+  ): Promise<T[] | null> {
+    if (!ignoreCooldown && Date.now() < rateLimitedUntil) {
+      return null;
     }
 
-    const url = `https://api.core.openaip.net/api/airspaces?pos=${lat},${lng}&dist=${AIRSPACE_DIST_METERS}&apiKey=${API_KEY}`;
+    const url = `https://api.core.openaip.net/api/${endpoint}?pos=${center.lat},${center.lng}&dist=${radiusM}&apiKey=${API_KEY}`;
 
     try {
       const response = await fetch(url);
       if (response.status === 429) {
         rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-        return { popupText: rateLimitMessage(), geojson: null };
+        return null;
       }
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
       const data = await response.json();
+      return (data.items ?? []) as T[];
+    } catch (error) {
+      console.error(`OpenAIP ${endpoint} fetch failed:`, error);
+      if (navigator.onLine) {
+        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+      }
+      return null;
+    }
+  }
 
-      const items: AirspaceItem[] = data.items ?? [];
+  /**
+   * Resolve a region cache-first: fresh cache wins, a stale entry is served
+   * immediately while a refresh runs in the background, and a miss falls
+   * through to the network.
+   */
+  async function resolveRegion<T>(
+    kind: "airspace" | "airport",
+    endpoint: "airspaces" | "airports",
+    lat: number,
+    lng: number,
+    radiusM: number,
+  ): Promise<RegionEntry<T> | null> {
+    const key = cellKey(kind, lat, lng);
+    const cached = await getRegion<T>(key);
+
+    if (cached && !isStale(cached)) {
+      return cached;
+    }
+
+    if (cached && !navigator.onLine) {
+      return cached;
+    }
+
+    const center = cellCenter(lat, lng);
+    const items = await fetchRegion<T>(endpoint, center, radiusM);
+    if (items) {
+      await putRegion(key, kind, items);
+      return await getRegion<T>(key);
+    }
+
+    return cached;
+  }
+
+  /** Prefix warning shown when the only data available is past its AIRAC TTL. */
+  function stalePrefix(entry: RegionEntry): string {
+    return isStale(entry)
+      ? `<b style="color:#b45309">⚠ cached data ${ageDays(entry)} d old</b><br>`
+      : "";
+  }
+
+  async function fetchAirspaceAt(
+    lat: number,
+    lng: number,
+  ): Promise<AirspaceLookup> {
+    const region = await resolveRegion<AirspaceItem>(
+      "airspace",
+      "airspaces",
+      lat,
+      lng,
+      AIRSPACE_FETCH_RADIUS_M,
+    );
+
+    if (!region) {
+      const message = !navigator.onLine
+        ? "Offline — no cached data for this location"
+        : rateLimitMessage();
+      return { popupText: message, geojson: null };
+    }
+
+    {
+      // The cached region covers the whole cell; narrow it to the airspaces
+      // actually containing this position.
+      const items = region.items.filter((airspace) =>
+        containsPoint(airspace.geometry, lat, lng),
+      );
       items.sort(
         (left, right) =>
           (left.lowerLimit ? toFeet(left.lowerLimit) : 0) -
@@ -135,7 +225,7 @@ export function useOpenAIP() {
               return `<b>${airspace.name}</b> (${airspaceTypeName(airspace.type)}, ${icaoClassName(airspace.icaoClass)}${activity}) — ${lower} / ${upper} — ${status}${flagsHtml}`;
             })
             .join("<br>")
-        : `No airspaces within ${AIRSPACE_DIST_METERS} m`;
+        : "No airspaces at this position";
 
       const geojson: FeatureCollection<Geometry> = {
         type: "FeatureCollection",
@@ -170,20 +260,7 @@ export function useOpenAIP() {
       };
 
       lastAirspaceFetchCenter = { lat, lng };
-      return { popupText, geojson };
-    } catch (error) {
-      console.error("OpenAIP error:", error);
-      if (!navigator.onLine) {
-        return {
-          popupText: "Offline — no cached data for this location",
-          geojson: null,
-        };
-      }
-      // A 429 response lacks CORS headers, so the browser reports it as an
-      // opaque "Failed to fetch" instead of a readable status — treat any
-      // fetch failure while online as a possible rate limit.
-      rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-      return { popupText: rateLimitMessage(), geojson: null };
+      return { popupText: `${stalePrefix(region)}${popupText}`, geojson };
     }
   }
 
@@ -191,35 +268,17 @@ export function useOpenAIP() {
     lat: number,
     lng: number,
   ): Promise<AirportItem[]> {
-    if (Date.now() < rateLimitedUntil) {
-      return [];
-    }
+    const region = await resolveRegion<AirportItem>(
+      "airport",
+      "airports",
+      lat,
+      lng,
+      AIRPORT_FETCH_RADIUS_M,
+    );
 
-    const url = `https://api.core.openaip.net/api/airports?pos=${lat},${lng}&dist=${AIRPORT_FETCH_RADIUS_M}&apiKey=${API_KEY}`;
-
-    try {
-      const response = await fetch(url);
-      if (response.status === 429) {
-        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-        return [];
-      }
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const data = await response.json();
-      return (data.items as AirportItem[]).filter(
-        (airport) => airport.frequencies?.length,
-      );
-    } catch (error) {
-      console.error("Airport fetch error:", error);
-      if (navigator.onLine) {
-        // A 429 response lacks CORS headers, so the browser reports it as an
-        // opaque "Failed to fetch" instead of a readable status — treat any
-        // fetch failure while online as a possible rate limit.
-        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-      }
-      return [];
-    }
+    return (region?.items ?? []).filter(
+      (airport) => airport.frequencies?.length,
+    );
   }
 
   function needsAirspaceRefetch(center: LatLng): boolean {
@@ -271,6 +330,69 @@ export function useOpenAIP() {
     }
   }
 
+  /**
+   * Pre-flight download: force-fetch and cache both regions covering a
+   * position, ignoring any existing cache entry.
+   */
+  async function downloadRegion(
+    center: LatLng,
+  ): Promise<{ airspaces: number; airports: number }> {
+    if (!navigator.onLine) {
+      throw new Error("Offline — cannot download");
+    }
+
+    const fetchCenter = cellCenter(center.lat, center.lng);
+
+    // An explicit user action bypasses the cooldown, so one endpoint failing
+    // does not silently skip the other.
+    const [airspaces, airports] = await Promise.all([
+      fetchRegion<AirspaceItem>(
+        "airspaces",
+        fetchCenter,
+        AIRSPACE_FETCH_RADIUS_M,
+        true,
+      ),
+      fetchRegion<AirportItem>(
+        "airports",
+        fetchCenter,
+        AIRPORT_FETCH_RADIUS_M,
+        true,
+      ),
+    ]);
+
+    if (airspaces) {
+      await putRegion(
+        cellKey("airspace", center.lat, center.lng),
+        "airspace",
+        airspaces,
+      );
+    }
+    if (airports) {
+      await putRegion(
+        cellKey("airport", center.lat, center.lng),
+        "airport",
+        airports,
+      );
+    }
+
+    // Report a partial failure as a failure — a "0 airspaces" success message
+    // would read as "this area has no airspaces".
+    const failed = [
+      airspaces ? null : "airspaces",
+      airports ? null : "airports",
+    ].filter(Boolean);
+    if (failed.length) {
+      throw new Error(
+        `${failed.join(" and ")} unavailable (${rateLimitMessage()})`,
+      );
+    }
+
+    return {
+      airspaces: airspaces?.length ?? 0,
+      airports: airports?.length ?? 0,
+    };
+  }
+
   function resetAirspaceCenter(): void {
     lastAirspaceFetchCenter = null;
   }
@@ -286,6 +408,7 @@ export function useOpenAIP() {
     needsAirspaceRefetch,
     needsAirportRefetch,
     refetchAirportsIfNeeded,
+    downloadRegion,
     resetAirspaceCenter,
     resetAirportCenter,
   };
