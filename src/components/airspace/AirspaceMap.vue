@@ -471,6 +471,29 @@ function airportRadius(zoom: number): number {
   return Math.max(AIRPORT_RADIUS_MIN, AIRPORT_RADIUS_MAX - shrink);
 }
 
+/**
+ * Extra pixels of transparent stroke around an airport marker.
+ *
+ * The SVG renderer sets pointer-events:auto on the path, so the browser
+ * hit-tests the painted shape — a 5 px marker is a 10 px target, about a
+ * quarter of the ~44 px a finger needs. A wide stroke at zero opacity is
+ * hit-tested but never drawn, so the target grows to radius + weight/2
+ * without changing how the marker looks.
+ */
+const AIRPORT_HIT_WEIGHT = 20;
+
+/** Marker styling, shared so the visible dot and the hit area cannot drift apart. */
+function airportStyle(color: string): PathOptions {
+  return {
+    color,
+    // Stroke carries the hit area only; opacity 0 keeps it invisible.
+    weight: AIRPORT_HIT_WEIGHT,
+    opacity: 0,
+    fillColor: color,
+    fillOpacity: 0.55,
+  };
+}
+
 /** Resize existing markers and honour the zoom threshold, without refetching. */
 function applyAirportZoom(): void {
   if (!map) {
@@ -514,12 +537,7 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
       const existing = airportMarkerById.get(airport._id);
       if (existing) {
         existing.setLatLng([lat, lng]);
-        existing.setStyle({
-          color,
-          weight: 2,
-          fillColor: color,
-          fillOpacity: 0.55,
-        });
+        existing.setStyle(airportStyle(color));
         existing.setRadius(radius);
         existing.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS);
         existing.bindTooltip(
@@ -532,10 +550,7 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
 
       const marker = new CircleMarker([lat, lng], {
         radius,
-        color,
-        weight: 2,
-        fillColor: color,
-        fillOpacity: 0.55,
+        ...airportStyle(color),
       }).addTo(activeMap);
       marker.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS);
       marker.bindTooltip(

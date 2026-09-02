@@ -12,9 +12,12 @@ declare module "leaflet" {
   export interface PathOptions {
     color?: string;
     weight?: number;
+    /** Stroke opacity, rendered as stroke-opacity. */
+    opacity?: number;
     fillColor?: string;
     fillOpacity?: number;
     dashArray?: string;
+    interactive?: boolean;
   }
 
   export class Layer {
