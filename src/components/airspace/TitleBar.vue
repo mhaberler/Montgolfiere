@@ -101,7 +101,7 @@ defineEmits<{
 <style scoped>
 .title-bar {
   min-height: 2.5rem;
-  padding-top: max(0.375rem, env(safe-area-inset-top));
+  padding-top: 0.375rem;
   padding-bottom: 0.375rem;
   padding-left: max(0.75rem, env(safe-area-inset-left));
   padding-right: max(0.75rem, env(safe-area-inset-right));

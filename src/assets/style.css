@@ -33,7 +33,7 @@ body {
 body {
   margin: 0;
   box-sizing: border-box;
-  padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom)
+  padding: 0 var(--safe-area-right) var(--safe-area-bottom)
     var(--safe-area-left);
 }
 
