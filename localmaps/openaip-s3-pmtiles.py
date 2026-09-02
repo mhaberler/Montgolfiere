@@ -54,7 +54,7 @@ def main():
     for layer_name, url in LAYERS.items():
         file_path = download(layer_name, url)
         if file_path:
-            tippecanoe_cmd.extend(["--layer", layer_name, file_path])
+            tippecanoe_cmd.append(f"--named-layer={layer_name}:{file_path}")
 
     print("\n[*] Running Tippecanoe to build PMTiles archive...")
     try:
