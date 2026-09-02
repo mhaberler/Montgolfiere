@@ -1,152 +1,271 @@
 /**
- * IndexedDB cache for OpenAIP region responses.
+ * Shared IndexedDB layer for offline airspace data.
  *
- * Airspace and airport items are stored per grid cell so that a cached region
- * can answer any point lookup inside it, online or offline.
+ * This module owns the schema for the "airspace-cache" database. Three stores:
+ *
+ *   countries  per-country GeoJSON exports (airspace/airports) — the primary
+ *              offline data source, written by useCountryData.ts
+ *   tiles      raster map tile blobs, written by tileCache.ts
+ *
+ * The per-cell "regions" store that backed the old OpenAIP REST cache is
+ * dropped in v3: whole-country downloads supersede it.
  */
 
+import { ref } from "vue";
+
 const DB_NAME = "airspace-cache";
-const DB_VERSION = 2;
-const STORE = "regions";
+const DB_VERSION = 3;
+const COUNTRY_STORE = "countries";
 const TILE_STORE = "tiles";
-const SIZE_LIMIT_BYTES = 50 * 1024 * 1024;
+const LEGACY_REGION_STORE = "regions";
 
-export const REGION_TTL_MS = 28 * 24 * 60 * 60 * 1000; // AIRAC cycle
+/** openAIP export layers this app consumes. Extensible: add a code here and a consumer. */
+export type CountryLayer = "asp" | "apt";
 
-export type RegionKind = "airspace" | "airport";
-
-export interface RegionEntry<T = unknown> {
-  key: string;
-  kind: RegionKind;
+export interface CountryEntry<T = unknown> {
+  key: string; // `${country}:${layer}`, e.g. "de:asp"
+  country: string;
+  layer: CountryLayer;
   items: T[];
+  /** Validators from the export bucket, for conditional revalidation. */
+  etag: string | null;
+  lastModified: string | null;
+  /** When the body was last actually downloaded. */
   fetchedAt: number;
-  lastAccess: number;
+  /** When it was last confirmed current — advanced by a 304, throttles refresh. */
+  lastCheckedAt: number;
   sizeBytes: number;
 }
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
+export function countryKey(country: string, layer: CountryLayer): string {
+  return `${country}:${layer}`;
+}
+
+/**
+ * A DB that opened at the right version but is missing a store cannot be
+ * repaired by reopening — only by deleting and recreating it. Caches are
+ * disposable, so that is safe; the alternative is every read failing forever.
+ */
+async function recreateDb(): Promise<IDBDatabase> {
+  dbPromise = null;
+  await new Promise<void>((resolve) => {
+    const request = indexedDB.deleteDatabase(DB_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = () => resolve();
+    request.onblocked = () => resolve();
+  });
+  return openDb();
+}
+
 function openDb(): Promise<IDBDatabase> {
   if (!dbPromise) {
     dbPromise = new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
+
       request.onupgradeneeded = () => {
         const db = request.result;
-        if (!db.objectStoreNames.contains(STORE)) {
-          const store = db.createObjectStore(STORE, { keyPath: "key" });
-          store.createIndex("lastAccess", "lastAccess");
+        if (!db.objectStoreNames.contains(COUNTRY_STORE)) {
+          const countries = db.createObjectStore(COUNTRY_STORE, {
+            keyPath: "key",
+          });
+          countries.createIndex("country", "country");
         }
         if (!db.objectStoreNames.contains(TILE_STORE)) {
           const tiles = db.createObjectStore(TILE_STORE, { keyPath: "key" });
           tiles.createIndex("lastAccess", "lastAccess");
         }
+        // The 0.25-degree REST region cache has no successor; whole countries
+        // answer any point the cells used to.
+        if (db.objectStoreNames.contains(LEGACY_REGION_STORE)) {
+          db.deleteObjectStore(LEGACY_REGION_STORE);
+        }
       };
-      request.onsuccess = () => resolve(request.result);
+
+      // Both this module and tileCache.ts hold their own connection to this
+      // DB. Without these, a version bump deadlocks behind the other one.
+      request.onblocked = () => {
+        console.warn("airspace-cache upgrade blocked by another connection");
+      };
+      request.onsuccess = () => {
+        const db = request.result;
+        db.onversionchange = () => {
+          db.close();
+          dbPromise = null;
+        };
+        if (
+          !db.objectStoreNames.contains(COUNTRY_STORE) ||
+          !db.objectStoreNames.contains(TILE_STORE)
+        ) {
+          console.warn("airspace-cache schema incomplete; recreating");
+          db.close();
+          recreateDb().then(resolve, reject);
+          return;
+        }
+        resolve(db);
+      };
       request.onerror = () => reject(request.error);
     });
   }
   return dbPromise;
 }
 
-function promisify<T>(request: IDBRequest<T>): Promise<T> {
+export { openDb };
+
+export function promisify<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
 }
 
-/** Grid cell key for a position. Cells are 0.25°; a 50 km fetch radius covers one fully. */
-export const CELL_DEGREES = 0.25;
+/** Whether the browser has promised not to evict this origin. */
+export const storagePersisted = ref(false);
 
-export function cellKey(kind: RegionKind, lat: number, lng: number): string {
-  const cellLat = Math.floor(lat / CELL_DEGREES) * CELL_DEGREES;
-  const cellLng = Math.floor(lng / CELL_DEGREES) * CELL_DEGREES;
-  return `${kind}:${cellLat.toFixed(2)},${cellLng.toFixed(2)}`;
-}
-
-/** Center of the cell a position falls into — the point a region fetch is made around. */
-export function cellCenter(
-  lat: number,
-  lng: number,
-): { lat: number; lng: number } {
-  return {
-    lat: Math.floor(lat / CELL_DEGREES) * CELL_DEGREES + CELL_DEGREES / 2,
-    lng: Math.floor(lng / CELL_DEGREES) * CELL_DEGREES + CELL_DEGREES / 2,
-  };
-}
-
-export function isStale(entry: RegionEntry): boolean {
-  return Date.now() - entry.fetchedAt > REGION_TTL_MS;
-}
-
-export function ageDays(entry: RegionEntry): number {
-  return Math.floor((Date.now() - entry.fetchedAt) / (24 * 60 * 60 * 1000));
-}
-
-/** Read a cached region, refreshing its LRU stamp. Returns null when absent. */
-export async function getRegion<T>(
-  key: string,
-): Promise<RegionEntry<T> | null> {
+/**
+ * Ask the browser not to evict this origin under storage pressure.
+ *
+ * Without it the whole cache — hundreds of MB of tiles included — is fair game
+ * for eviction exactly when it matters: offline, mid-flight.
+ *
+ * Browsers grant this on engagement signals (installed/bookmarked, high site
+ * engagement, notification permission), so a fresh dev origin is refused
+ * without prompting. That is a downgrade, not a failure: caches still work,
+ * they are just evictable, so the app reports it rather than retrying.
+ */
+export async function requestPersistentStorage(): Promise<boolean> {
   try {
-    const db = await openDb();
-    const entry = await promisify(
-      db.transaction(STORE, "readonly").objectStore(STORE).get(key),
-    );
-    if (!entry) {
+    if (!navigator.storage?.persist) {
+      return false;
+    }
+    const granted =
+      (await navigator.storage.persisted()) ||
+      (await navigator.storage.persist());
+    storagePersisted.value = granted;
+    return granted;
+  } catch (error) {
+    console.warn("persistent storage request failed:", error);
+    return false;
+  }
+}
+
+/** Bytes the browser will let this origin use, when it will say. */
+export async function storageQuota(): Promise<{
+  usage: number;
+  quota: number;
+} | null> {
+  try {
+    if (!navigator.storage?.estimate) {
       return null;
     }
-    const touched = { ...entry, lastAccess: Date.now() } as RegionEntry<T>;
-    const store = db.transaction(STORE, "readwrite").objectStore(STORE);
-    store.put(touched);
-    return touched;
-  } catch (error) {
-    console.error("airspaceCache read failed:", error);
+    const { usage, quota } = await navigator.storage.estimate();
+    return { usage: usage ?? 0, quota: quota ?? 0 };
+  } catch {
     return null;
   }
 }
 
-/** Store a region response, evicting least-recently-used entries past the size cap. */
-export async function putRegion<T>(
+/** Bytes currently held, per store, for the Settings storage readout. */
+export async function storageUsage(): Promise<{
+  countries: number;
+  tiles: number;
+}> {
+  const db = await openDb();
+  const sum = async (store: string): Promise<number> => {
+    const entries = (await promisify(
+      db.transaction(store, "readonly").objectStore(store).getAll(),
+    )) as { sizeBytes?: number }[];
+    return entries.reduce((total, entry) => total + (entry.sizeBytes ?? 0), 0);
+  };
+  return { countries: await sum(COUNTRY_STORE), tiles: await sum(TILE_STORE) };
+}
+
+/** Log a repeated cache failure once, not once per lookup. */
+let readFailureLogged = false;
+
+export async function getCountry<T>(
   key: string,
-  kind: RegionKind,
-  items: T[],
-): Promise<void> {
+): Promise<CountryEntry<T> | null> {
   try {
     const db = await openDb();
-    const now = Date.now();
-    const entry: RegionEntry<T> = {
-      key,
-      kind,
-      items,
-      fetchedAt: now,
-      lastAccess: now,
-      sizeBytes: JSON.stringify(items).length,
-    };
-    await promisify(
-      db.transaction(STORE, "readwrite").objectStore(STORE).put(entry),
-    );
-    await evictIfNeeded(db);
+    const entry = (await promisify(
+      db
+        .transaction(COUNTRY_STORE, "readonly")
+        .objectStore(COUNTRY_STORE)
+        .get(key),
+    )) as CountryEntry<T> | undefined;
+    readFailureLogged = false;
+    return entry ?? null;
   } catch (error) {
-    console.error("airspaceCache write failed:", error);
+    if (!readFailureLogged) {
+      readFailureLogged = true;
+      console.error("countryStore read failed:", error);
+    }
+    return null;
   }
 }
 
-async function evictIfNeeded(db: IDBDatabase): Promise<void> {
-  const entries = (await promisify(
-    db.transaction(STORE, "readonly").objectStore(STORE).getAll(),
-  )) as RegionEntry[];
-
-  let total = entries.reduce((sum, entry) => sum + entry.sizeBytes, 0);
-  if (total <= SIZE_LIMIT_BYTES) {
-    return;
+/** Every stored country layer, for the Settings list. */
+export async function listCountries(): Promise<CountryEntry[]> {
+  try {
+    const db = await openDb();
+    return (await promisify(
+      db
+        .transaction(COUNTRY_STORE, "readonly")
+        .objectStore(COUNTRY_STORE)
+        .getAll(),
+    )) as CountryEntry[];
+  } catch (error) {
+    console.error("countryStore list failed:", error);
+    return [];
   }
+}
 
-  const store = db.transaction(STORE, "readwrite").objectStore(STORE);
-  for (const entry of entries.sort((a, b) => a.lastAccess - b.lastAccess)) {
-    if (total <= SIZE_LIMIT_BYTES) {
-      break;
+/**
+ * Store one downloaded country layer.
+ *
+ * Throws on quota exhaustion rather than logging and continuing: a silently
+ * half-written country would read as "no airspace here".
+ */
+export async function putCountry<T>(entry: CountryEntry<T>): Promise<void> {
+  const db = await openDb();
+  try {
+    await promisify(
+      db
+        .transaction(COUNTRY_STORE, "readwrite")
+        .objectStore(COUNTRY_STORE)
+        .put(entry),
+    );
+  } catch (error) {
+    if ((error as DOMException)?.name === "QuotaExceededError") {
+      throw new Error(
+        "Out of storage space — free space or delete a downloaded country",
+        { cause: error },
+      );
     }
-    store.delete(entry.key);
-    total -= entry.sizeBytes;
+    throw error;
+  }
+}
+
+/** Update validators after a 304, without rewriting the (unchanged) items. */
+export async function touchCountry(
+  key: string,
+  lastCheckedAt: number,
+): Promise<void> {
+  const existing = await getCountry(key);
+  if (existing) {
+    await putCountry({ ...existing, lastCheckedAt });
+  }
+}
+
+export async function deleteCountry(country: string): Promise<void> {
+  const db = await openDb();
+  const store = db
+    .transaction(COUNTRY_STORE, "readwrite")
+    .objectStore(COUNTRY_STORE);
+  const keys = await promisify(store.index("country").getAllKeys(country));
+  for (const key of keys) {
+    store.delete(key);
   }
 }

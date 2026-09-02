@@ -17,23 +17,19 @@ import {
   type AirportItem,
 } from "@/airspace/markerCallback";
 import {
-  ageDays,
-  cellCenter,
-  cellKey,
-  getRegion,
-  isStale,
-  putRegion,
-  type RegionEntry,
-} from "./airspaceCache";
+  countriesAt,
+  countriesInBounds,
+  coverageOf,
+  itemsFor,
+  type Bounds,
+} from "./useCountryData";
 
-// OpenAIP rejects dist > 50_000 with HTTP 400
-export const AIRPORT_FETCH_RADIUS_M = 50_000;
-export const AIRSPACE_FETCH_RADIUS_M = 50_000;
+/**
+ * Distance the map may move before airspace/airports are recomputed. Purely a
+ * render throttle now — the data is local, so these are cheap.
+ */
 export const AIRSPACE_REFETCH_THRESHOLD_M = 10_000;
-export const AIRPORT_REFETCH_THRESHOLD_M = AIRPORT_FETCH_RADIUS_M / 2;
-const RATE_LIMIT_COOLDOWN_MS = 60_000;
-
-const API_KEY = import.meta.env.VITE_OPENAIP_KEY as string;
+export const AIRPORT_REFETCH_THRESHOLD_M = 25_000;
 
 export interface LatLng {
   lat: number;
@@ -62,6 +58,34 @@ function haversineM(a: LatLng, b: LatLng): number {
   return 2 * r * Math.asin(Math.sqrt(h));
 }
 
+/** Build the display feature for one airspace, at a position for the active test. */
+function airspaceFeature(airspace: AirspaceItem, lat: number, lng: number) {
+  const { active, reason } = airspace.hoursOfOperation
+    ? isActive(airspace.hoursOfOperation, lat, lng)
+    : { active: true, reason: "24h" };
+  return {
+    type: "Feature" as const,
+    geometry: airspace.geometry,
+    properties: {
+      name: airspace.name,
+      type: airspace.type,
+      icaoClass: airspace.icaoClass,
+      lowerLabel: airspace.lowerLimit
+        ? formatAltitude(airspace.lowerLimit)
+        : "?",
+      upperLabel: airspace.upperLimit
+        ? formatAltitude(airspace.upperLimit)
+        : "?",
+      lowerFt: airspace.lowerLimit ? toFeet(airspace.lowerLimit) : 0,
+      upperFt: airspace.upperLimit ? toFeet(airspace.upperLimit) : 0,
+      ...(airspace.activity ? { activity: airspace.activity } : {}),
+      flags: activeFlags(airspace),
+      activeReason: reason,
+      active,
+    },
+  };
+}
+
 export function useOpenAIP() {
   const online = ref(
     typeof navigator !== "undefined" ? navigator.onLine : true,
@@ -87,198 +111,157 @@ export function useOpenAIP() {
   let lastAirportFetchCenter: LatLng | null = null;
   let airportRefreshInFlight = false;
   let pendingAirportRefreshCenter: LatLng | null = null;
-  let rateLimitedUntil = 0;
-
-  function rateLimitMessage(): string {
-    const secs = Math.ceil((rateLimitedUntil - Date.now()) / 1000);
-    return `OpenAIP rate limited — retry in ${secs}s`;
-  }
 
   /**
-   * Fetch one region from OpenAIP. Returns null on any failure, arming the
-   * rate-limit cooldown when the failure could be a 429 (whose CORS-less
-   * response the browser reports as an opaque "Failed to fetch").
+   * Explain a lookup that returned nothing.
+   *
+   * "No airspaces here" and "this country was never downloaded" must never read
+   * the same: one says the air is clear, the other says we do not know.
    */
-  async function fetchRegion<T>(
-    endpoint: "airspaces" | "airports",
-    center: LatLng,
-    radiusM: number,
-    ignoreCooldown = false,
-  ): Promise<T[] | null> {
-    if (!ignoreCooldown && Date.now() < rateLimitedUntil) {
-      return null;
+  async function coverageMessage(lat: number, lng: number): Promise<string> {
+    const countries = countriesAt(lat, lng);
+    if (!countries.length) {
+      return "Outside openAIP coverage";
     }
 
-    const url = `https://api.core.openaip.net/api/${endpoint}?pos=${center.lat},${center.lng}&dist=${radiusM}&apiKey=${API_KEY}`;
-
-    try {
-      const response = await fetch(url);
-      if (response.status === 429) {
-        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-        return null;
+    const missing: string[] = [];
+    for (const country of countries) {
+      const coverage = await coverageOf(country, "asp");
+      if (coverage === "missing") {
+        missing.push(country.toUpperCase());
       }
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const data = await response.json();
-      return (data.items ?? []) as T[];
-    } catch (error) {
-      console.error(`OpenAIP ${endpoint} fetch failed:`, error);
-      if (navigator.onLine) {
-        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-      }
-      return null;
     }
+    if (missing.length) {
+      return `No airspace data — download ${missing.map((c) => `'${c}'`).join(" or ")} for offline use`;
+    }
+    return `openAIP publishes no airspace here (${countries
+      .map((c) => c.toUpperCase())
+      .join(", ")})`;
   }
 
-  /**
-   * Resolve a region cache-first: fresh cache wins, a stale entry is served
-   * immediately while a refresh runs in the background, and a miss falls
-   * through to the network.
-   */
-  async function resolveRegion<T>(
-    kind: "airspace" | "airport",
-    endpoint: "airspaces" | "airports",
+  /** Airspaces containing a point, from the locally held country. */
+  async function airspacesAt(
     lat: number,
     lng: number,
-    radiusM: number,
-  ): Promise<RegionEntry<T> | null> {
-    const key = cellKey(kind, lat, lng);
-    const cached = await getRegion<T>(key);
-
-    if (cached && !isStale(cached)) {
-      return cached;
+  ): Promise<AirspaceItem[] | null> {
+    // Every country whose box covers the point, not just the closest: airspace
+    // crosses borders, and a German CTR can reach over Austrian ground.
+    const countries = countriesAt(lat, lng);
+    if (!countries.length) {
+      return null;
     }
 
-    if (cached && !navigator.onLine) {
-      return cached;
+    const found: AirspaceItem[] = [];
+    for (const country of countries) {
+      // A country that publishes airspace but is not downloaded leaves a real
+      // gap. Reporting "no airspaces" then would claim clear air we cannot
+      // see, so any gap makes the whole lookup a coverage failure.
+      if ((await coverageOf(country, "asp")) === "missing") {
+        return null;
+      }
+      found.push(
+        ...(await itemsFor<AirspaceItem>(country, "asp")).filter((airspace) =>
+          containsPoint(airspace.geometry, lat, lng),
+        ),
+      );
     }
-
-    const center = cellCenter(lat, lng);
-    const items = await fetchRegion<T>(endpoint, center, radiusM);
-    if (items) {
-      await putRegion(key, kind, items);
-      return await getRegion<T>(key);
-    }
-
-    return cached;
-  }
-
-  /** Prefix warning shown when the only data available is past its AIRAC TTL. */
-  function stalePrefix(entry: RegionEntry): string {
-    return isStale(entry)
-      ? `<b style="color:#b45309">⚠ cached data ${ageDays(entry)} d old</b><br>`
-      : "";
+    return found;
   }
 
   async function fetchAirspaceAt(
     lat: number,
     lng: number,
   ): Promise<AirspaceLookup> {
-    const region = await resolveRegion<AirspaceItem>(
-      "airspace",
-      "airspaces",
-      lat,
-      lng,
-      AIRSPACE_FETCH_RADIUS_M,
-    );
+    const found = await airspacesAt(lat, lng);
 
-    if (!region) {
-      const message = !navigator.onLine
-        ? "Offline — no cached data for this location"
-        : rateLimitMessage();
-      return { popupText: message, geojson: null };
+    if (found === null) {
+      return { popupText: await coverageMessage(lat, lng), geojson: null };
     }
 
-    {
-      // The cached region covers the whole cell; narrow it to the airspaces
-      // actually containing this position.
-      const items = region.items.filter((airspace) =>
-        containsPoint(airspace.geometry, lat, lng),
-      );
-      items.sort(
-        (left, right) =>
-          (left.lowerLimit ? toFeet(left.lowerLimit) : 0) -
-          (right.lowerLimit ? toFeet(right.lowerLimit) : 0),
-      );
+    const items = [...found].sort(
+      (left, right) =>
+        (left.lowerLimit ? toFeet(left.lowerLimit) : 0) -
+        (right.lowerLimit ? toFeet(right.lowerLimit) : 0),
+    );
 
-      const popupText = items.length
-        ? items
-            .map((airspace) => {
-              const lower = airspace.lowerLimit
-                ? formatAltitude(airspace.lowerLimit)
-                : "?";
-              const upper = airspace.upperLimit
-                ? formatAltitude(airspace.upperLimit)
-                : "?";
-              const { active, reason } = airspace.hoursOfOperation
-                ? isActive(airspace.hoursOfOperation, lat, lng)
-                : { active: true, reason: "24h" };
-              const status = active
-                ? `<span style="color:green">ACTIVE</span> (${reason})`
-                : `<span style="color:grey">INACTIVE</span> (${reason})`;
-              const activity = airspace.activity
-                ? ` – ${activityName(airspace.activity)}`
-                : "";
-              const flags = activeFlags(airspace);
-              const flagsHtml = flags.length ? ` [${flags.join(", ")}]` : "";
-              return `<b>${airspace.name}</b> (${airspaceTypeName(airspace.type)}, ${icaoClassName(airspace.icaoClass)}${activity}) — ${lower} / ${upper} — ${status}${flagsHtml}`;
-            })
-            .join("<br>")
-        : "No airspaces at this position";
-
-      const geojson: FeatureCollection<Geometry> = {
-        type: "FeatureCollection",
-        features: items
-          .filter((airspace) => airspace.geometry)
+    const popupText = items.length
+      ? items
           .map((airspace) => {
+            const lower = airspace.lowerLimit
+              ? formatAltitude(airspace.lowerLimit)
+              : "?";
+            const upper = airspace.upperLimit
+              ? formatAltitude(airspace.upperLimit)
+              : "?";
             const { active, reason } = airspace.hoursOfOperation
               ? isActive(airspace.hoursOfOperation, lat, lng)
               : { active: true, reason: "24h" };
-            return {
-              type: "Feature" as const,
-              geometry: airspace.geometry,
-              properties: {
-                name: airspace.name,
-                type: airspace.type,
-                icaoClass: airspace.icaoClass,
-                lowerLabel: airspace.lowerLimit
-                  ? formatAltitude(airspace.lowerLimit)
-                  : "?",
-                upperLabel: airspace.upperLimit
-                  ? formatAltitude(airspace.upperLimit)
-                  : "?",
-                lowerFt: airspace.lowerLimit ? toFeet(airspace.lowerLimit) : 0,
-                upperFt: airspace.upperLimit ? toFeet(airspace.upperLimit) : 0,
-                ...(airspace.activity ? { activity: airspace.activity } : {}),
-                flags: activeFlags(airspace),
-                activeReason: reason,
-                active,
-              },
-            };
-          }),
-      };
+            const status = active
+              ? `<span style="color:green">ACTIVE</span> (${reason})`
+              : `<span style="color:grey">INACTIVE</span> (${reason})`;
+            const activity = airspace.activity
+              ? ` – ${activityName(airspace.activity)}`
+              : "";
+            const flags = activeFlags(airspace);
+            const flagsHtml = flags.length ? ` [${flags.join(", ")}]` : "";
+            return `<b>${airspace.name}</b> (${airspaceTypeName(airspace.type)}, ${icaoClassName(airspace.icaoClass)}${activity}) — ${lower} / ${upper} — ${status}${flagsHtml}`;
+          })
+          .join("<br>")
+      : "No airspaces at this position";
 
-      lastAirspaceFetchCenter = { lat, lng };
-      return { popupText: `${stalePrefix(region)}${popupText}`, geojson };
+    const geojson: FeatureCollection<Geometry> = {
+      type: "FeatureCollection",
+      features: items
+        .filter((airspace) => airspace.geometry)
+        .map((airspace) => airspaceFeature(airspace, lat, lng)),
+    };
+
+    lastAirspaceFetchCenter = { lat, lng };
+    return { popupText, geojson };
+  }
+
+  /**
+   * All airspace intersecting the viewport, for the map overlay.
+   *
+   * Holding the whole country makes this free, and the airspace a balloon is
+   * about to drift into matters more than the one it is already inside.
+   */
+  async function airspacesInBounds(
+    bounds: Bounds,
+  ): Promise<FeatureCollection<Geometry>> {
+    const center = {
+      lat: (bounds.minLat + bounds.maxLat) / 2,
+      lng: (bounds.minLng + bounds.maxLng) / 2,
+    };
+    const features = [];
+
+    // One store read per country, not a coverage probe plus a read: this runs
+    // on every pan, across every country in view.
+    for (const country of countriesInBounds(bounds)) {
+      for (const airspace of await itemsFor<AirspaceItem>(country, "asp")) {
+        if (
+          !airspace.geometry ||
+          !intersectsBounds(airspace.geometry, bounds)
+        ) {
+          continue;
+        }
+        features.push(airspaceFeature(airspace, center.lat, center.lng));
+      }
     }
+
+    return { type: "FeatureCollection", features };
   }
 
   async function fetchAirportsAt(
     lat: number,
     lng: number,
   ): Promise<AirportItem[]> {
-    const region = await resolveRegion<AirportItem>(
-      "airport",
-      "airports",
-      lat,
-      lng,
-      AIRPORT_FETCH_RADIUS_M,
-    );
-
-    return (region?.items ?? []).filter(
-      (airport) => airport.frequencies?.length,
-    );
+    const airports: AirportItem[] = [];
+    for (const country of countriesAt(lat, lng)) {
+      const items = await itemsFor<AirportItem>(country, "apt");
+      airports.push(...items.filter((airport) => airport.frequencies?.length));
+    }
+    return airports;
   }
 
   function needsAirspaceRefetch(center: LatLng): boolean {
@@ -330,69 +313,6 @@ export function useOpenAIP() {
     }
   }
 
-  /**
-   * Pre-flight download: force-fetch and cache both regions covering a
-   * position, ignoring any existing cache entry.
-   */
-  async function downloadRegion(
-    center: LatLng,
-  ): Promise<{ airspaces: number; airports: number }> {
-    if (!navigator.onLine) {
-      throw new Error("Offline — cannot download");
-    }
-
-    const fetchCenter = cellCenter(center.lat, center.lng);
-
-    // An explicit user action bypasses the cooldown, so one endpoint failing
-    // does not silently skip the other.
-    const [airspaces, airports] = await Promise.all([
-      fetchRegion<AirspaceItem>(
-        "airspaces",
-        fetchCenter,
-        AIRSPACE_FETCH_RADIUS_M,
-        true,
-      ),
-      fetchRegion<AirportItem>(
-        "airports",
-        fetchCenter,
-        AIRPORT_FETCH_RADIUS_M,
-        true,
-      ),
-    ]);
-
-    if (airspaces) {
-      await putRegion(
-        cellKey("airspace", center.lat, center.lng),
-        "airspace",
-        airspaces,
-      );
-    }
-    if (airports) {
-      await putRegion(
-        cellKey("airport", center.lat, center.lng),
-        "airport",
-        airports,
-      );
-    }
-
-    // Report a partial failure as a failure — a "0 airspaces" success message
-    // would read as "this area has no airspaces".
-    const failed = [
-      airspaces ? null : "airspaces",
-      airports ? null : "airports",
-    ].filter(Boolean);
-    if (failed.length) {
-      throw new Error(
-        `${failed.join(" and ")} unavailable (${rateLimitMessage()})`,
-      );
-    }
-
-    return {
-      airspaces: airspaces?.length ?? 0,
-      airports: airports?.length ?? 0,
-    };
-  }
-
   function resetAirspaceCenter(): void {
     lastAirspaceFetchCenter = null;
   }
@@ -405,11 +325,46 @@ export function useOpenAIP() {
     online,
     fetchAirspaceAt,
     fetchAirportsAt,
+    airspacesInBounds,
     needsAirspaceRefetch,
     needsAirportRefetch,
     refetchAirportsIfNeeded,
-    downloadRegion,
     resetAirspaceCenter,
     resetAirportCenter,
   };
+}
+
+/** Cheap bbox rejection so the viewport overlay does not test every polygon. */
+function intersectsBounds(geometry: Geometry, bounds: Bounds): boolean {
+  let minLng = Infinity;
+  let minLat = Infinity;
+  let maxLng = -Infinity;
+  let maxLat = -Infinity;
+
+  const visit = (coordinates: unknown): void => {
+    if (typeof (coordinates as number[])[0] === "number") {
+      const [lng, lat] = coordinates as number[];
+      minLng = Math.min(minLng, lng);
+      maxLng = Math.max(maxLng, lng);
+      minLat = Math.min(minLat, lat);
+      maxLat = Math.max(maxLat, lat);
+      return;
+    }
+    for (const child of coordinates as unknown[]) {
+      visit(child);
+    }
+  };
+
+  const coordinates = (geometry as { coordinates?: unknown }).coordinates;
+  if (!coordinates) {
+    return false;
+  }
+  visit(coordinates);
+
+  return (
+    minLng <= bounds.maxLng &&
+    maxLng >= bounds.minLng &&
+    minLat <= bounds.maxLat &&
+    maxLat >= bounds.minLat
+  );
 }

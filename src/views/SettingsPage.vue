@@ -351,6 +351,95 @@
             </div>
           </section>
 
+          <!-- Airspace data accordion -->
+          <section
+            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+          >
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+              @click="toggleAccordion('airspace')"
+            >
+              <span>Airspace Data</span>
+              <span class="text-gray-400">{{
+                openAccordion === "airspace" ? "−" : "+"
+              }}</span>
+            </button>
+            <div
+              v-if="openAccordion === 'airspace'"
+              class="space-y-3 border-t border-gray-100 p-3"
+            >
+              <div v-if="heldCountries.length" class="space-y-1">
+                <div
+                  class="mb-1 px-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase"
+                >
+                  Downloaded countries
+                </div>
+                <div
+                  v-for="c in heldCountries"
+                  :key="c.country"
+                  class="flex items-center justify-between rounded bg-gray-50 px-2 py-1 text-xs"
+                >
+                  <span class="font-mono font-bold text-gray-700">{{
+                    c.country.toUpperCase()
+                  }}</span>
+                  <span
+                    class="ml-2 flex-1 truncate px-2 text-[10px] text-gray-500"
+                  >
+                    {{ c.layers }} · {{ formatBytes(c.bytes) }} ·
+                    {{ c.ageDays }}d old
+                  </span>
+                  <button
+                    type="button"
+                    class="shrink-0 rounded px-2 py-0.5 text-[10px] font-bold text-red-600 hover:bg-red-50"
+                    @click="removeCountry(c.country)"
+                  >
+                    delete
+                  </button>
+                </div>
+              </div>
+              <div v-else class="px-1 text-xs text-gray-400">
+                No countries downloaded — use the download button on the map
+              </div>
+
+              <div
+                class="flex items-center justify-between border-t border-gray-100 pt-2 text-xs text-gray-600"
+              >
+                <span>Storage used</span>
+                <span class="font-mono">
+                  {{ formatBytes(storageBytes)
+                  }}<span v-if="quotaBytes" class="text-gray-400">
+                    / {{ formatBytes(quotaBytes) }}</span
+                  >
+                </span>
+              </div>
+
+              <div class="flex items-start justify-between gap-2 text-xs">
+                <span class="text-gray-600">Eviction protection</span>
+                <span
+                  v-if="persisted"
+                  class="shrink-0 font-semibold text-green-600"
+                  >protected</span
+                >
+                <span v-else class="shrink-0 text-right text-amber-600">
+                  not granted
+                  <span class="block text-[10px] font-normal text-gray-400">
+                    downloads may be cleared under storage pressure
+                  </span>
+                </span>
+              </div>
+
+              <button
+                type="button"
+                class="w-full rounded-lg bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                :disabled="refreshing"
+                @click="refreshCountries"
+              >
+                {{ refreshing ? "Checking…" : "Check for updates" }}
+              </button>
+            </div>
+          </section>
+
           <!-- Topics accordion -->
           <section
             class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
@@ -563,6 +652,17 @@ import {
   autoQNHflag,
 } from "@/composables/useAppState";
 import { selectedDemUrl } from "@/composables/useDemUrl";
+import {
+  requestPersistentStorage,
+  storagePersisted,
+  storageQuota,
+  storageUsage,
+} from "@/composables/airspace/airspaceCache";
+import {
+  deleteCountry,
+  listCountries,
+  revalidateHeld,
+} from "@/composables/airspace/useCountryData";
 
 // Track which accordion is open
 const openAccordion = ref("");
@@ -575,6 +675,80 @@ const toggleAccordion = (value: string) => {
 };
 
 const isAndroid = computed(() => Capacitor.getPlatform() === "android");
+
+// --- Airspace data ---
+interface HeldCountry {
+  country: string;
+  layers: string;
+  bytes: number;
+  ageDays: number;
+}
+
+const heldCountries = ref<HeldCountry[]>([]);
+const storageBytes = ref(0);
+const quotaBytes = ref(0);
+const persisted = storagePersisted;
+const refreshing = ref(false);
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Group the per-layer store rows into one row per country for display. */
+async function loadHeldCountries(): Promise<void> {
+  const entries = await listCountries();
+  const byCountry = new Map<string, HeldCountry>();
+  for (const entry of entries) {
+    const existing = byCountry.get(entry.country);
+    const age = Math.floor((Date.now() - entry.fetchedAt) / 86_400_000);
+    if (existing) {
+      existing.layers += `+${entry.layer}`;
+      existing.bytes += entry.sizeBytes;
+      existing.ageDays = Math.max(existing.ageDays, age);
+    } else {
+      byCountry.set(entry.country, {
+        country: entry.country,
+        layers: entry.layer,
+        bytes: entry.sizeBytes,
+        ageDays: age,
+      });
+    }
+  }
+  heldCountries.value = [...byCountry.values()].sort((a, b) =>
+    a.country.localeCompare(b.country),
+  );
+  const usage = await storageUsage();
+  storageBytes.value = usage.countries + usage.tiles;
+  quotaBytes.value = (await storageQuota())?.quota ?? 0;
+  // Opening this panel is engagement; browsers that refused at startup may
+  // grant it now.
+  if (!persisted.value) {
+    await requestPersistentStorage();
+  }
+}
+
+async function removeCountry(country: string): Promise<void> {
+  await deleteCountry(country);
+  await loadHeldCountries();
+}
+
+async function refreshCountries(): Promise<void> {
+  refreshing.value = true;
+  try {
+    await revalidateHeld();
+    await loadHeldCountries();
+  } finally {
+    refreshing.value = false;
+  }
+}
+
+watch(openAccordion, (value) => {
+  if (value === "airspace") {
+    void loadHeldCountries();
+  }
+});
 
 // Build information constants
 const gitSha = __GIT_COMMIT_HASH__ || "N/A";

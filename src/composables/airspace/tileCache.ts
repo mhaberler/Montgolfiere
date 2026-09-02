@@ -6,12 +6,12 @@
  * never expire and are pruned only by LRU size eviction. Aeronautical overlay
  * tiles (OpenAIP/OpenFlightMaps) carry an AIRAC-cycle TTL: a stale tile is
  * still served immediately (avoids a flash of missing tile) while a
- * background refetch replaces it, mirroring resolveRegion()'s behavior in
- * useOpenAIP.ts.
+ * background refetch replaces it, mirroring how useCountryData.ts serves a
+ * held country while revalidating it.
  */
 
-const DB_NAME = "airspace-cache";
-const DB_VERSION = 2;
+import { openDb, promisify } from "./airspaceCache";
+
 const TILE_STORE = "tiles";
 const TILE_SIZE_LIMIT_BYTES = 200 * 1024 * 1024;
 
@@ -29,36 +29,6 @@ export interface TileEntry {
   fetchedAt: number;
   lastAccess: number;
   sizeBytes: number;
-}
-
-let dbPromise: Promise<IDBDatabase> | null = null;
-
-function openDb(): Promise<IDBDatabase> {
-  if (!dbPromise) {
-    dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        // Defensive/idempotent: airspaceCache.ts's onupgradeneeded is the
-        // primary owner of schema creation for this DB; these guards make
-        // it safe regardless of which module's open() call runs first.
-        if (!db.objectStoreNames.contains(TILE_STORE)) {
-          const tiles = db.createObjectStore(TILE_STORE, { keyPath: "key" });
-          tiles.createIndex("lastAccess", "lastAccess");
-        }
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-  return dbPromise;
-}
-
-function promisify<T>(request: IDBRequest<T>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
 }
 
 /** Cache key for a tile: layer-scoped so different layers' z/x/y never collide. */
@@ -109,8 +79,8 @@ export async function putTile(
   layerId: TileLayerId,
   blob: Blob,
 ): Promise<void> {
+  const db = await openDb();
   try {
-    const db = await openDb();
     const now = Date.now();
     const entry: TileEntry = {
       key,
@@ -128,26 +98,63 @@ export async function putTile(
     );
     await evictIfNeeded(db);
   } catch (error) {
+    // Quota exhaustion silently stops the cache growing; make it visible
+    // rather than letting offline coverage quietly stall.
+    if ((error as DOMException)?.name === "QuotaExceededError") {
+      console.warn("tileCache full — evicting and retrying next write");
+      await evictIfNeeded(db).catch(() => undefined);
+      return;
+    }
     console.error("tileCache write failed:", error);
   }
 }
 
 async function evictIfNeeded(db: IDBDatabase): Promise<void> {
-  const entries = (await promisify(
-    db.transaction(TILE_STORE, "readonly").objectStore(TILE_STORE).getAll(),
-  )) as TileEntry[];
-
-  let total = entries.reduce((sum, entry) => sum + entry.sizeBytes, 0);
+  const total = await totalBytes(db);
   if (total <= TILE_SIZE_LIMIT_BYTES) {
     return;
   }
 
-  const store = db.transaction(TILE_STORE, "readwrite").objectStore(TILE_STORE);
-  for (const entry of entries.sort((a, b) => a.lastAccess - b.lastAccess)) {
-    if (total <= TILE_SIZE_LIMIT_BYTES) {
-      break;
-    }
-    store.delete(entry.key);
-    total -= entry.sizeBytes;
-  }
+  // Walk the lastAccess index oldest-first and delete until under budget.
+  // Deliberately a cursor rather than getAll(): at a 200 MB cap the latter
+  // materializes every tile blob in memory on every single write.
+  let remaining = total;
+  await new Promise<void>((resolve, reject) => {
+    const store = db
+      .transaction(TILE_STORE, "readwrite")
+      .objectStore(TILE_STORE);
+    const request = store.index("lastAccess").openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor || remaining <= TILE_SIZE_LIMIT_BYTES) {
+        resolve();
+        return;
+      }
+      remaining -= (cursor.value as TileEntry).sizeBytes;
+      cursor.delete();
+      cursor.continue();
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/** Sum of cached tile bytes, read via the key cursor to avoid loading blobs. */
+async function totalBytes(db: IDBDatabase): Promise<number> {
+  return new Promise((resolve, reject) => {
+    let total = 0;
+    const request = db
+      .transaction(TILE_STORE, "readonly")
+      .objectStore(TILE_STORE)
+      .openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) {
+        resolve(total);
+        return;
+      }
+      total += (cursor.value as TileEntry).sizeBytes;
+      cursor.continue();
+    };
+    request.onerror = () => reject(request.error);
+  });
 }

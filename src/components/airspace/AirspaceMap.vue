@@ -52,6 +52,12 @@ import {
 } from "@/composables/airspace/useOpenAIP";
 import { useOpenAIP } from "@/composables/airspace/useOpenAIP";
 import {
+  countriesInBounds,
+  downloadCountries,
+  estimatedBytes,
+  type Bounds,
+} from "@/composables/airspace/useCountryData";
+import {
   location as sharedLocation,
   locationAvailable,
   locationError,
@@ -243,10 +249,32 @@ function createLatLng(
   return new LatLng(latlng.lat, latlng.lng);
 }
 
+/** Feet either side of current altitude still treated as immediately relevant. */
+const ALTITUDE_BAND_FT = 2000;
+
+/**
+ * Is this airspace near the current altitude?
+ *
+ * Used to dim, never to filter: the CTR 2000 ft above is exactly what a balloon
+ * is about to drift into, so it must stay visible.
+ */
+function inAltitudeBand(properties: Record<string, any> | null | undefined) {
+  const lower = properties?.lowerFt ?? 0;
+  const upper = properties?.upperFt ?? 0;
+  if (!upper) {
+    return true;
+  }
+  return (
+    props.altitude + ALTITUDE_BAND_FT >= lower &&
+    props.altitude - ALTITUDE_BAND_FT <= upper
+  );
+}
+
 function featureStyle(
   properties: Record<string, any> | null | undefined,
 ): PathOptions {
   const active = properties?.active ?? true;
+  const relevant = inAltitudeBand(properties);
   const hex = airspaceColor({
     type: properties?.type ?? 0,
     icaoClass: properties?.icaoClass ?? 7,
@@ -254,8 +282,8 @@ function featureStyle(
   });
   return {
     color: active ? hex : "#888888",
-    weight: 2,
-    fillOpacity: active ? 0.2 : 0.08,
+    weight: relevant ? 2 : 1,
+    fillOpacity: relevant ? (active ? 0.2 : 0.08) : 0.03,
     dashArray: active ? undefined : "5, 5",
   };
 }
@@ -310,7 +338,41 @@ function onAltitudeEmit(feet: number): void {
   emit("update:altitude", feet);
 }
 
-function renderGeojson(geojson: FeatureCollection | null): void {
+/** Leaflet 2 alpha types getBounds() more narrowly than the runtime object. */
+function viewportBounds(target: LeafletMapWithExtras): Bounds {
+  const bounds = target.getBounds() as unknown as {
+    getSouth(): number;
+    getNorth(): number;
+    getWest(): number;
+    getEast(): number;
+  };
+  return {
+    minLat: bounds.getSouth(),
+    maxLat: bounds.getNorth(),
+    minLng: bounds.getWest(),
+    maxLng: bounds.getEast(),
+  };
+}
+
+/**
+ * Draw all airspace intersecting the viewport.
+ *
+ * Separate from renderGeojson because the overlay and the altitude stack now
+ * answer different questions: the overlay shows what is around, the stack shows
+ * what encloses the current position.
+ */
+async function renderViewportAirspace(): Promise<void> {
+  if (!map || !props.showAirspace) {
+    return;
+  }
+  const geojson = await openAIP.airspacesInBounds(viewportBounds(map));
+  renderGeojson(geojson, false);
+}
+
+function renderGeojson(
+  geojson: FeatureCollection | null,
+  updateStack = true,
+): void {
   resetHighlight();
   currentGeojsonLayer?.remove();
   currentGeojsonLayer = null;
@@ -343,10 +405,8 @@ function renderGeojson(geojson: FeatureCollection | null): void {
     }).addTo(map);
   }
 
-  if (props.showStack) {
-    stackFeatures.value = geojson ? geojson.features : [];
-  } else {
-    stackFeatures.value = [];
+  if (updateStack) {
+    stackFeatures.value = props.showStack && geojson ? geojson.features : [];
   }
 
   for (const marker of airportMarkerById.values()) {
@@ -469,7 +529,8 @@ function scheduleRefreshAirports(): void {
 
 async function loadAirspaceAt(latlng: LatLng): Promise<void> {
   const { geojson } = await openAIP.fetchAirspaceAt(latlng.lat, latlng.lng);
-  renderGeojson(geojson);
+  stackFeatures.value = props.showStack && geojson ? geojson.features : [];
+  await renderViewportAirspace();
 }
 
 function syncTrackPosition(position: Position): void {
@@ -801,7 +862,7 @@ onMounted(() => {
       ) as HTMLDivElement;
       const link = DomUtil.create("a", "", btn) as HTMLAnchorElement;
       link.href = "#";
-      link.title = "Download this area for offline use";
+      link.title = "Download countries in view for offline use";
       link.append(createDownloadIcon());
       link.role = "button";
       DomEvent.disableClickPropagation(btn);
@@ -811,23 +872,57 @@ onMounted(() => {
           return;
         }
 
-        downloadInFlight = true;
-        link.classList.add("is-busy");
-        void openAIP
-          .downloadRegion(controlMap.getCenter())
-          .then(({ airspaces, airports }) => {
-            emit(
-              "error",
-              `Area cached: ${airspaces} airspaces, ${airports} airports`,
-            );
-          })
-          .catch((error: unknown) => {
+        void (async () => {
+          const candidates = countriesInBounds(viewportBounds(controlMap));
+
+          if (!candidates.length) {
+            emit("error", "No openAIP coverage in view");
+            return;
+          }
+
+          // Never download on a pinch-out without consent: a wide view can span
+          // a dozen countries, and the US alone is 72 MB.
+          const bytes = estimatedBytes(candidates, ["asp", "apt"]);
+          const names = candidates.map((c) => c.toUpperCase()).join(", ");
+          const megabytes = (bytes / 1e6).toFixed(1);
+          if (
+            !window.confirm(
+              `Download airspace and airports for ${names}?\n\n${megabytes} MB`,
+            )
+          ) {
+            return;
+          }
+
+          downloadInFlight = true;
+          link.classList.add("is-busy");
+          try {
+            const { ok, failed } = await downloadCountries(candidates, [
+              "asp",
+              "apt",
+            ]);
+            if (failed.length) {
+              emit(
+                "error",
+                `Downloaded ${ok.length}; failed: ${failed
+                  .map((f) => f.country.toUpperCase())
+                  .join(", ")}`,
+              );
+            } else {
+              emit(
+                "error",
+                `Downloaded ${ok.length} countries (${megabytes} MB)`,
+              );
+            }
+            await renderViewportAirspace();
+            openAIP.resetAirportCenter();
+            await refreshAirports();
+          } catch (error: unknown) {
             emit("error", `Download failed: ${error}`);
-          })
-          .finally(() => {
+          } finally {
             downloadInFlight = false;
             link.classList.remove("is-busy");
-          });
+          }
+        })();
       });
       return btn;
     },
@@ -867,6 +962,7 @@ onMounted(() => {
     if (!map) {
       return;
     }
+    void renderViewportAirspace();
     scheduleRefreshAirports();
   });
 

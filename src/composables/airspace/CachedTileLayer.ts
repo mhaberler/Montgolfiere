@@ -61,7 +61,7 @@ export class CachedTileLayer extends TileLayer {
       if (isTileStale(cached)) {
         // Aero layer past its 28-day AIRAC TTL: keep showing the stale
         // tile (already handed to showBlob above) but kick off a
-        // background refetch-and-replace, mirroring resolveRegion()'s
+        // background refetch-and-replace, mirroring the country store's
         // stale-serve-then-refresh behavior in useOpenAIP.ts.
         void this.refetchAndCache(key, url);
       }

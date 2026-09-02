@@ -19,6 +19,8 @@ import {
 } from "../sensors/network";
 import { useMqttConnection } from "../composables/useMqttConnection";
 import { useMdnsScan } from "../composables/useMdnsScan";
+import { requestPersistentStorage } from "../composables/airspace/airspaceCache";
+import { revalidateHeld } from "../composables/airspace/useCountryData";
 import { startTimer, stopTimer } from "./ticker";
 import { Share } from "@capacitor/share";
 import QRCode from "qrcode";
@@ -110,6 +112,10 @@ const cameToForeground = async () => {
   }
   useMdnsScan().startScan();
   useMqttConnection().resume();
+
+  // Downloaded airspace follows the AIRAC cycle; the bucket declares
+  // max-age=86400, so this is throttled to once a day and skips metered links.
+  void revalidateHeld();
 };
 
 const wentToBackground = async () => {
@@ -260,6 +266,26 @@ const initializeApp = async () => {
     useMdnsScan().startScan();
   }
   startTimer();
+
+  // Without this the whole origin — downloaded countries and hundreds of MB of
+  // map tiles — is evictable under storage pressure, exactly when it is needed:
+  // offline, mid-flight.
+  // Refusal is normal on a low-engagement origin (fresh dev server, browser
+  // preview) and is a downgrade, not a failure: Settings > Airspace Data shows
+  // the resulting state, so this is informational only.
+  // Also revalidate here, not only in cameToForeground(): that fires on an
+  // isActive transition, which never happens on a cold start, so a launched-
+  // and-never-backgrounded app would never refresh its airspace data.
+  void revalidateHeld();
+
+  void requestPersistentStorage().then((granted) => {
+    console.log(
+      granted
+        ? "Persistent storage granted"
+        : "Persistent storage not granted; caches are evictable",
+    );
+  });
+
   // console.log('Network status:', networkStatus.value?.connected, networkStatus.value?.connectionType);
   console.log("App initialized and ready to use.");
 };

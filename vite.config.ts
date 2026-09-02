@@ -42,6 +42,22 @@ export default defineConfig(({ mode }) => {
           ]
         : []),
     ],
+    server: {
+      proxy: {
+        // The openAIP export bucket sends no CORS headers at all (OPTIONS
+        // returns 403), so browser fetch() cannot read it. On device
+        // @leadscout/http bypasses this natively; for `vite dev` we proxy.
+        "/openaip-exports": {
+          target: "https://storage.openaip.net",
+          changeOrigin: true,
+          rewrite: (requestPath: string) =>
+            requestPath.replace(
+              /^\/openaip-exports/,
+              "/openaip-system-exports",
+            ),
+        },
+      },
+    },
     optimizeDeps: {
       exclude: ["capacitor-barometer"],
       include: ["@ionic/vue", "@ionic/vue/css/core.css"],
