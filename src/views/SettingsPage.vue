@@ -176,55 +176,6 @@
           <section
             class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
           >
-            <div class="flex items-center justify-between gap-3 px-4 py-3">
-              <div class="flex min-w-0 flex-1 items-center gap-3">
-                <button
-                  type="button"
-                  class="min-w-0 flex-1 text-left font-semibold text-gray-800"
-                  @click="toggleAccordion('sensors')"
-                >
-                  <span>Sensors</span>
-                </button>
-                <div
-                  v-if="openAccordion === 'sensors'"
-                  class="flex shrink-0 items-center gap-2"
-                >
-                  <button
-                    type="button"
-                    class="btn btn-primary text-sm"
-                    @click.stop="clearBLEDevices"
-                  >
-                    Clear
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-primary text-sm"
-                    @click.stop="restartBLEScan"
-                  >
-                    Restart
-                  </button>
-                </div>
-              </div>
-              <button
-                type="button"
-                class="shrink-0 text-gray-400"
-                @click="toggleAccordion('sensors')"
-                aria-label="Toggle sensors section"
-              >
-                {{ openAccordion === "sensors" ? "−" : "+" }}
-              </button>
-            </div>
-            <div
-              v-if="openAccordion === 'sensors'"
-              class="border-t border-gray-100 p-4"
-            >
-              <SensorAssignmentsPanel :show-actions="false" />
-            </div>
-          </section>
-
-          <section
-            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-          >
             <button
               type="button"
               class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
@@ -306,48 +257,6 @@
                   {{ qnhError }}
                 </div>
               </div>
-            </div>
-          </section>
-
-          <section
-            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-          >
-            <button
-              type="button"
-              class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
-              @click="toggleAccordion('debug')"
-            >
-              <span>Debug</span>
-              <span class="text-gray-400">{{
-                openAccordion === "debug" ? "−" : "+"
-              }}</span>
-            </button>
-            <div
-              v-if="openAccordion === 'debug'"
-              class="border-t border-gray-100 p-4"
-            >
-              <DebugEkf />
-            </div>
-          </section>
-
-          <section
-            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-          >
-            <button
-              type="button"
-              class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
-              @click="toggleAccordion('mqtt')"
-            >
-              <span>MQTT</span>
-              <span class="text-gray-400">{{
-                openAccordion === "mqtt" ? "−" : "+"
-              }}</span>
-            </button>
-            <div
-              v-if="openAccordion === 'mqtt'"
-              class="border-t border-gray-100 p-4"
-            >
-              <ScannerView />
             </div>
           </section>
 
@@ -476,6 +385,76 @@
             </div>
           </section>
 
+          <section
+            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+          >
+            <div class="flex items-center justify-between gap-3 px-4 py-3">
+              <div class="flex min-w-0 flex-1 items-center gap-3">
+                <button
+                  type="button"
+                  class="min-w-0 flex-1 text-left font-semibold text-gray-800"
+                  @click="toggleAccordion('sensors')"
+                >
+                  <span>Sensors</span>
+                </button>
+                <div
+                  v-if="openAccordion === 'sensors'"
+                  class="flex shrink-0 items-center gap-2"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-primary text-sm"
+                    @click.stop="clearBLEDevices"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary text-sm"
+                    @click.stop="restartBLEScan"
+                  >
+                    Restart
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="shrink-0 text-gray-400"
+                @click="toggleAccordion('sensors')"
+                aria-label="Toggle sensors section"
+              >
+                {{ openAccordion === "sensors" ? "−" : "+" }}
+              </button>
+            </div>
+            <div
+              v-if="openAccordion === 'sensors'"
+              class="border-t border-gray-100 p-4"
+            >
+              <SensorAssignmentsPanel :show-actions="false" />
+            </div>
+          </section>
+
+          <section
+            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+          >
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+              @click="toggleAccordion('mqtt')"
+            >
+              <span>MQTT</span>
+              <span class="text-gray-400">{{
+                openAccordion === "mqtt" ? "−" : "+"
+              }}</span>
+            </button>
+            <div
+              v-if="openAccordion === 'mqtt'"
+              class="border-t border-gray-100 p-4"
+            >
+              <ScannerView />
+            </div>
+          </section>
+
           <!-- Topics accordion -->
           <section
             class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
@@ -551,6 +530,27 @@
                   </button>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section
+            class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+          >
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-left font-semibold text-gray-800"
+              @click="toggleAccordion('debug')"
+            >
+              <span>Debug</span>
+              <span class="text-gray-400">{{
+                openAccordion === "debug" ? "−" : "+"
+              }}</span>
+            </button>
+            <div
+              v-if="openAccordion === 'debug'"
+              class="border-t border-gray-100 p-4"
+            >
+              <DebugEkf />
             </div>
           </section>
 
