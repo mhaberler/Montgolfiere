@@ -111,3 +111,4 @@ vite.config.d.ts
 localmaps/openaip_s3_tmp/
 localmaps/*.pmtiles
 localmaps/openaip-s3-grok.py
+android/.idea/
