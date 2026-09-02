@@ -77,7 +77,6 @@
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "8.2.0",
-    "@capacitor-community/camera-preview": "8.0.1",
     "@capacitor-community/keep-awake": "^8.0.1",
     "@capacitor-mlkit/barcode-scanning": "^8.1.0",
     "@capacitor/action-sheet": "^8.1.1",
