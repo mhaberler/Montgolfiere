@@ -129,6 +129,28 @@ export const manualQNHvalue = usePersistedRef<number>(
 export const autoQNHflag = usePersistedRef<boolean>("autoQNHflag", true);
 
 // ============================================================================
+// Airspace Map Settings
+// ============================================================================
+/**
+ * Zoom below which the airspace overlay is not drawn.
+ *
+ * Zoomed far enough out, individual airspace is unreadable and the polygon
+ * count grows without giving the pilot anything — France holds 1768 airspaces.
+ * The altitude stack is unaffected; only the map overlay is suppressed.
+ */
+export const airspaceMinZoom = usePersistedRef<number>("airspaceMinZoom", 8);
+
+/**
+ * Zoom below which airport markers are not drawn.
+ *
+ * Marker radius is in screen pixels, so zooming out packs airports together
+ * under fixed-size dots — measured 2253 overlapping pairs five steps out from
+ * Paris. Radius scaling (airportMarkerRadius) handles the mid-range; below
+ * this zoom even scaled dots are an unreadable blob.
+ */
+export const airportMinZoom = usePersistedRef<number>("airportMinZoom", 8);
+
+// ============================================================================
 // EKF / Barometer Settings
 // ============================================================================
 export const transitionAltitude = usePersistedRef<number>(
@@ -217,6 +239,9 @@ export function useAppState() {
     // BLE Debugging Statistics
     bleScanTimeouts,
     bleInitErrors,
+    // Airspace Map Settings
+    airspaceMinZoom,
+    airportMinZoom,
     // Debug Settings
     showDebugInfo,
   };

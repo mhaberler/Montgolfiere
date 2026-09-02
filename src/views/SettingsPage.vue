@@ -429,6 +429,42 @@
                 </span>
               </div>
 
+              <div
+                class="flex items-center justify-between gap-3 border-t border-gray-100 pt-2"
+              >
+                <label class="text-xs text-gray-600">
+                  Airspace min zoom
+                  <span class="block text-[10px] text-gray-400">
+                    hide airspace below this zoom
+                  </span>
+                </label>
+                <input
+                  class="w-20 shrink-0 rounded-md border border-gray-300 px-2 py-1 text-sm"
+                  type="number"
+                  min="1"
+                  max="18"
+                  step="1"
+                  v-model.number="airspaceMinZoom"
+                />
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <label class="text-xs text-gray-600">
+                  Airport min zoom
+                  <span class="block text-[10px] text-gray-400">
+                    hide airport markers below this zoom
+                  </span>
+                </label>
+                <input
+                  class="w-20 shrink-0 rounded-md border border-gray-300 px-2 py-1 text-sm"
+                  type="number"
+                  min="1"
+                  max="18"
+                  step="1"
+                  v-model.number="airportMinZoom"
+                />
+              </div>
+
               <button
                 type="button"
                 class="w-full rounded-lg bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200 disabled:opacity-50"
@@ -650,6 +686,8 @@ import {
   showDebugInfo,
   manualQNHvalue,
   autoQNHflag,
+  airspaceMinZoom,
+  airportMinZoom,
 } from "@/composables/useAppState";
 import { selectedDemUrl } from "@/composables/useDemUrl";
 import {

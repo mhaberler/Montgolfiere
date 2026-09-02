@@ -37,13 +37,7 @@ import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
 import type { Position } from "@capacitor/geolocation";
 import L from "leaflet";
 import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
-import {
-  type AirspaceEntry,
-  activityName,
-  airspaceColor,
-  airspaceTypeName,
-  icaoClassName,
-} from "@/airspace/airspaceStack";
+import { type AirspaceEntry, airspaceColor } from "@/airspace/airspaceStack";
 import AirspaceStack from "@/components/airspace/AirspaceStack.vue";
 import { CachedTileLayer } from "@/composables/airspace/CachedTileLayer";
 import {
@@ -57,6 +51,7 @@ import {
   estimatedBytes,
   type Bounds,
 } from "@/composables/airspace/useCountryData";
+import { airportMinZoom, airspaceMinZoom } from "@/composables/useAppState";
 import {
   location as sharedLocation,
   locationAvailable,
@@ -365,6 +360,20 @@ async function renderViewportAirspace(): Promise<void> {
   if (!map || !props.showAirspace) {
     return;
   }
+
+  const zoom = map.getZoom();
+  console.log(
+    `map zoom: ${zoom} (airspace overlay min: ${airspaceMinZoom.value})`,
+  );
+
+  // Below the threshold individual airspace is unreadable and the polygon
+  // count climbs steeply, so draw nothing rather than a useless tangle. The
+  // altitude stack still answers "what is above me" — only the overlay stops.
+  if (zoom < airspaceMinZoom.value) {
+    renderGeojson(null, false);
+    return;
+  }
+
   const geojson = await openAIP.airspacesInBounds(viewportBounds(map));
   renderGeojson(geojson, false);
 }
@@ -379,29 +388,22 @@ function renderGeojson(
   lastGeojsonFeatures = geojson;
 
   if (geojson && props.showAirspace && map) {
+    // Non-interactive: the viewport overlay blankets the map, so interactive
+    // polygons swallow every map click and what-if mode can never place a
+    // marker. The marker's own popup already lists all airspace at the clicked
+    // point, so the per-polygon popups only duplicated it.
+    // Non-interactive, and no per-polygon popups: the viewport overlay
+    // blankets the map, so clickable polygons swallow every map click and
+    // what-if mode can never place a marker. bindPopup would re-enable
+    // interactivity on its own (Leaflet needs a click target), so it has to go
+    // too — the marker popup from fetchAirspaceAt already lists every airspace
+    // at the clicked point, which is strictly more useful than one polygon's.
     currentGeojsonLayer = new LeafletGeoJSON(geojson, {
-      style: (feature?: FeatureLike) => featureStyle(feature?.properties),
-      onEachFeature: (feature: FeatureLike, layer: Layer) => {
-        const name = feature.properties?.name ?? "Airspace";
-        const lower = feature.properties?.lowerLabel ?? "?";
-        const upper = feature.properties?.upperLabel ?? "?";
-        const active = feature.properties?.active ?? true;
-        const reason = feature.properties?.activeReason ?? "24h";
-        const status = active
-          ? `<span style="color:green">ACTIVE</span> (${reason})`
-          : `<span style="color:grey">INACTIVE</span> (${reason})`;
-        const cls = icaoClassName(feature.properties?.icaoClass ?? 7);
-        const typ = airspaceTypeName(feature.properties?.type ?? 0);
-        const act = feature.properties?.activity
-          ? ` – ${activityName(feature.properties.activity)}`
-          : "";
-        const flags: string[] = feature.properties?.flags ?? [];
-        const flagsHtml = flags.length ? `<br>${flags.join(", ")}` : "";
-        layer.bindPopup(
-          `<b>${name}</b> (${typ}, ${cls}${act})<br>${lower} – ${upper}<br>${status}${flagsHtml}`,
-          AIRSPACE_POPUP_OPTIONS,
-        );
-      },
+      interactive: false,
+      style: (feature?: FeatureLike) => ({
+        ...featureStyle(feature?.properties),
+        interactive: false,
+      }),
     }).addTo(map);
   }
 
@@ -452,6 +454,44 @@ function clearAll(): void {
   stackFeatures.value = [];
 }
 
+/**
+ * Marker radius for a zoom level.
+ *
+ * CircleMarker radius is screen pixels, so without this a marker covers the
+ * same 14 px at every zoom and airports converge into a blob as you zoom out.
+ * Floored at 5 px: smaller than that and the marker stops being reliably
+ * tappable in flight, which trades one problem for another.
+ */
+const AIRPORT_RADIUS_MAX = 7;
+const AIRPORT_RADIUS_MIN = 5;
+const AIRPORT_RADIUS_FULL_ZOOM = 12;
+
+function airportRadius(zoom: number): number {
+  const shrink = Math.max(0, AIRPORT_RADIUS_FULL_ZOOM - zoom);
+  return Math.max(AIRPORT_RADIUS_MIN, AIRPORT_RADIUS_MAX - shrink);
+}
+
+/** Resize existing markers and honour the zoom threshold, without refetching. */
+function applyAirportZoom(): void {
+  if (!map) {
+    return;
+  }
+  const zoom = map.getZoom();
+  const visible = props.showAirports && zoom >= airportMinZoom.value;
+  const radius = airportRadius(zoom);
+
+  for (const marker of airportMarkerById.values()) {
+    if (visible) {
+      marker.setRadius(radius);
+      if (!map.hasLayer(marker)) {
+        marker.addTo(map);
+      }
+    } else if (map.hasLayer(marker)) {
+      marker.remove();
+    }
+  }
+}
+
 async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
   if (!props.showAirports || !map) {
     return;
@@ -464,8 +504,11 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
   await openAIP.refetchAirportsIfNeeded(center, (airports) => {
     let added = 0;
     let updated = 0;
+    const radius = airportRadius(activeMap.getZoom());
+    const seen = new Set<string>();
 
     for (const airport of airports) {
+      seen.add(airport._id);
       const [lng, lat] = airport.geometry.coordinates;
       const color = airportColor(airport.type);
       const existing = airportMarkerById.get(airport._id);
@@ -477,7 +520,7 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
           fillColor: color,
           fillOpacity: 0.55,
         });
-        existing.setRadius(7);
+        existing.setRadius(radius);
         existing.bindPopup(airportPopupHtml(airport), AIRPORT_POPUP_OPTIONS);
         existing.bindTooltip(
           `${airport.icaoCode ? `${airport.icaoCode} · ` : ""}${airport.name} (${airportTypeName(airport.type)})`,
@@ -488,7 +531,7 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
       }
 
       const marker = new CircleMarker([lat, lng], {
-        radius: 7,
+        radius,
         color,
         weight: 2,
         fillColor: color,
@@ -503,11 +546,25 @@ async function refreshAirports(targetCenter?: LatLngExpression): Promise<void> {
       added += 1;
     }
 
+    // Drop markers no longer in the fetched set. Without this the map only
+    // ever accumulates airports from every region visited this session.
+    let removed = 0;
+    for (const [id, marker] of airportMarkerById) {
+      if (!seen.has(id)) {
+        marker.remove();
+        airportMarkerById.delete(id);
+        removed += 1;
+      }
+    }
+
+    applyAirportZoom();
+
     for (const marker of airportMarkerById.values()) {
       marker.bringToFront();
     }
 
     logAirportRefresh("fetch-done", {
+      removed,
       fetched: airports.length,
       added,
       updated,
@@ -668,9 +725,9 @@ function applyShowAirports(): void {
   }
 
   if (props.showAirports) {
-    for (const marker of airportMarkerById.values()) {
-      marker.addTo(map);
-    }
+    // applyAirportZoom, not a bare addTo: re-showing airports must still
+    // respect the zoom threshold.
+    applyAirportZoom();
     openAIP.resetAirportCenter();
     const center =
       props.mode === "track" && trackMarker
@@ -958,6 +1015,12 @@ onMounted(() => {
     void refreshAirports(event.latlng);
   });
   map.on("contextmenu", () => clearAll());
+  // zoomend as well as moveend: on a zoom, moveend fires before the new zoom
+  // level is applied, so the threshold check would read the previous value.
+  map.on("zoomend", () => {
+    void renderViewportAirspace();
+    applyAirportZoom();
+  });
   map.on("moveend", () => {
     if (!map) {
       return;
@@ -1015,6 +1078,11 @@ watch(
   () => props.showAirspace,
   () => applyShowAirspace(),
 );
+
+// Changing the threshold in Settings must take effect without waiting for the
+// next pan, which is otherwise the only thing that redraws the overlay.
+watch(airspaceMinZoom, () => void renderViewportAirspace());
+watch(airportMinZoom, () => applyAirportZoom());
 watch(
   () => props.showStack,
   () => applyShowStack(),

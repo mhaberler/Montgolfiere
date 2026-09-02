@@ -98,7 +98,32 @@ Quota exhaustion now throws rather than being logged and swallowed, so a half-wr
 
 The map draws **all airspace intersecting the viewport**, not only what encloses the current position — the CTR a balloon is about to drift into matters more than the one it is already inside. The altitude band (±2000 ft) **dims** airspace outside it rather than filtering it out.
 
-The renderer is Leaflet's default **SVG**. `preferCanvas` was tried and reverted: Leaflet 2.0.0-alpha.1's canvas renderer does not reposition on pan, leaving airspace polygons frozen on screen while the map moves beneath them. Measured on-device over Paris with 12 countries downloaded, SVG holds 342–405 paths with a ~1.2 s settle after a pan, and Leaflet's own viewport culling keeps that flat as you zoom out — so no polygon cap is needed. If it ever becomes one, skipping the overlay below a zoom threshold is cheaper than a cap, and hides nothing at usable zooms.
+Airspace polygons are **non-interactive and bind no popups**. The viewport overlay blankets the map, so clickable polygons swallow every map click and what-if mode can never place a marker — sampling 400 random points found no bare map anywhere. `bindPopup` cannot be kept alongside this: Leaflet re-enables interactivity on any layer that binds one, since it needs a click target. Nothing is lost, because the marker popup from `fetchAirspaceAt` already lists _every_ airspace at the clicked point with limits and ACTIVE status, which is strictly more than one polygon's popup gave.
+
+Below `airspaceMinZoom` (default **8**, Settings → Airspace Data) the overlay is not drawn at all. Zoomed that far out individual airspace is unreadable and the polygon count climbs steeply, so nothing is drawn rather than an illegible tangle. The **altitude stack is unaffected** — "what is above me" still answers at any zoom; only the map overlay stops. The current zoom and the active threshold are logged on every redraw.
+
+### Airport markers
+
+Airport markers are `CircleMarker`s, whose radius is in **screen pixels** and therefore zoom-invariant by default. Left alone, they pack into an unreadable blob as you zoom out — measured 2253 overlapping pairs five steps out from Paris. Two mechanisms bound that:
+
+| Mechanism        | Behaviour                                                   |
+| ---------------- | ----------------------------------------------------------- |
+| Radius scaling   | 7 px at z12+, shrinking 1 px per level, floored at **5 px** |
+| `airportMinZoom` | Default **8** — below it markers are not drawn at all       |
+
+The 5 px floor is a tappability limit, not an aesthetic one: smaller markers cannot be reliably hit on a phone in flight. Resizing applies to _existing_ markers on `zoomend`, not only to newly fetched ones — the airport set only refreshes every 25 km, so most markers on screen were created at a different zoom.
+
+Markers absent from the current fetch are now removed. They previously accumulated for the whole session, so the map showed airports from every region visited.
+
+### Renderer
+
+The renderer is Leaflet's default **SVG**. `preferCanvas` was tried and reverted: Leaflet 2.0.0-alpha.1's canvas renderer does not reposition on pan, leaving airspace polygons frozen on screen while the map moves beneath them.
+
+Redraws hook **both `moveend` and `zoomend`**. On a zoom, `moveend` fires _before_ the new zoom level is applied, so a threshold check running only there reads the previous value and acts one step late.
+
+Measured on-device over Paris with 12 countries downloaded, the overlay holds a few hundred polygons with a ~1.2 s settle after a pan, and Leaflet's own viewport culling keeps that flat as you zoom out — so no polygon _count_ cap is needed; the zoom threshold is the cheaper lever, and it hides nothing at usable zooms.
+
+> **Counting paths is misleading.** Removed `CircleMarker`s leave behind empty `<path d="M0 0">` elements in the overlay pane — 322 of them against 18 real polygons in one measurement. Any density or performance figure taken from `querySelectorAll('path').length` must exclude `d="M0 0"` or it is measuring orphaned DOM.
 
 ## Files
 
@@ -209,14 +234,3 @@ indexedDB.open("airspace-cache").onsuccess = (e) => {
 ```
 
 To exercise the aero-layer stale path, edit an `ofm`/`openaip` entry's `fetchedAt` to more than 28 days ago and pan away and back.
-
-## PMTiles (not used by the app)
-
-`localmaps/openaip-s3-pmtiles.py` builds a vector-tile archive from the same exports. It is **not part of the app** — the per-country GeoJSON path replaced it — but is kept because the build is non-obvious:
-
-- `--named-layer=name:file` per layer; the bare `--layer` flag is global, so repeating it leaves only the last layer in the archive.
-- `--no-clipping` keeps whole polygons in every tile they touch. With clipping, an 8-vertex CTR came back as 169 fragments at z14, which turns "outline the airspace I am in" into a seam-aware reassembly problem. Duplicates are deduped on `_id` instead.
-- Airspaces are capped at z12 while point layers go to z14. Duplication cost scales with feature area × 4^zoom: Austria's `CTA C` alone spans 25 025 tiles at z14, which turns a 7 MB archive into 72 MB.
-- All feature-dropping and simplification is disabled — a missing airspace reads as "clear here", and a moved boundary moves a legal limit.
-
-Attributes survive tiling as JSON strings (`hoursOfOperation`, `frequencies`, `runways`, the limit triples), so they need one `JSON.parse` each on read.
