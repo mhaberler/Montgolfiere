@@ -110,3 +110,4 @@ vite.config.d.ts
 # openAIP export downloads and generated tiles (localmaps/*.py regenerates them)
 localmaps/openaip_s3_tmp/
 localmaps/*.pmtiles
+localmaps/openaip-s3-grok.py
