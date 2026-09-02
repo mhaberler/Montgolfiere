@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-white">
+  <div class="flex h-full min-h-0 flex-col bg-white">
     <nav
       id="tab-bar"
       class="safe-top sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/85"
