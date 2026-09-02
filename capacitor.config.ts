@@ -1,5 +1,4 @@
 import type { CapacitorConfig } from "@capacitor/cli";
-import pkg from "./package.json";
 
 const config: CapacitorConfig = {
   appId: "com.haberler.montgolfiere",
