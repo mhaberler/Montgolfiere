@@ -106,3 +106,7 @@ android/app/src/main/res/values/strings.xml
 vite.config.js
 vite.config.d.ts
 *.tsbuildinfo
+
+# openAIP export downloads and generated tiles (localmaps/*.py regenerates them)
+localmaps/openaip_s3_tmp/
+localmaps/*.pmtiles
