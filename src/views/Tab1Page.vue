@@ -41,10 +41,7 @@
             <ValueCard
               name="heading"
               :value="
-                formatHeading(
-                  location?.coords?.speed,
-                  location?.coords?.heading,
-                )
+                formatHeading(location?.coords?.speed, filteredHeading)
               "
               :decimals="0"
               unit="°"
@@ -413,7 +410,7 @@ const vaccMajorTickTextOffset = ref(15);
 import UnitsTable from "@/components/units/UnitsTable.vue";
 
 // State imports
-import { location, elevation } from "@/sensors/location";
+import { location, elevation, filteredHeading } from "@/sensors/location";
 import {
   ekfAltitudeISA,
   ekfAltitudeQNH,
@@ -439,7 +436,7 @@ function formatHeading(
   speed: number | null | undefined,
   heading: number | null | undefined,
 ) {
-  if (speed === null || speed === undefined || isNaN(speed) || speed < 0.1) {
+  if (speed === null || speed === undefined || isNaN(speed) || speed < 0.5) {
     return "--";
   }
   if (heading === null || heading === undefined || isNaN(heading)) {

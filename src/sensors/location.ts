@@ -1,5 +1,9 @@
 import { ref, watch } from "vue";
-import { Geolocation, Position } from "@capacitor/geolocation";
+import {
+  Geolocation,
+  Position,
+  PositionOptions,
+} from "@capacitor/geolocation";
 import { Capacitor } from "@capacitor/core";
 import { DEMLookup, DEMInfo } from "@/dem/DEMLookup";
 import { MapterhornDEMLookup } from "@/dem/MapterhornDEMLookup";
@@ -9,12 +13,8 @@ const options: PositionOptions = {
   enableHighAccuracy: true, // Use high accuracy mode
   timeout: 60000,
   maximumAge: 0, // Do not use cached position
-};
-
-const androidOptions: PositionOptions = {
-  enableHighAccuracy: true, // Use high accuracy mode
-  timeout: 60000,
-  maximumAge: 0,
+  interval: 2000, // Android only: desired watchPosition update cadence
+  minimumUpdateInterval: 1000, // Android only: fastest acceptable update cadence
 };
 
 const isWeb = Capacitor.getPlatform() === "web";
@@ -30,6 +30,12 @@ const demLookup = ref<DEMLookup | null>(null);
 const demInfo = ref<DEMInfo | null>(null);
 const elevation = ref<number | null>(null);
 const elevationAvailable = ref(false);
+
+const SPEED_THRESHOLD = 0.5; // m/s — below this, GPS course-over-ground is unreliable
+const HEADING_EMA_ALPHA = 0.3;
+
+const filteredHeading = ref<number | null>(null);
+let headingVector: { x: number; y: number } | null = null; // unit-vector EMA state
 
 watch(
   selectedDemUrl,
@@ -90,6 +96,42 @@ watch(location, async (newlocation) => {
   }
 });
 
+// smooth heading with a speed-gated unit-vector EMA to avoid GPS course-over-ground
+// noise/jumps at low ground speed
+watch(location, (newlocation) => {
+  const speed = newlocation?.coords?.speed;
+  const heading = newlocation?.coords?.heading;
+
+  if (
+    speed == null ||
+    isNaN(speed) ||
+    speed < SPEED_THRESHOLD ||
+    heading == null ||
+    isNaN(heading)
+  ) {
+    filteredHeading.value = null;
+    headingVector = null; // reset filter state so it doesn't resume stale on next fix
+    return;
+  }
+
+  const rad = (heading * Math.PI) / 180;
+  const x = Math.cos(rad);
+  const y = Math.sin(rad);
+
+  if (headingVector === null) {
+    headingVector = { x, y };
+  } else {
+    headingVector = {
+      x: headingVector.x + HEADING_EMA_ALPHA * (x - headingVector.x),
+      y: headingVector.y + HEADING_EMA_ALPHA * (y - headingVector.y),
+    };
+  }
+
+  let deg = (Math.atan2(headingVector.y, headingVector.x) * 180) / Math.PI;
+  if (deg < 0) deg += 360;
+  filteredHeading.value = deg;
+});
+
 const checkPermissions = async () => {
   try {
     if (!isWeb) {
@@ -146,11 +188,6 @@ const startLocation = async () => {
         }
       },
     );
-
-    // For Android, supplement with periodic getCurrentPosition calls
-    if (Capacitor.getPlatform() === "android") {
-      startAndroidLocationPolling();
-    }
   } catch (error) {
     console.error("Error getting current position:" + error);
     locationAvailable.value = false;
@@ -162,20 +199,6 @@ const startLocation = async () => {
   }
 };
 
-let androidPollingInterval: ReturnType<typeof setInterval> | null = null;
-
-const startAndroidLocationPolling = () => {
-  // Poll every 2 seconds on Android for more frequent updates
-  androidPollingInterval = setInterval(async () => {
-    try {
-      const result = await Geolocation.getCurrentPosition(androidOptions);
-      location.value = result;
-    } catch (error) {
-      console.error("Android polling error:", error);
-    }
-  }, 2000);
-};
-
 const stopLocation = async () => {
   if (isWeb) {
     console.log("stopLocation: noop for web");
@@ -184,11 +207,6 @@ const stopLocation = async () => {
   if (watchId) {
     await Geolocation.clearWatch({ id: watchId });
     watchId = null;
-  }
-  // Stop Android polling
-  if (androidPollingInterval) {
-    clearInterval(androidPollingInterval);
-    androidPollingInterval = null;
   }
   console.log("Stopped watching position");
 };
@@ -204,4 +222,5 @@ export {
   demLookup,
   selectedDemUrl as demUrl,
   demInfo,
+  filteredHeading,
 };
