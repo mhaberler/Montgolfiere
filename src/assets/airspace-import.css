@@ -112,10 +112,11 @@
 .airspace-stack-control {
   --airspace-stack-column-width-vw: 5;
   --airspace-stack-viewport-margin: 8px;
+  /* fraction of the map pane height used when the user has not resized */
+  --airspace-stack-auto-height-fraction: 0.8;
   position: relative;
   min-width: 100px;
   max-width: calc(100vw - (var(--airspace-stack-viewport-margin) * 2));
-  height: 80vh;
   box-sizing: border-box;
   padding: 0.5rem 0.25rem;
   background: rgba(255, 255, 255, 0.92);
@@ -253,6 +254,8 @@
 .airspace-detail-popup {
   position: fixed;
   width: min(16.25rem, calc(100vw - 1rem));
+  /* max-height is set inline from the map pane rect; this is the pre-measure
+     fallback used while the popup is still hidden */
   max-height: 50vh;
   overflow-y: auto;
   background: #fff;
@@ -311,18 +314,6 @@
   width: 20px;
   height: 20px;
   color: #333;
-}
-
-@media (max-height: 700px) {
-  .airspace-stack-control {
-    height: 55vh;
-  }
-}
-
-@media (max-height: 500px) {
-  .airspace-stack-control {
-    height: 45vh;
-  }
 }
 
 @media (max-width: 480px) {

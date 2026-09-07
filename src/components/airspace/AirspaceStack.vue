@@ -242,6 +242,8 @@ const windowWidth = ref(
 const isResizing = ref(false);
 const autoWidthTrigger = ref(0);
 
+const MIN_HEIGHT_PX = 100;
+
 function getMinWidthPx(): number {
   if (!containerRef.value) {
     return 100;
@@ -272,6 +274,32 @@ function clampWidthPx(widthPx: number): number {
   return Math.max(getMinWidthPx(), Math.min(widthPx, getAvailableWidthPx()));
 }
 
+// The stack is a bottomright Leaflet control, so its height grows upward from
+// the map pane bottom. Measure against the pane, not the viewport: the pane is
+// shorter than 100vh (tab bar + title bar above it) so vh-based heights slide
+// under the toolbar.
+function getAvailableHeightPx(): number {
+  const pane = containerRef.value?.closest(".leaflet-container");
+  if (!pane) {
+    return window.innerHeight;
+  }
+  const margin = getCssVarPx("--airspace-stack-viewport-margin", 8);
+  return Math.max(
+    MIN_HEIGHT_PX,
+    pane.getBoundingClientRect().height - margin * 2,
+  );
+}
+
+function clampHeightPx(heightPx: number): number {
+  return Math.max(MIN_HEIGHT_PX, Math.min(heightPx, getAvailableHeightPx()));
+}
+
+function computeAutoHeightPx(): number {
+  const fraction =
+    getCssVarPx("--airspace-stack-auto-height-fraction", 0.8) || 0.8;
+  return getAvailableHeightPx() * fraction;
+}
+
 function computeAutoWidthPx(): number {
   const colVw = getCssVarPx("--airspace-stack-column-width-vw", 5);
   return (windowWidth.value * colVw * numCols.value) / 100;
@@ -285,22 +313,26 @@ const containerStyle = computed(() => {
   if (containerRef.value) {
     const desired = manualWidthPx.value ?? computeAutoWidthPx();
     style.width = `${Math.round(clampWidthPx(desired))}px`;
-  }
-  if (manualHeightPx.value != null) {
-    style.height = `${manualHeightPx.value}px`;
+    const desiredHeight = manualHeightPx.value ?? computeAutoHeightPx();
+    style.height = `${Math.round(clampHeightPx(desiredHeight))}px`;
   }
   return style;
 });
 
 const stackAreaStyle = computed(() => {
-  if (manualHeightPx.value == null) {
+  void autoWidthTrigger.value;
+  if (!containerRef.value) {
     return {};
   }
-  return { height: `${manualHeightPx.value - 35}px` };
+  const desiredHeight = manualHeightPx.value ?? computeAutoHeightPx();
+  return { height: `${Math.round(clampHeightPx(desiredHeight)) - 35}px` };
 });
 
 function onWindowResize() {
   windowWidth.value = window.innerWidth;
+  // height-only changes (rotation, on-screen keyboard) must re-run the
+  // pane-relative height clamp as well
+  autoWidthTrigger.value++;
 }
 
 const altDragging = ref(false);
@@ -371,7 +403,7 @@ function onTopResizeMove(event: PointerEvent) {
     return;
   }
   const rect = containerRef.value.getBoundingClientRect();
-  manualHeightPx.value = Math.max(100, rect.bottom - event.clientY);
+  manualHeightPx.value = clampHeightPx(rect.bottom - event.clientY);
 }
 
 function onTopResizeEnd() {
@@ -395,7 +427,7 @@ function onCornerResizeMove(event: PointerEvent) {
   }
   const rect = containerRef.value.getBoundingClientRect();
   manualWidthPx.value = Math.max(getMinWidthPx(), rect.right - event.clientX);
-  manualHeightPx.value = Math.max(100, rect.bottom - event.clientY);
+  manualHeightPx.value = clampHeightPx(rect.bottom - event.clientY);
 }
 
 function onCornerResizeEnd() {
@@ -410,6 +442,7 @@ interface DetailPopupState {
   index: number;
   x: number;
   y: number;
+  maxHeight: number | null;
   placed: boolean;
 }
 
@@ -422,6 +455,9 @@ const detailPopupStyle = computed(() => {
     position: "fixed" as const,
     left: `${detailPopup.value.x}px`,
     top: `${detailPopup.value.y}px`,
+    ...(detailPopup.value.maxHeight != null
+      ? { maxHeight: `${Math.round(detailPopup.value.maxHeight)}px` }
+      : {}),
     pointerEvents: "auto" as const,
     visibility: detailPopup.value.placed
       ? ("visible" as const)
@@ -437,7 +473,14 @@ async function onBlockClick(
   event.stopPropagation();
   const clickX = event.clientX;
   const clickY = event.clientY;
-  detailPopup.value = { entry, index, x: clickX, y: clickY, placed: false };
+  detailPopup.value = {
+    entry,
+    index,
+    x: clickX,
+    y: clickY,
+    maxHeight: null,
+    placed: false,
+  };
   emit("block-click", { entry, index });
   await nextTick();
   if (!detailPopupRef.value || !detailPopup.value) {
@@ -445,18 +488,28 @@ async function onBlockClick(
   }
   const rect = detailPopupRef.value.getBoundingClientRect();
   const margin = 8;
+  // Clamp inside the map pane, not the viewport: the tab bar and title bar sit
+  // above the pane, and a viewport-clamped popup slides underneath them.
+  const pane = containerRef.value?.closest(".leaflet-container");
+  const paneRect = pane?.getBoundingClientRect();
+  const paneTop = paneRect?.top ?? 0;
+  const paneBottom = paneRect?.bottom ?? window.innerHeight;
+  const height = Math.min(rect.height, paneBottom - paneTop - margin * 2);
+  const minY = paneTop + margin;
+  const maxY = paneBottom - height - margin;
   const x = Math.max(
     margin,
     Math.min(clickX - rect.width / 2, window.innerWidth - rect.width - margin),
   );
-  const y = Math.max(
-    margin,
-    Math.min(
-      clickY - rect.height / 2,
-      window.innerHeight - rect.height - margin,
-    ),
-  );
-  detailPopup.value = { entry, index, x, y, placed: true };
+  const y = Math.max(minY, Math.min(clickY - rect.height / 2, maxY));
+  detailPopup.value = {
+    entry,
+    index,
+    x,
+    y,
+    maxHeight: paneBottom - paneTop - margin * 2,
+    placed: true,
+  };
 }
 
 function onAreaClick(event: MouseEvent) {
