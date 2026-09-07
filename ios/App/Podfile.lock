@@ -56,15 +56,15 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorBackgroundTask (8.0.3):
     - Capacitor
-  - CapawesomeCapacitorFilePicker (8.0.5):
+  - CapawesomeCapacitorFilePicker (8.1.0):
     - Capacitor
   - CapawesomeCapacitorScreenOrientation (8.0.3):
     - Capacitor
   - CapawesomeCapacitorScreenshot (8.0.2):
     - Capacitor
-  - CapgoCapacitorShake (8.0.39):
+  - CapgoCapacitorShake (8.0.40):
     - Capacitor
-  - CapgoCapacitorUploader (8.3.12):
+  - CapgoCapacitorUploader (8.3.13):
     - Capacitor
   - CapgoNativeAudio (8.4.2):
     - Capacitor
@@ -281,11 +281,11 @@ SPEC CHECKSUMS:
   CapacitorTextZoom: b3c80b09abef831245bc3434b1c03aa898ad4762
   CapacitorToast: 408036fbd702120d3adde3980b740f3c0fb60c9e
   CapawesomeCapacitorBackgroundTask: 4aa93c0743a17df5b34d2ede15689afc0fc22245
-  CapawesomeCapacitorFilePicker: 7c17fa9e9f4cdebecf03731df288279f617955c4
+  CapawesomeCapacitorFilePicker: 63170fae6d17f3ce2547ffc0290f287e7bdc45d7
   CapawesomeCapacitorScreenOrientation: 18368e1ed685dc6904225063bddd52553a5a89f0
   CapawesomeCapacitorScreenshot: 4eb96d533eb6d93bfa2aee9dcd26eb4b242ed054
-  CapgoCapacitorShake: c33e3670e314fa76ba1a29dde9e346edb12ef4af
-  CapgoCapacitorUploader: 089ce587c4804424fe4925d6067179092dfa98da
+  CapgoCapacitorShake: 391637e95e9ecccd5812514f1174bc8dc1921d3c
+  CapgoCapacitorUploader: 12333620eaf9f99abb75998d51f481f92f79321b
   CapgoNativeAudio: cfc29c10c7a7e6b52ce1077398a694eb8c3101b8
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: ddd51d7dff36ff28defa69afedd9cdce684fd857
