@@ -180,6 +180,9 @@
     "@tailwindcss/oxide",
     "core-js"
   ],
+  "overrides": {
+    "typescript": "npm:typescript-native-bridge@6.0.3-bridge.16.tsgo.7.0.2"
+  },
   "patchedDependencies": {
     "@leadscout/http@7.0.0": "patches/@leadscout%2Fhttp@7.0.0.patch"
   }

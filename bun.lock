@@ -114,6 +114,9 @@
   "patchedDependencies": {
     "@leadscout/http@7.0.0": "patches/@leadscout%2Fhttp@7.0.0.patch",
   },
+  "overrides": {
+    "typescript": "npm:typescript-native-bridge@6.0.3-bridge.16.tsgo.7.0.2",
+  },
   "packages": {
     "@alloc/quick-lru": ["@alloc/quick-lru@5.2.0", "", {}, "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw=="],
 
@@ -606,6 +609,20 @@
     "@typescript-eslint/utils": ["@typescript-eslint/utils@8.62.0", "", { "dependencies": { "@eslint-community/eslint-utils": "^4.9.1", "@typescript-eslint/scope-manager": "8.62.0", "@typescript-eslint/types": "8.62.0", "@typescript-eslint/typescript-estree": "8.62.0" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0", "typescript": ">=4.8.4 <6.1.0" } }, "sha512-82r66fi9zYwZ+mTq3vKgwjbZ1PVk/DJzrXFLpG6RnBbdvH8TEGVHIs9H4d2drhkOzf0syZuD/OZvvlu6GDbP4g=="],
 
     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.62.0", "", { "dependencies": { "@typescript-eslint/types": "8.62.0", "eslint-visitor-keys": "^5.0.0" } }, "sha512-CY3uyFSRbcQv3nnSv8S0+lDftMVz6P963PoRlxrV7ew/Md564g9ut60PYzdLM5qW4jFn93GBF+Soi90ISAN+GQ=="],
+
+    "@typescript-native-bridge/darwin-arm64": ["@typescript-native-bridge/darwin-arm64@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-D0yL7T3gDXwn4XiRtA1x7bW+0zedMUVG3PnIt+X4lxblnId+Wo2FBvf+2ZLZpPOO3DILGz5bdX+Aq8tqboeGEg=="],
+
+    "@typescript-native-bridge/darwin-x64": ["@typescript-native-bridge/darwin-x64@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "darwin", "cpu": "x64" }, "sha512-HLPoAVsmkgDec3UZpUPI4hquvA/X/qZ71w4dQXP7LbsN+5ROpum7gWx9S0ZwVgvoaC4++iu08Qnw1l5gXknyvg=="],
+
+    "@typescript-native-bridge/linux-arm": ["@typescript-native-bridge/linux-arm@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "linux", "cpu": "arm" }, "sha512-rCqqctyc4801hX2pCVM1kv7rYfBiSi0SGJU+Nv3RQ5C2gBXkShBA39+Vw0bsqrX+Fj+Tre4kuOdSlUnSeDv2GA=="],
+
+    "@typescript-native-bridge/linux-arm64": ["@typescript-native-bridge/linux-arm64@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-tVOhuwktZREiVdfOTgh4K8sLaJZHyXOz5SwtwkMknM3A6tSdYTqQ3s7s/hDkB18l33+ZWBKYfJ69Sge8pGeKJw=="],
+
+    "@typescript-native-bridge/linux-x64": ["@typescript-native-bridge/linux-x64@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "linux", "cpu": "x64" }, "sha512-WKIuVkh9YuL1udrL0Dp+XvNLaM9maQZMz38ukNn93kwNhSXIXa+62xK69IKdc8osVZU6fDk0ZbIKkcrGkOi51A=="],
+
+    "@typescript-native-bridge/win32-arm64": ["@typescript-native-bridge/win32-arm64@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-u0/Aq5bkdFcuw463Y6zsYSKRdX1rcTtLkAK1PTwRH70aMkaU6vkr7BSIjvLj3lDCqsySFuoHHuNg5J2pmqxp3A=="],
+
+    "@typescript-native-bridge/win32-x64": ["@typescript-native-bridge/win32-x64@6.0.3-bridge.16.tsgo.7.0.2", "", { "os": "win32", "cpu": "x64" }, "sha512-l0OPZ6xD69vQpyfS5yTSwJ5xJTYM2hUKFRYlvyyUSvbFubUz8jQRLcrn+WU4QehV9WkVIQIx8CLgNCI0Zqhmyg=="],
 
     "@vitejs/plugin-vue": ["@vitejs/plugin-vue@6.0.8", "", { "dependencies": { "@rolldown/pluginutils": "^1.0.1" }, "peerDependencies": { "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0", "vue": "^3.2.25" } }, "sha512-0ZjgOg7oO6farnNGup7yvoM/YXZV84OZxHAwtflItNa/6zzQyVb5LNxyea3FEKEX2XlagIKzrlH7wwxkKgtiew=="],
 
@@ -1731,7 +1748,7 @@
 
     "typedarray": ["typedarray@0.0.6", "", {}, "sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA=="],
 
-    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+    "typescript": ["typescript-native-bridge@6.0.3-bridge.16.tsgo.7.0.2", "", { "optionalDependencies": { "@typescript-native-bridge/darwin-arm64": "6.0.3-bridge.16.tsgo.7.0.2", "@typescript-native-bridge/darwin-x64": "6.0.3-bridge.16.tsgo.7.0.2", "@typescript-native-bridge/linux-arm": "6.0.3-bridge.16.tsgo.7.0.2", "@typescript-native-bridge/linux-arm64": "6.0.3-bridge.16.tsgo.7.0.2", "@typescript-native-bridge/linux-x64": "6.0.3-bridge.16.tsgo.7.0.2", "@typescript-native-bridge/win32-arm64": "6.0.3-bridge.16.tsgo.7.0.2", "@typescript-native-bridge/win32-x64": "6.0.3-bridge.16.tsgo.7.0.2" }, "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-bO+fh23fh4j0mK2NmlFOrlbR9Ke5cHpjOsDaM2czXlSXqxNchGdDVyAdaVCFz0DofkFOov96HLvQaP3W57F+CA=="],
 
     "typescript-eslint": ["typescript-eslint@8.62.0", "", { "dependencies": { "@typescript-eslint/eslint-plugin": "8.62.0", "@typescript-eslint/parser": "8.62.0", "@typescript-eslint/typescript-estree": "8.62.0", "@typescript-eslint/utils": "8.62.0" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0", "typescript": ">=4.8.4 <6.1.0" } }, "sha512-8QxXi+ZACKX0kaqO4gY8kn0RSD9gFfaHDWwjqtEN48aWCBkX4MJaufWN+c3BzlrXLOxfywDL8CaoqUwcRq4j4Q=="],
 
