@@ -49,7 +49,10 @@
     "open-in-Android-Studio": "bunx cap open android",
     "android-cpu-usage": "adb shell top",
     "sync": "bunx cap sync && (cd ios/App && pod install)",
-    "deploy-leaflet-mapterhorn": "rsync -avz --delete examples/leaflet-elevation/index.html mah@vps.mah.priv.at:/var/www/vps/apps/leaflet-mapterhorn/ && echo visit https://vps.mah.priv.at/apps/leaflet-mapterhorn/index.html"
+    "deploy-leaflet-mapterhorn": "rsync -avz --delete examples/leaflet-elevation/index.html mah@vps.mah.priv.at:/var/www/vps/apps/leaflet-mapterhorn/ && echo visit https://vps.mah.priv.at/apps/leaflet-mapterhorn/index.html",
+    "release:patch": "npm version patch && git push origin HEAD --follow-tags",
+    "release:minor": "npm version minor && git push origin HEAD --follow-tags",
+    "release:major": "npm version major && git push origin HEAD --follow-tags"
   },
   "scripts-disabled": {
     "ios-build-number": "cd ios/App && agvtool what-version ",

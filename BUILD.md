@@ -10,9 +10,12 @@
 
 ## CI builds (GitHub Actions)
 
-`.github/workflows/app-release.yml`, `workflow_dispatch` only. Builds a signed APK,
-AAB and IPA and attaches them as workflow artifacts. **Nothing is uploaded** to
-TestFlight or Google Play.
+`.github/workflows/app-release.yml`.
+
+- `workflow_dispatch`: signed APK/AAB/IPA as workflow artifacts, **no uploads**.
+- tag `v*` (`bun run release:patch|minor|major`): additionally uploads the IPA to
+  TestFlight, the AAB to the Play internal track (status draft — promote by hand in
+  Play Console) and attaches APK+AAB+IPA to a GitHub Release.
 
 ```sh
 gh workflow run app-release.yml
@@ -32,6 +35,7 @@ gh run download <run-id> --dir /tmp/art
 scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --ios-only
 scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --android-only
 scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --vite-only
+scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --play-only
 ```
 
 - `VITE_*` secrets are baked into the bundle at build time (written to
