@@ -81,7 +81,8 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          ./gradlew --no-daemon assembleRelease bundleRelease \
+          # android/gradle.properties pins a local Homebrew JDK; use the runner's.
+          ./gradlew --no-daemon -Dorg.gradle.java.home="$JAVA_HOME" assembleRelease bundleRelease \
             -PversionCode=${{ needs.version.outputs.code }} \
             -PversionName=${{ needs.version.outputs.name }}
           mkdir -p "$RUNNER_TEMP/out"
