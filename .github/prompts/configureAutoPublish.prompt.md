@@ -4,7 +4,7 @@ description: Configure automatic app store release publishing in CI/CD pipelines
 argument-hint: The app store platform (e.g., Google Play, TestFlight) and configuration file
 ---
 
-Configure automatic release publishing for app stores in CI/CD automation tools (fastlane, etc.), accounting for platform-specific requirements and approval workflows.
+Configure automatic release publishing for app stores in CI/CD (this repo uses GitHub Actions: `.github/workflows/app-release.yml`, see `BUILD.md`), accounting for platform-specific requirements and approval workflows.
 
 ## Analysis Steps:
 
@@ -38,6 +38,6 @@ Configure automatic release publishing for app stores in CI/CD automation tools 
 
 ## Common Scenarios:
 
-- **Google Play**: Draft apps require `release_status: "draft"` → switch to `"completed"` after approval
+- **Google Play**: Draft apps require `status: draft` (r0adkll/upload-google-play) → switch to `completed` after approval
 - **TestFlight**: Automatic approval possible for internal testers, external requires review
 - **Staged rollouts**: Percentage-based gradual deployment options

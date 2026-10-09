@@ -503,11 +503,22 @@ bun run debug-android-a15 # Android emulator
 **Production Builds:**
 
 ```bash
-gh workflow run app-release.yml  # CI test build: signed APK/AAB/IPA artifacts (see BUILD.md)
+gh workflow run app-release.yml  # CI test build: signed APK/AAB/IPA artifacts, no uploads
+bun run release:patch    # bump, tag vX.Y.Z, push -> CI uploads to TestFlight + Play internal (draft) + GitHub Release
 bun run build-dev        # Web build (development mode)
 bun run build-prod       # Web build (production mode)
 bun run deploy-mah.priv.at  # Build + rsync web preview to static host
 ```
+
+**Releases (GitHub Actions, `.github/workflows/app-release.yml`):** no fastlane/Ruby/match.
+`release:patch|minor|major` runs `npm version` + `git push origin HEAD --follow-tags`; the `v*` tag triggers
+the build. iOS: Xcode cloud-managed signing via App Store Connect API key (archive unsigned from
+`App.xcworkspace`, sign at export). Android: upload keystore from secrets. `versionName` = tag,
+`versionCode`/`CFBundleVersion` = `run_number + 200` (injected at build time, never committed;
+`build.gradle` reads `-PversionCode/-PversionName`, `Info.plist` uses `$(MARKETING_VERSION)` /
+`$(CURRENT_PROJECT_VERSION)`). `VITE_*` values come from GH secrets. Secrets: `.env` (gitignored) +
+`scripts/sync-app-secrets.sh`. Play upload is `status: draft` — promote by hand. See `BUILD.md`.
+iOS still CocoaPods (SPM blocked: `@capacitor-mlkit/barcode-scanning`, `@capacitor/motion`, `@leadscout/http` lack `Package.swift`).
 
 **Capacitor Sync:**
 
@@ -600,9 +611,9 @@ For questions or issues, refer to the project repository documentation or contac
 
 ---
 
-**Last Updated:** 2026-05-30
-**Version:** 1.12.5
-**Latest Changes:** Added MQTT auto-connect (`autoConnect` field on `ServiceEntry`, retry loop in `startup.ts`, Tab1 status badge); refactored mDNS scanning into singleton `useMdnsScan` composable (single continuous scan, sole ZeroConf owner, fixes Android double-watch crash); added Topics accordion in Settings (per-topic message counts, compact publish); added MQTT keepalive=15s for faster dead-connection detection.
+**Last Updated:** 2026-10-09
+**Version:** 2.0.0
+**Latest Changes:** Removed fastlane (Gemfile, Ruby, match); releases now via tag-triggered GitHub Actions to TestFlight + Play internal (draft) + GitHub Release; added `esbuild` devDependency for vite 8. Earlier: Added MQTT auto-connect (`autoConnect` field on `ServiceEntry`, retry loop in `startup.ts`, Tab1 status badge); refactored mDNS scanning into singleton `useMdnsScan` composable (single continuous scan, sole ZeroConf owner, fixes Android double-watch crash); added Topics accordion in Settings (per-topic message counts, compact publish); added MQTT keepalive=15s for faster dead-connection detection.
 
 # CLAUDE.md
 
