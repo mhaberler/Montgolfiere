@@ -503,8 +503,7 @@ bun run debug-android-a15 # Android emulator
 **Production Builds:**
 
 ```bash
-bun run ios-beta         # iOS beta build (fastlane)
-bun run android-beta     # Android beta build (fastlane)
+gh workflow run app-release.yml  # CI test build: signed APK/AAB/IPA artifacts (see BUILD.md)
 bun run build-dev        # Web build (development mode)
 bun run build-prod       # Web build (production mode)
 bun run deploy-mah.priv.at  # Build + rsync web preview to static host

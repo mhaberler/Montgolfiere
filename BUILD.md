@@ -2,11 +2,40 @@
 
 ## build
 
-- npm install
-- npm run build
-- npx cap sync
-- npx cap open android
-- npx cap open ios
+- bun install
+- bunx vite build --mode production
+- bun run sync (`cap sync` + `pod install`)
+- bunx cap open android
+- bunx cap open ios
+
+## CI builds (GitHub Actions)
+
+`.github/workflows/app-release.yml`, `workflow_dispatch` only. Builds a signed APK,
+AAB and IPA and attaches them as workflow artifacts. **Nothing is uploaded** to
+TestFlight or Google Play.
+
+```sh
+gh workflow run app-release.yml
+gh run watch
+gh run download <run-id> --dir /tmp/art
+```
+
+- `versionName` = `version` in package.json; `versionCode` / `CFBundleVersion` =
+  `run_number + 200`. Passed at build time (Gradle `-PversionCode`, xcodebuild
+  `CURRENT_PROJECT_VERSION`); nothing is committed back.
+- iOS uses Xcode cloud-managed signing via an App Store Connect API key (Admin role).
+  No certificates/profiles are stored. The archive is built unsigned from
+  `App.xcworkspace` (CocoaPods) and signed at export (`ci/ExportOptions-export.plist`).
+- Secrets: copy `.env.example` to `.env`, fill in, then
+
+```sh
+scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --ios-only
+scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --android-only
+scripts/sync-app-secrets.sh --repo mhaberler/Montgolfiere --env-file .env --vite-only
+```
+
+- `VITE_*` secrets are baked into the bundle at build time (written to
+  `.env.production` on the runner).
 
 ## Debugging on-target
 
@@ -25,7 +54,7 @@ Using brew, install libimobiledevice - handy for iOS logging:
 Once done, connect idevice to mac and type in terminal
 `idevicesyslog`
 
-Also Xcode, Android Studio and fastlane.
+Also Xcode and Android Studio.
 
 ### run the development server
 

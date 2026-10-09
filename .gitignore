@@ -39,7 +39,6 @@ TODO
 .env.development
 .env.production
 .gitignore
-fastlane/report.xml
 android_logs.txt
 .capgo_key_v2
 .capgo_key_v2.pub

@@ -33,9 +33,9 @@
 
 - Capacitor plugins and native settings: [capacitor.config.ts](capacitor.config.ts), [android/](android/), [ios/](ios/).
 - MQTT runtime config uses `VITE_` env vars in [src/utils/mqtt.ts](src/utils/mqtt.ts).
-- Deployment and signing via fastlane in [fastlane/README.md](fastlane/README.md).
+- Deployment and signing via GitHub Actions in [BUILD.md](../BUILD.md).
 
 ## Security
 
 - Do not commit secrets; `.env*` and signing files are ignored (see .gitignore).
-- Keystore and fastlane credentials come from environment variables; see [capacitor.config.ts](capacitor.config.ts) and [fastlane/README.md](fastlane/README.md).
+- Keystore and App Store Connect credentials live in GitHub Actions secrets (see [BUILD.md](../BUILD.md)); locally they come from `.env` (gitignored).
